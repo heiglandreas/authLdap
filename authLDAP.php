@@ -209,6 +209,9 @@ function authldapOptionsPanel()
                 <p class="authLDAPDescription">The Filter should contain the string %s which will be replaced by the login-name of the currently logged in user</p>
                 <p class="authLDAPDefault">This field defaults to <strong>(&amp;(objectClass=posixGroup)(memberUid=%s))</strong></p>
             </div>
+        </fieldset>
+        <fieldset class="options">
+            <legend>Group-Memberships</legend>
 authLdapForm;
 
     foreach (get_option('wp_user_roles') as $group => $vals){
@@ -219,7 +222,7 @@ authLdapForm;
                     <input type="text" name="authLDAPGroups['.$group.']" value="'.$authLDAPGroups[$group].'" />
                 </span>
                 <p class="authLDAPDescription">What LDAP-Groups shall be matched to the '.$vals['name'].'-Role?</p>
-                <p class="authLDAPDescription">Please provide a coma-separated list of integers</p>
+                <p class="authLDAPDescription">Please provide a coma-separated list of values</p>
                 <p class="authLDAPDefault">This field is empty by default</p>
             </div>';
     }
