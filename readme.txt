@@ -9,6 +9,8 @@ This plugin allows you to use your existing LDAP as authentication base for Word
 
 == Description ==
 
+
+
 This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
 
 For backwards compatibility, if this section is missing, the full length of the short description will be used, and
@@ -36,23 +38,15 @@ you put the stable version, in order to eliminate any doubt.
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('plugin_name_hook'); ?>` in your templates
+1. Upload the extracted folder `authLdap` to the `/wp-content/plugins/` directory
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Configure the Plugin via the 'authLdap'-Configuration-Page.
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= Where can I find more Informations about the plugin? =
 
-An answer to that question.
-
-= What about foo bar? =
-
-Answer to foo bar dilemma.
+Go to http://andreas.heigl.org/cat/dev/wp/authldap
 
 == Screenshots ==
 
@@ -63,11 +57,7 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 == Changelog ==
 
 = 1.0 =
-* A change since the previous version.
-* Another change.
-
-= 0.5 =
-* List versions from most recent at top to oldest at bottom.
+* The primary version of the plugin
 
 == Upgrade Notice ==
 
@@ -105,5 +95,3 @@ Titles are optional, naturally.
 
 Markdown uses email style notation for blockquotes and I've been told:
 > Asterisks for *emphasis*. Double it up  for **strong**.
-
-`<?php code(); // goes in backticks ?>`

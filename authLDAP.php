@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: AuthLDAP
-Plugin URI: http://heigl.org/dev/wp/authLDAP
+Plugin URI: http://andreas.heigl.org/cat/dev/wp/authldap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 0.01
+Version: 1.0
 Author: Andreas Heigl <a.heigl@wdv.de>
-Author URI: http://www.heigl.org
+Author URI: http://andreas.heigl.org
 */
 
 require_once ABSPATH . 'wp-content/plugins/authLDAP/ldap.php';
@@ -78,6 +78,11 @@ function authldapOptionsPanel()
         $fDebugChecked =  'checked="checked"';
     }
     $action=$_SERVER['REQUEST_URI'];
+    if ( !extension_loaded ( 'ldap' ) ) {
+        echo '<div class="warning">The LDAP-Extension is not available on your '
+             . 'WebServer. Therefore Everything you can alter here does not '
+             . 'make any sense!</div>';
+    }
     echo <<<authLdapForm
     <div class="wrap">
     <h2>authLDAP Options</h2>
@@ -109,7 +114,7 @@ function authldapOptionsPanel()
             <p class="authLDAPDescription">The <acronym title="Uniform Ressource Identifier">URI</acronym> 
                 for connecting to the LDAP-Server. This usualy takes the form 
                 <var>&lt;scheme&gt;://&lt;user&gt;:&lt;password&gt;@&lt;server&gt;/&lt;path&gt;</var>
-                according to RFC xyz.</p><p class="authLDAPDescription">
+                according to RFC 1738.</p><p class="authLDAPDescription">
                 In this case it schould be something like 
                 <var>ldap://uid=adminuser,dc=example,c=com:secret@ldap.example.com/dc=basePath,dc=example,c=com</var>.</p>
             <p class="authLDAPDescription">If your LDAP accepts anonymous login, you can ommit the
@@ -124,7 +129,7 @@ function authldapOptionsPanel()
             <p class="authLDAPDescription">Please provide a valid filter that can be used for querying 
                 the <acronym title="Lightweight Directory Access Protocol">LDAP</acronym>
                 for the correct user. For more information on this 
-                feature have a look at <a href="??">http://??</a></p>
+                feature have a look at <a href="http://andreas.heigl.org/cat/dev/wp/authldap">http://andreas.heigl.org/cat/dev/wp/authldap</a></p>
             <p class="authLDAPDescription">This field <strong>should</strong> 
                 include the string <var>%s</var> that will be replaced with the 
                 username provided during log-in</p><p class="authLDAPDescription">If you 
