@@ -1,12 +1,11 @@
-=== Plugin Name ===
-Contributors: markjaquith, mdawaffe
-Donate link: http://example.com/
-Tags: comments, spam
-Requires at least: 2.0.2
-Tested up to: 2.1
-Stable tag: 4.3
+=== authLdap ===
+Contributors: heiglandreas
+Tags: ldap, auth
+Requires at least: 2.5.0
+Tested up to: 3.0.1
+Stable tag: trunk
 
-Here is a short description of the plugin.  This should be no more than 150 characters.  No markup here.
+This plugin allows you to use your existing LDAP as authentication base for WordPress
 
 == Description ==
 
