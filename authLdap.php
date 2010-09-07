@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: http://andreas.heigl.org/cat/dev/wp/authldap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.0
+Version: 1.0.1
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
@@ -44,10 +44,10 @@ function authldapOptionsPanel()
         update_option('authLDAPDebug',         $_POST['authLDAPDebug']);
         update_option('authLDAPGroupAttr',     $_POST['authLDAPGroupAttr']);
         update_option('authLDAPGroupFilter',   $_POST['authLDAPGroupFilter']);
-    
+
         echo "<div class='updated'><p>Saved Options!</p></div>";
     }
-    
+
     $authLDAP               = get_option("authLDAP");
     $authLDAPCookieMarker   = get_option("authLDAPCookieMarker");
     $authLDAPURI            = get_option("authLDAPURI");
@@ -65,8 +65,8 @@ function authldapOptionsPanel()
     $authLDAPDebug          = get_option('authLDAPDebug');
     $authLDAPGroupAttr      = get_option('authLDAPGroupAttr');
     $authLDAPGroupFilter    = get_option('authLDAPGroupFilter');
-        
-    
+
+
     if($authLDAP){
         $tChecked = ' checked="checked"';
     } else {
@@ -111,11 +111,11 @@ function authldapOptionsPanel()
             <span class="element">
                 <input type='text' name='authLDAPURI' value='$authLDAPURI' style='width: 300px;'/>
             </span>
-            <p class="authLDAPDescription">The <acronym title="Uniform Ressource Identifier">URI</acronym> 
-                for connecting to the LDAP-Server. This usualy takes the form 
+            <p class="authLDAPDescription">The <acronym title="Uniform Ressource Identifier">URI</acronym>
+                for connecting to the LDAP-Server. This usualy takes the form
                 <var>&lt;scheme&gt;://&lt;user&gt;:&lt;password&gt;@&lt;server&gt;/&lt;path&gt;</var>
                 according to RFC 1738.</p><p class="authLDAPDescription">
-                In this case it schould be something like 
+                In this case it schould be something like
                 <var>ldap://uid=adminuser,dc=example,c=com:secret@ldap.example.com/dc=basePath,dc=example,c=com</var>.</p>
             <p class="authLDAPDescription">If your LDAP accepts anonymous login, you can ommit the
                 user and password-Part of the URI</p>
@@ -126,13 +126,13 @@ function authldapOptionsPanel()
             <span class="element">
                 <input type='text' name='authLDAPFilter' value='$authLDAPFilter' style='width: 450px;'/>
             </span>
-            <p class="authLDAPDescription">Please provide a valid filter that can be used for querying 
+            <p class="authLDAPDescription">Please provide a valid filter that can be used for querying
                 the <acronym title="Lightweight Directory Access Protocol">LDAP</acronym>
-                for the correct user. For more information on this 
+                for the correct user. For more information on this
                 feature have a look at <a href="http://andreas.heigl.org/cat/dev/wp/authldap">http://andreas.heigl.org/cat/dev/wp/authldap</a></p>
-            <p class="authLDAPDescription">This field <strong>should</strong> 
-                include the string <var>%s</var> that will be replaced with the 
-                username provided during log-in</p><p class="authLDAPDescription">If you 
+            <p class="authLDAPDescription">This field <strong>should</strong>
+                include the string <var>%s</var> that will be replaced with the
+                username provided during log-in</p><p class="authLDAPDescription">If you
                 leave this field empty it defaults to <strong>(uid=%s)</strong></p>
         </div>
         </fieldset>
@@ -143,7 +143,7 @@ function authldapOptionsPanel()
             <span class="element">
                 <input type='text' name='authLDAPNameAttr' value='$authLDAPNameAttr' style='width: 450px;'/><br />
             </span>
-            <p class="authLDAPDescription">Which Attribute from the LDAP contains 
+            <p class="authLDAPDescription">Which Attribute from the LDAP contains
             the Full or the First name of the user trying to log in.</p>
             <p class="authLDAPDefault">This defaults to <strong>name</strong></p>
         </div>
@@ -153,7 +153,7 @@ function authldapOptionsPanel()
             <span class="element">
                 <input type='text' name='authLDAPSecName' value='$authLDAPSecName' />
             </span>
-            <p class="authLDAPDescription">If the above Name-Attribute only 
+            <p class="authLDAPDescription">If the above Name-Attribute only
             contains the First Name of the user you can here specify an Attribute
             that contains the second name.</p>
             <p class="authLDAPDefault">This field is empty by default</p>
@@ -164,7 +164,7 @@ function authldapOptionsPanel()
             <span class="element">
                 <input type='text' name='authLDAPUidAttr' value='$authLDAPUidAttr' />
             </span>
-            <p class="authLDAPDescription">Please give the Attribute, that is 
+            <p class="authLDAPDescription">Please give the Attribute, that is
             used to identify the user. This should be the same as you used in the
             above <em>Filter</em>-Option</p>
             <p class="authLDAPDefault">This field defaults to <strong>uid</strong></p>
@@ -213,24 +213,26 @@ function authldapOptionsPanel()
         <fieldset class="options">
             <legend>Group-Memberships</legend>
 authLdapForm;
-
-    foreach ((array)get_option('wp_user_roles') as $group => $vals){
-    echo '
-            <div class="row">
-                <span class="description">'.$vals['name'].'</span>
-                <span class="element">
-                    <input type="text" name="authLDAPGroups['.$group.']" value="'.$authLDAPGroups[$group].'" />
-                </span>
-                <p class="authLDAPDescription">What LDAP-Groups shall be matched to the '.$vals['name'].'-Role?</p>
-                <p class="authLDAPDescription">Please provide a coma-separated list of values</p>
-                <p class="authLDAPDefault">This field is empty by default</p>
-            </div>';
+    $roles = new WP_Roles();
+    print_r($roles->get_names(),true);
+    foreach ($roles->get_names() as $group => $vals){
+        $aGroup=$authLDAPGroups[$group];
+        echo '<div class="row">'
+           . '    <span class="description">' . $vals . '</span>'
+           . '    <span class="element">'
+           . '         <input type="text" name="authLDAPGroups['.$group.']" value="'.$aGroup.'" />'
+           . '     </span>'
+           . '     <p class="authLDAPDescription">What LDAP-Groups shall be matched to the '.$vals.'-Role?</p>'
+           . '     <p class="authLDAPDescription">Please provide a coma-separated list of values</p>'
+           . '     <p class="authLDAPDefault">This field is empty by default</p>'
+           . '</div';
     }
+
     echo <<<authLdapForm3
         </fieldset>
         <fieldset class="buttons">
         <legend>Buttons</legend>
-        
+
         <p class="submit"><input type="submit" name="ldapOptionsSave" value="Save" /></p>
         </fieldset>
     </form>
@@ -238,12 +240,12 @@ authLdapForm;
 authLdapForm3;
 }
 
-if ( !function_exists('wp_login') ) :
+//if ( !function_exists('wp_login') ) :
 /**
- * This method authenticates a user using either the LDAP or, if LDAP is not 
+ * This method authenticates a user using either the LDAP or, if LDAP is not
  * available, the local database
- * 
- * For this we store the hashed passwords in the WP_Database to ensure working 
+ *
+ * For this we store the hashed passwords in the WP_Database to ensure working
  * conditions even without an LDAP-Connection
  *
  * @param string $username
@@ -254,8 +256,9 @@ if ( !function_exists('wp_login') ) :
  * @conf boolean authLDAPDebug true, if debug messages should be logged, false if not. Defaluts to false
  * @todo add the other configuration parameters here
  */
-function wp_login($username, $password, $already_md5 = false)
+function authLdap_login($foo,$username, $password, $already_md5 = false)
 {
+
     global $wpdb, $error;
     try {
         $authLDAP               = get_option("authLDAP");
@@ -271,17 +274,17 @@ function wp_login($username, $password, $already_md5 = false)
         $authLDAPDebug          = get_option('authLDAPDebug');
         $authLDAPGroupAttr      = get_option('authLDAPGroupAttr');
         $authLDAPGroupFilter    = get_option('authLDAPGroupFilter');
-        
-        
+
+
         if($authLDAP && !$authLDAPCookieMarker){
             update_option("authLDAPCookierMarker", "LDAP");
             $authLDAPCookieMarker = get_option("authLDAPCookieMarker");
         }
-        
+
         if(!$username){
             return false;
         }
-    
+
         if(!$password){
             $error = __('<strong>Error</strong>: The password field is empty.');
             return false;
@@ -297,16 +300,17 @@ function wp_login($username, $password, $already_md5 = false)
                     return true;
                 }
             }
-            
+
             // No cookie, so have to authenticate them via LDAP
             //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
             $server = new LDAP($authLDAPURI,$authLDAPDebug);
-            
+
             $result = $server->Authenticate ($username, $password, $authLDAPFilter);
             // The user is positively matched against the ldap
             if ( $result ) {
-                $attribs = $server->search(sprintf($authLDAPFilter,$username),array ($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr));
-                // First get all the relevant group informations so we can see if 
+                $attributes = array ($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr);
+                $attribs = $server->search(sprintf($authLDAPFilter,$username),$attributes);
+                // First get all the relevant group informations so we can see if
                 // whether have been changes in group association of the user
                 $groups = $server->search(sprintf($authLDAPGroupFilter,$username), array($authLDAPGroupAttr));
                 $grp = array ();
@@ -315,72 +319,86 @@ function wp_login($username, $password, $already_md5 = false)
                         $grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
                     }
                 }
+
                 $userid=null;
+                $mail = '';
+                if(isset($attribs[0][strtolower($authLDAPMailAttr)][0])){
+                    $mail=$attribs[0][strtolower($authLDAPMailAttr)][0];
+                }
                 if ( $login ){
-                    // The user already has an entry in the WP-Database, so we have 
+                    // The user already has an entry in the WP-Database, so we have
                     // to update the pasword just in case it changed
-                    $userid = wp_update_user( array ('ID'=> $login->ID, 'user_pass' => $password,'user_email' => $attribs[0][strtolower($authLDAPMailAttr)][0]));
+                    $array=array('ID'=> $login->ID, 'user_pass' => $password);
+                    if(''!=$mail){
+                        $array['user_email'] = $mail;
+                    }
+                    $userid = wp_update_user($array);
                 } else {
                     // There is no user in the WP_Database, so we have to create one
                     // For this we have to get the groups of the user so we can find,
                     // what role the user will get
-                    trigger_Error ( print_r ( $result,true));
-                    $userid = wp_create_user($username, $password, $attribs[0][strtolower($authLDAPMailAttr)][0] );
+                    if(''==$mail){
+                    	$mail='me@example.com';
+                    }
+                    $userid = wp_create_user($username, $password, $mail );
                 }
+                trigger_ERror ($userid,E_USER_WARNING);
+
                 if ( $userid == null){
                     return false;
                 }
-                $meta = get_usermeta($userid, 'wp_capabilities');
+                $meta = get_user_meta($userid, 'wp301_capabilities');
                 if ( ! is_array ( $meta )){
                     return false;
                 }
-                update_usermeta($userid,'first_name', $attribs[0][strtolower($authLDAPNameAttr)][0]);
+                update_user_meta($userid,'first_name', $attribs[0][strtolower($authLDAPNameAttr)][0]);
                 $nicename = $attribs[0][strtolower($authLDAPNameAttr)][0];
+                trigger_ERror ($nicename,E_USER_WARNING);
                 if ( $attribs[0][strtolower($authLDAPSecName)][0]){
-                    update_usermeta($userid, 'last_name', $attribs[0][strtolower($authLDAPSecName)][0]);
+                    update_user_meta($userid, 'last_name', $attribs[0][strtolower($authLDAPSecName)][0]);
                     $nicename .= ' ' . $attribs[0][strtolower($authLDAPSecName)][0];
                 }
                 // Set the Nice-Name for display
                 wp_update_user(array ('ID' => $userid, 'display_name' => $nicename));
                 // Deaktivate the WYSIWYG-Editor for better Performance of the
                 // FCKEditor
-                update_usermeta($userid,'rich_editing', 'false');
-                update_usermeta($userid,'authLDAP',true);
+                update_user_meta($userid,'rich_editing', 'false');
+                update_user_meta($userid,'authLDAP',true);
                 foreach ($authLDAPGroups as $key => $val){
                     // check only if there is a group entry made
                     if ( $val ){
                         foreach ( explode(',',$val) as $group){
                             if ( in_array (trim($group),$grp)){
-                                // The user is member of the ldap group and should 
+                                // The user is member of the ldap group and should
                                 // be added to the appropriate group
-                                update_usermeta($userid,'wp_capabilities',array ($key => 1));
+                                update_user_meta($userid,'wp301_capabilities',array ($key => 1));
                                 return true;
                             }
                         }
                     } else
                     {
                         // FIXME remove the credentials, if present!!!!
-                        update_usermeta($userid,'wp_capabilities',array ($key => 0));
+                        update_user_meta($userid,'wp301_capabilities',array ($key => 0));
                     }
                 }
                 //$error = __('<strong>Error</strong>: Invalid Credentials supplied');
                 //return false;
             }
             // If the user is not positively matched against the ldap, it can either
-            // have been wrong credentials to the ldap or it can be a local user 
+            // have been wrong credentials to the ldap or it can be a local user
             // that is only present in the WP-Database.
             // therefore we just do nothing more here, but check for a local account
         } // if (LDAP_ENABLED)
-        if (!$login) 
+        if (!$login)
         {
             $error = __('<strong>Error</strong>: Invalid Credentials.');
             return false;
-        } 
-        else 
+        }
+        else
         {
             // If the password is already_md5, it has been double hashed.
             // Otherwise, it is plain text.
-            if ( ( $already_md5 
+            if ( ( $already_md5
                 && ( $login->user_login == $username )
                 &&  (md5($login->user_pass) == $password) )
               || ( ( $login->user_login == $username )
@@ -397,18 +415,18 @@ function wp_login($username, $password, $already_md5 = false)
         trigger_ERror ( $e->getMessage() . '. Exception thrown in line ' . $e->getLine());
     }
 }
-endif;
+//endif;
 if ( !function_exists('wp_setcookie') ) :
-function wp_setcookie($username, $password, $already_md5 = false, $home = '', $siteurl = '') 
+function wp_setcookie($username, $password, $already_md5 = false, $home = '', $siteurl = '')
 {
     $ldapCookieMarker = get_option("ldapCookieMarker");
     $ldapAuth = get_option("ldapAuth");
-    
+
     if(($ldapAuth) && ($username != "admin"))
     {
         $password = md5($username).md5($ldapCookieMarker);
     }
-    else 
+    else
     {
         if(!$already_md5)
         {
@@ -425,12 +443,12 @@ function wp_setcookie($username, $password, $already_md5 = false, $home = '', $s
         $cookiepath = preg_replace('|https?://[^/]+|i', '', $home . '/' );
     }
 
-    if ( empty($siteurl) ) 
+    if ( empty($siteurl) )
     {
         $sitecookiepath = SITECOOKIEPATH;
         $cookiehash = COOKIEHASH;
-    } 
-    else 
+    }
+    else
     {
         $sitecookiepath = preg_replace('|https?://[^/]+|i', '', $siteurl . '/' );
         $cookiehash = md5($siteurl);
@@ -439,7 +457,7 @@ function wp_setcookie($username, $password, $already_md5 = false, $home = '', $s
     setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $cookiepath);
     setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $cookiepath);
 
-    if ( $cookiepath != $sitecookiepath ) 
+    if ( $cookiepath != $sitecookiepath )
     {
         setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $sitecookiepath);
         setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $sitecookiepath);
@@ -449,11 +467,11 @@ endif;
 
 /**
  * This function disables the password-change fields in the users preferences.
- * 
+ *
  * It does not make sense to authenticate via LDAP and then allow the user to
  * change the password only in the wordpress database. And changing the password
  * LDAP-wide can not be the scope of Wordpress!
- * 
+ *
  * Whether the user is an LDAP-User or not is determined using the authLDAP-Flag
  * of the users meta-informations
  *
@@ -475,3 +493,4 @@ function authLDAP_show_password_fields()
 add_action('admin_menu', 'authldap_addmenu');
 add_action('admin_head', 'authldap_addcss');
 add_filter('show_password_fields', 'authLDAP_show_password_fields');
+add_filter('authenticate', 'authLdap_login', 10, 3);
