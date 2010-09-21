@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: LdapTest.php 291905 2010-09-21 07:12:41Z heiglandreas $
+ * $Id: LdapTest.php 292156 2010-09-21 19:32:01Z heiglandreas $
  *
  * authLdap - Authenticate Wordpress against an LDAP-Backend.
  * Copyright (c) 2008 Andreas Heigl<andreas@heigl.org>
