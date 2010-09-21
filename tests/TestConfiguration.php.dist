@@ -1,0 +1,36 @@
+<?php
+/**
+ * $Id: ldap.php 285993 2010-09-06 19:15:19Z heiglandreas $
+ *
+ * authLdap - Authenticate Wordpress against an LDAP-Backend.
+ * Copyright (c) 2008 Andreas Heigl<andreas@heigl.org>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * This file contains some Configuration-Parameters for the tests
+ *
+ * @category authLdap
+ * @package authLdap
+ * @subpackage tests
+ * @author Andreas Heigl<andreas@heigl.org>
+ * @copyright 2010 Andreas Heigl<andreas@heigl.org>
+ * @license GPL
+ * @since 21.09.2010
+ */
+
+define('TESTS_OB_ENABLED', false);
+define('TESTS_GENERATE_REPORT', true);
+define('TESTS_GENERATE_REPORT_TARGET', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'reports' );
+
