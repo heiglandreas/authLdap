@@ -350,7 +350,6 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                     }
                     $userid = wp_create_user($username, $password, $mail );
                 }
-                trigger_ERror ($userid,E_USER_WARNING);
 
                 if ( $userid == null){
                     return false;
@@ -361,7 +360,6 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                 }
                 update_user_meta($userid,'first_name', $attribs[0][strtolower($authLDAPNameAttr)][0]);
                 $nicename = $attribs[0][strtolower($authLDAPNameAttr)][0];
-                trigger_ERror ($nicename,E_USER_WARNING);
                 if ( $attribs[0][strtolower($authLDAPSecName)][0]){
                     update_user_meta($userid, 'last_name', $attribs[0][strtolower($authLDAPSecName)][0]);
                     $nicename .= ' ' . $attribs[0][strtolower($authLDAPSecName)][0];
