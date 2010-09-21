@@ -114,7 +114,7 @@ class LDAP
      */
     public function disconnect()
     {
-        if ( is_ressource ( $this->_ch ) ) {
+        if ( is_resource ( $this->_ch ) ) {
             @ldap_unbind ( $this->_ch );
         }
         $this->_ch = null;
