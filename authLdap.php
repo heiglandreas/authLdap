@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: http://andreas.heigl.org/cat/dev/wp/authldap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.0.2
+Version: 1.0.3
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
@@ -36,10 +36,6 @@ function authldapOptionsPanel()
         update_option('authLDAPUidAttr',       $_POST['authLDAPUidAttr']);
         update_option('authLDAPMailAttr',      $_POST['authLDAPMailAttr']);
         update_option('authLDAPWebAttr',       $_POST['authLDAPWebAttr']);
-        //update_option('authLDAPAdminGroup',    $_POST['authLDAPAdminGroup']);
-        //update_option('authLDAPEditorGroup',   $_POST['authLDAPEditorGroup']);
-        //update_option('authLDAPAuthorGroup',   $_POST['authLDAPAuthorGroup']);
-        //update_option('authLDAPContribGroup',  $_POST['authLDAPContribGroup']);
         update_option('authLDAPGroups',        $_POST['authLDAPGroups']);
         update_option('authLDAPDebug',         $_POST['authLDAPDebug']);
         update_option('authLDAPGroupAttr',     $_POST['authLDAPGroupAttr']);
@@ -57,10 +53,6 @@ function authldapOptionsPanel()
     $authLDAPMailAttr       = get_option("authLDAPMailAttr");
     $authLDAPUidAttr        = get_option("authLDAPUidAttr");
     $authLDAPWebAttr        = get_option("authLDAPWebAttr");
-    //$authLDAPAdminGroup     = get_option('authLDAPAdminGroup');
-    //$authLDAPEditorGroup    = get_option('authLDAPEditorGroup');
-    //$authLDAPAuthorGroup    = get_option('authLDAPAuthorGroup');
-    //$authLDAPContribGroup   = get_option('authLDAPAContribGroup');
     $authLDAPGroups         = get_option('authLDAPGroups');
     $authLDAPDebug          = get_option('authLDAPDebug');
     $authLDAPGroupAttr      = get_option('authLDAPGroupAttr');
@@ -354,7 +346,7 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                 if ( $userid == null){
                     return false;
                 }
-                $meta = get_user_meta($userid, 'wp301_capabilities');
+                $meta = get_user_meta($userid, 'capabilities');
                 if ( ! is_array ( $meta )){
                     return false;
                 }
@@ -377,14 +369,14 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                             if ( in_array (trim($group),$grp)){
                                 // The user is member of the ldap group and should
                                 // be added to the appropriate group
-                                update_user_meta($userid,'wp301_capabilities',array ($key => 1));
+                                update_user_meta($userid,'capabilities',array ($key => 1));
                                 return true;
                             }
                         }
                     } else
                     {
                         // FIXME remove the credentials, if present!!!!
-                        update_user_meta($userid,'wp301_capabilities',array ($key => 0));
+                        update_user_meta($userid,'capabilities',array ($key => 0));
                     }
                 }
                 //$error = __('<strong>Error</strong>: Invalid Credentials supplied');
