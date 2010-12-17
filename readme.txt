@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth
 Requires at least: 2.5.0
-Tested up to: 3.0.2
+Tested up to: 3.0.3
 Stable tag: trunk
 
 Use your existing LDAP flexible as authentication backend for WordPress
@@ -35,12 +35,6 @@ For more Information on the configuration have a look at http://andreas.heigl.or
 = Where can I find more Informations about the plugin? =
 
 Go to http://andreas.heigl.org/cat/dev/wp/authldap
-
-== Screenshots ==
-
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1.png` (or jpg, jpeg, gif)
-2. This is the second screen shot
 
 == Changelog ==
 = 1.1.0 =
