@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: http://andreas.heigl.org/cat/dev/wp/authldap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.0.3
+Version: 1.1.0
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
@@ -320,6 +320,28 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                     }
                 }
 
+                // Check whether the user is member of one of the groups that are
+                // allowed acces to the blog. If the user is not member of one of
+                // The groups throw her out! ;-)
+                // If the user is member of more than one group only the first one
+                // will be taken into account!
+                $groupMember = null;
+                foreach ( $authLDAPGroups as $key => $val ) {
+                    $currentGroup = explode (',', $val );
+                    // Remove whitespaces around the group-ID
+                    foreach ( $currentGroup as $gKey => $curGroup ) {
+                        $currentGroup[$gKey] = trim($curGroup);
+                    }
+                    if ( 0 < count ( array_intersect ( $currentGroup, $grp ) ) ) {
+                        $groupMember = $key;
+                        break;
+                    }
+                }
+                if ( null == $groupMember ) {
+                    // Sorry, but you are not in any group that is allowed access
+                    trigger_Error ('no group found');
+                    return false;
+                }
                 $userid=null;
                 $mail = '';
                 if(isset($attribs[0][strtolower($authLDAPMailAttr)][0])){
@@ -338,7 +360,7 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                     // For this we have to get the groups of the user so we can find,
                     // what role the user will get
                     if(''==$mail){
-                        $mail='me@example.com';
+                        $mail=$username . '@example.com';
                     }
                     $userid = wp_create_user($username, $password, $mail );
                 }
@@ -361,26 +383,10 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                 // Deaktivate the WYSIWYG-Editor for better Performance of the
                 // FCKEditor
                 update_user_meta($userid,'rich_editing', 'false');
-                update_user_meta($userid,'authLDAP',true);
-                foreach ($authLDAPGroups as $key => $val){
-                    // check only if there is a group entry made
-                    if ( $val ){
-                        foreach ( explode(',',$val) as $group){
-                            if ( in_array (trim($group),$grp)){
-                                // The user is member of the ldap group and should
-                                // be added to the appropriate group
-                                update_user_meta($userid,'capabilities',array ($key => 1));
-                                return true;
-                            }
-                        }
-                    } else
-                    {
-                        // FIXME remove the credentials, if present!!!!
-                        update_user_meta($userid,'capabilities',array ($key => 0));
-                    }
-                }
-                //$error = __('<strong>Error</strong>: Invalid Credentials supplied');
-                //return false;
+		update_user_meta($userid,'authLDAP',true);
+		// Add the table-prefix
+		global $wpdb;
+                update_user_meta($userid, $wpdb->prefix . 'capabilities', array ( $groupMember => 1));
             }
             // If the user is not positively matched against the ldap, it can either
             // have been wrong credentials to the ldap or it can be a local user
