@@ -300,7 +300,7 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                 $server = new LDAP($authLDAPURI,$authLDAPDebug);
                 $result = $server->Authenticate ($username, $password, $authLDAPFilter);
             } catch ( Exception $e) {
-            	if ( $authLdapDebug ) {
+            	if ( $authLDAPDebug ) {
             		trigger_error ( $e -> getMessage () );
             	}
                 return false;
