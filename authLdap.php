@@ -3,12 +3,12 @@
 Plugin Name: AuthLDAP
 Plugin URI: http://andreas.heigl.org/cat/dev/wp/authldap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.1.0
+Version: 1.1.1
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
 
-require_once ABSPATH . 'wp-content/plugins/authldap/ldap.php';
+require_once ABSPATH . 'wp-content/plugins/authLdap/ldap.php';
 require_once ABSPATH . 'wp-includes/registration.php';
 
 function authldap_addmenu()
@@ -300,6 +300,9 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                 $server = new LDAP($authLDAPURI,$authLDAPDebug);
                 $result = $server->Authenticate ($username, $password, $authLDAPFilter);
             } catch ( Exception $e) {
+            	if ( $authLdapDebug ) {
+            		trigger_error ( $e -> getMessage () );
+            	}
                 return false;
             }
             // The user is positively matched against the ldap
