@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: ldap.php 292159 2010-09-21 19:50:37Z heiglandreas $
+ * $Id: ldap.php 381646 2011-05-06 09:37:31Z heiglandreas $
  *
  * authLdap - Authenticate Wordpress against an LDAP-Backend.
  * Copyright (c) 2008 Andreas Heigl<andreas@heigl.org>
@@ -95,8 +95,11 @@ class LDAP
         $this -> disconnect ();
         if ( 'ldaps' != $this->_scheme ){
             $this->_ch = @ldap_connect ( $this->_server, $this->_port );
-        }else{
-            $this->_ch = @ldap_connect ( $this->_scheme . '://' . $this->_server . ':' . $this -> _port );
+		}else{
+			if ( 389 == $this -> _port ) {
+				$this -> _port = 636;
+			}
+            $this->_ch = @ldap_connect ( $this->_scheme . '://' . $this->_server, $this -> _port  );
         }
 		if ( ! $this->_ch ){
             throw new AuthLDAP_Exception ( 'Could not connect to the server' );
