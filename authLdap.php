@@ -200,7 +200,8 @@ function authldapOptionsPanel()
                 </span>
                 <p class="authLDAPDescription">Here you can add the filter for selecting groups for the currentlly logged in user</p>
                 <p class="authLDAPDescription">The Filter should contain the string %s which will be replaced by the login-name of the currently logged in user</p>
-                <p class="authLDAPDefault">This field defaults to <strong>(&amp;(objectClass=posixGroup)(memberUid=%s))</strong></p>
+				<p class="authLDAPDescription">Alternatively the string <code>%dn%</code> will be replaced by the DN of the currently logged in user. This can be helpfull if group-memberships are defined with DNs rather than UIDs</p>
+				<p class="authLDAPDefault">This field defaults to <strong>(&amp;(objectClass=posixGroup)(memberUid=%s))</strong></p>
             </div>
         </fieldset>
         <fieldset class="options">
@@ -312,7 +313,13 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                 try{
                     $attribs = $server->search(sprintf($authLDAPFilter,$username),$attributes);
                     // First get all the relevant group informations so we can see if
-                    // whether have been changes in group association of the user
+					// whether have been changes in group association of the user
+					// To allow searches based on the DN instead of the uid, we replace the
+					// string %dn% with the users DN.
+					if ( ! isset ( $attribs['dn'] ) ) {
+						throw new UnexpectedValueException ( 'dn has not been returned' );
+					}
+					$authLDAPGroupFilter = str_replace ( '%dn%', $attribs['dn'] );
                     $groups = $server->search(sprintf($authLDAPGroupFilter,$username), array($authLDAPGroupAttr));
                 }catch(Exception $e){
                     return false;
