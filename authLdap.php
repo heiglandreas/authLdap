@@ -389,11 +389,6 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                     update_user_meta($userid, 'last_name', $attribs[0][strtolower($authLDAPSecName)][0]);
                     $nicename .= ' ' . $attribs[0][strtolower($authLDAPSecName)][0];
                 }
-                // Set the Nice-Name for display
-                wp_update_user(array ('ID' => $userid, 'display_name' => $nicename));
-                // Deaktivate the WYSIWYG-Editor for better Performance of the
-                // FCKEditor
-                update_user_meta($userid,'rich_editing', 'false');
 		update_user_meta($userid,'authLDAP',true);
 		// Add the table-prefix
 		global $wpdb;
