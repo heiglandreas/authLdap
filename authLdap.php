@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: http://andreas.heigl.org/cat/dev/wp/authldap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.2.0
+Version: 1.2.1
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
@@ -374,6 +374,10 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                         $mail=$username . '@example.com';
                     }
                     $userid = wp_create_user($username, $password, $mail );
+                	// Set the Nice-Name for display
+					if ( null != $userid ) {
+						wp_update_user(array ('ID' => $userid, 'display_name' => $nicename));
+					}
                 }
 
                 if ( $userid == null){
@@ -389,14 +393,9 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                     update_user_meta($userid, 'last_name', $attribs[0][strtolower($authLDAPSecName)][0]);
                     $nicename .= ' ' . $attribs[0][strtolower($authLDAPSecName)][0];
                 }
-                // Set the Nice-Name for display
-                wp_update_user(array ('ID' => $userid, 'display_name' => $nicename));
-                // Deaktivate the WYSIWYG-Editor for better Performance of the
-                // FCKEditor
-                update_user_meta($userid,'rich_editing', 'false');
-		update_user_meta($userid,'authLDAP',true);
-		// Add the table-prefix
-		global $wpdb;
+		        update_user_meta($userid,'authLDAP',true);
+		        // Add the table-prefix
+		        global $wpdb;
                 update_user_meta($userid, $wpdb->prefix . 'capabilities', array ( $groupMember => 1));
             }
             // If the user is not positively matched against the ldap, it can either
