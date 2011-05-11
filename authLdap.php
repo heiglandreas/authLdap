@@ -302,9 +302,9 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
                 $server = new LDAP($authLDAPURI,$authLDAPDebug);
                 $result = $server->Authenticate ($username, $password, $authLDAPFilter);
             } catch ( Exception $e) {
-            	if ( $authLDAPDebug ) {
-            		trigger_error ( $e -> getMessage () );
-            	}
+                if ( $authLDAPDebug ) {
+                    trigger_error ( $e -> getMessage () );
+                }
                 return false;
             }
             // The user is positively matched against the ldap
@@ -316,10 +316,10 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
 					// whether have been changes in group association of the user
 					// To allow searches based on the DN instead of the uid, we replace the
 					// string %dn% with the users DN.
-					if ( ! isset ( $attribs['dn'] ) ) {
+					if ( ! isset ( $attribs[0]['dn'] ) ) {
 						throw new UnexpectedValueException ( 'dn has not been returned' );
 					}
-					$authLDAPGroupFilter = str_replace ( '%dn%', $attribs['dn'] );
+					$authLDAPGroupFilter = str_replace ( '%dn%', $attribs[0]['dn'], $authLDAPGroupFilter );
                     $groups = $server->search(sprintf($authLDAPGroupFilter,$username), array($authLDAPGroupAttr));
                 }catch(Exception $e){
                     return false;
