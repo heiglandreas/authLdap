@@ -317,6 +317,9 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
             // No cookie, so have to authenticate them via LDAP
             //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
             $result = false;
+
+            if (empty($authLDAPFilter)) $authLDAPFilter = "(uid=%s)";
+
             try {
                 $server = new LDAP($authLDAPURI,$authLDAPDebug);
                 $result = $server->Authenticate ($username, $password, $authLDAPFilter);
