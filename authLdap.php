@@ -298,7 +298,7 @@ function authLdap_login($foo,$username, $password, $already_md5 = false)
 		if ( ! $authLDAPGroupAttr ) {
 			$authLDAPGroupAttr = 'gidNumber';
 		}
-		if ( ! $authLDAPGroupAttr ) {
+		if ( ! $authLDAPGroupFilter ) {
 			$authLDAPGroupFilter = '(&(objectClass=posixGroup)(memberUid=%s))';
 		}
 
