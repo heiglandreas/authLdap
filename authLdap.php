@@ -354,8 +354,6 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 			$authLDAPGroupFilter = '(&(objectClass=posixGroup)(memberUid=%s))';
 		}
 
-		// First get whether the user is already present in the database
-		$login = $wpdb->get_row("SELECT ID, user_login, user_pass, user_email, user_nicename, display_name, user_url, user_status FROM $wpdb->users WHERE user_login = '$username'");
 		// Keep the admin user local in case all LDAP servers go down
 		if (($authLDAP) && ($username != "admin")) {
 			// If already_md5 is TRUE, then we're getting the user/password from the cookie. As we don't want to store LDAP passwords in any
@@ -429,6 +427,9 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 				if (isset($attribs[0][strtolower($authLDAPMailAttr)][0])) {
 					$mail=$attribs[0][strtolower($authLDAPMailAttr)][0];
 				}
+
+				// First get whether the user is already present in the database
+				$login = $wpdb->get_row("SELECT ID, user_login, user_pass FROM $wpdb->users WHERE user_login = '$username'");
 
 				if ($login) {
 					// The user already has an entry in the WP-Database, so we have
