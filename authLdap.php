@@ -11,6 +11,13 @@
 require_once dirname ( __FILE__ ) . '/ldap.php';
 require_once ABSPATH . 'wp-includes/registration.php';
 
+function authldap_debug($message) {
+	if (get_option('authLDAPDebug')) {
+		error_log('[AuthLDAP] ' . $message, 0);
+	}
+}
+
+
 function authldap_addmenu()
 {
 	if (function_exists('add_options_page')) {
@@ -365,10 +372,12 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 
 		// Keep the admin user local in case all LDAP servers go down
 		if (($authLDAP) && ($username != "admin")) {
+			 authldap_debug('user logging in');
 			// If already_md5 is TRUE, then we're getting the user/password from the cookie. As we don't want to store LDAP passwords in any
 			// form, we've already replaced the password with the hashed username and LDAP_COOKIE_MARKER
 			if ($already_md5) {
 				if ($password == md5($username).md5($ldapCookieMarker)) {
+					authldap_debug('cookie authentication');
 					return true;
 				}
 			}
@@ -377,27 +386,30 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 			//$authLDAPURI = 'ldap:/foo:bar@server/trallala';
 			$result = false;
 			try {
+				authldap_debug('about to do LDAP authentication');
 				$server = new LDAP($authLDAPURI,$authLDAPDebug);
 				$result = $server->Authenticate ($username, $password, $authLDAPFilter);
 			} catch (Exception $e) {
-				if ($authLDAPDebug) {
-					trigger_error($e ->getMessage());
-				}
+				authldap_debug('LDAP authentication failed. Exception: ' . $e->getMessage());
 				return false;
 			}
 			// The user is positively matched against the ldap
 			if (true === $result) {
+				authldap_debug('LDAP authentication successfull');
 				$attributes = array ($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr);
 				try {
 					$attribs = $server->search(sprintf($authLDAPFilter,$username),$attributes);
 					// First get all the relevant group informations so we can see if
 					// whether have been changes in group association of the user
-					// To allow searches based on the DN instead of the uid, we replace the
-					// string %dn% with the users DN.
 					if (! isset($attribs[0]['dn'])) {
+						authldap_debug('could nog get user attributes from LDAP');
 						throw new UnexpectedValueException ('dn has not been returned');
 					}
+
+					// To allow searches based on the DN instead of the uid, we replace the
+					// string %dn% with the users DN.
 					$authLDAPGroupFilter = str_replace('%dn%', $attribs[0]['dn'], $authLDAPGroupFilter);
+					authldap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
 					$groups = $server->search(sprintf($authLDAPGroupFilter,$username), array($authLDAPGroupAttr));
 				} catch(Exception $e) {
 					return false;
@@ -408,6 +420,8 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 						$grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
 					}
 				}
+
+				authldap_debug('LDAP groups: ' . json_encode($grp));
 
 				// Check whether the user is member of one of the groups that are
 				// allowed acces to the blog. If the user is not member of one of
@@ -423,12 +437,14 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 					}
 					if (0 < count(array_intersect($currentGroup, $grp ))) {
 						$groupMember = $key;
+						authldap_debug('found a matching role: ' . $key);
 						break;
 					}
 				}
 				if (null == $groupMember) {
 					// Sorry, but you are not in any group that is allowed access
 					trigger_error('no group found');
+					authldap_debug('user is not in any group that is allowed access');
 					return false;
 				}
 				$userid = null;
