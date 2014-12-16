@@ -387,7 +387,7 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 			$result = false;
 			try {
 				authldap_debug('about to do LDAP authentication');
-				$server = new LDAP($authLDAPURI,$authLDAPDebug);
+				$server = new LDAP($authLDAPURI, $authLDAPDebug);
 				$result = $server->Authenticate ($username, $password, $authLDAPFilter);
 			} catch (Exception $e) {
 				authldap_debug('LDAP authentication failed. Exception: ' . $e->getMessage());
@@ -398,7 +398,7 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 				authldap_debug('LDAP authentication successfull');
 				$attributes = array ($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr);
 				try {
-					$attribs = $server->search(sprintf($authLDAPFilter,$username),$attributes);
+					$attribs = $server->search(sprintf($authLDAPFilter, $username), $attributes);
 					// First get all the relevant group informations so we can see if
 					// whether have been changes in group association of the user
 					if (! isset($attribs[0]['dn'])) {
@@ -410,7 +410,7 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 					// string %dn% with the users DN.
 					$authLDAPGroupFilter = str_replace('%dn%', $attribs[0]['dn'], $authLDAPGroupFilter);
 					authldap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
-					$groups = $server->search(sprintf($authLDAPGroupFilter,$username), array($authLDAPGroupAttr));
+					$groups = $server->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
 				} catch(Exception $e) {
 					return false;
 				}
@@ -494,7 +494,7 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 					return false;
 				}
 
-				update_user_meta($userid,'first_name', $attribs[0][strtolower($authLDAPNameAttr)][0]);
+				update_user_meta($userid, 'first_name', $attribs[0][strtolower($authLDAPNameAttr)][0]);
 				$nicename = $attribs[0][strtolower($authLDAPNameAttr)][0];
 				if ($attribs[0][strtolower($authLDAPSecName)][0]) {
 					update_user_meta($userid, 'last_name', $attribs[0][strtolower($authLDAPSecName)][0]);
