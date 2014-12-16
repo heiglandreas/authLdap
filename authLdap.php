@@ -14,12 +14,12 @@ require_once ABSPATH . 'wp-includes/registration.php';
 function authldap_addmenu()
 {
 	if (function_exists('add_options_page')) {
-		add_options_page('AuthLDAP', 'AuthLDAP', 9, basename(__FILE__), 'authLdapOptionsPanel');
+		add_options_page('AuthLDAP', 'AuthLDAP', 9, basename(__FILE__), 'authLdap_optionsPanel');
 	}
 }
 
 
-function authldapOptionsPanel()
+function authldap_optionsPanel()
 {
 	// inclusde style sheet
 	wp_enqueue_style('authLdap-style', plugin_dir_url(__FILE__) . 'authLdap.css');
@@ -74,7 +74,7 @@ function authldapOptionsPanel()
 	}
 	echo <<<authLdapForm
 	<div class="wrap">
-	 <h2>authLDAP Options</h2>
+	 <h2>AuthLDAP Options</h2>
 	 <form method="post" id="authLDAP_options" action="$action">
 
 
@@ -90,7 +90,7 @@ function authldapOptionsPanel()
 	   </div>
 
 	   <div class="row">
-	    <span class="description">Debug authLDAP?</span>
+	    <span class="description">Debug AuthLDAP?</span>
 	    <span class="element">
 	     <input type='radio' name='authLDAPDebug' value='1'$tDebugChecked/> Yes<br />
 	     <input type='radio' name='authLDAPDebug' value='0'$fDebugChecked/> No
