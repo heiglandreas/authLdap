@@ -19,14 +19,10 @@ function authldap_addmenu()
 }
 
 
-function authldap_addcss()
-{
-	echo "<link rel='stylesheet' href='" . get_settings('siteurl') . "/wp-content/plugins/authldap/authLdap.css' media='screen' type='text/css' />";
-}
-
-
 function authldapOptionsPanel()
 {
+	// inclusde style sheet
+	wp_enqueue_style('authLdap-style', plugin_dir_url(__FILE__) . 'authLdap.css');
 
 	if ($_POST['ldapOptionsSave']) {
 		update_option('authLDAP',            $_POST['authLDAPAuth']);
@@ -76,13 +72,15 @@ function authldapOptionsPanel()
 			. 'WebServer. Therefore Everything you can alter here does not '
 			. 'make any sense!</div>';
 	}
-
 	echo <<<authLdapForm
 	<div class="wrap">
 	 <h2>authLDAP Options</h2>
 	 <form method="post" id="authLDAP_options" action="$action">
+
+
+	  <h3 class="title">General Usage of authLDAP</h3>
 	  <fieldset class="options">
-	   <legend>General Usage of authLDAP</legend>
+
 	   <div class="row">
 	    <span class="description">Enable Authentication via LDAP?</span>
 	    <span class="element">
@@ -90,6 +88,7 @@ function authldapOptionsPanel()
 	     <input type='radio' name='authLDAPAuth' value='0'$fChecked/> No
 	    </span>
 	   </div>
+
 	   <div class="row">
 	    <span class="description">Debug authLDAP?</span>
 	    <span class="element">
@@ -97,16 +96,20 @@ function authldapOptionsPanel()
 	     <input type='radio' name='authLDAPDebug' value='0'$fDebugChecked/> No
 	    </span>
 	   </div>
+
 	  </fieldset>
+
+
+	  <h3 class="title">General Server Settings</h3>
 	  <fieldset class="options">
-	   <legend>General Server Settings</legend>
+
 	   <div class="row">
 	    <span class="description">LDAP URI</span>
 	    <span class="element">
 	     <input type='text' name='authLDAPURI' value='$authLDAPURI' style='width: 300px;'/>
 	    </span>
 	    <p class="authLDAPDescription">
-	     The <acronym title="Uniform Ressource Identifier">URI</acronym>
+	     The <abbr title="Uniform Ressource Identifier">URI</abbr>
 	     for connecting to the LDAP-Server. This usualy takes the form
 	     <var>&lt;scheme&gt;://&lt;user&gt;:&lt;password&gt;@&lt;server&gt;/&lt;path&gt;</var>
 	     according to RFC 1738.</p><p class="authLDAPDescription">
@@ -118,6 +121,7 @@ function authldapOptionsPanel()
 	      password-Part of the URI
             </p>
 	   </div>
+
 	   <div class="row">
 	    <span class="description">Filter</span>
 	    <span class="element">
@@ -125,7 +129,7 @@ function authldapOptionsPanel()
 	    </span>
 	    <p class="authLDAPDescription">
 	     Please provide a valid filter that can be used for querying the
-	     <acronym title="Lightweight Directory Access Protocol">LDAP</acronym>
+	     <abbr title="Lightweight Directory Access Protocol">LDAP</abbr>
 	     for the correct user. For more information on this
 	     feature have a look at <a href="http://andreas.heigl.org/cat/dev/wp/authldap">http://andreas.heigl.org/cat/dev/wp/authldap</a>
 	    </p>
@@ -137,9 +141,11 @@ function authldapOptionsPanel()
 	     If you leave this field empty it defaults to <strong>(uid=%s)</strong>
 	    </p>
 	   </div>
+
 	  </fieldset>
+
+	  <h3 class="title">Settings for creating new Users</h3>
 	  <fieldset class="options">
-	   <legend>Settings for creating new Users</legend>
 
 	   <div class="row">
 	    <span class="description">Name-Attribute</span>
@@ -212,10 +218,12 @@ function authldapOptionsPanel()
 	     This field is empty by default
 	    </p>
 	   </div>
+
 	  </fieldset>
 
+
+	  <h3 class="title">Groups for Roles</h3> 
 	  <fieldset class="options">
-	  <legend>User-Groups for Roles</legend>
 
 	   <div class="row">
 	    <span class="description">Group-Attribute</span>
@@ -255,14 +263,15 @@ function authldapOptionsPanel()
 	   </div>
 
 	  </fieldset>
+
+          <h3 class="title">Role - group mapping</h3>
 	  <fieldset class="options">
-	   <legend>Group-Memberships</legend>
 authLdapForm;
 
 	$roles = new WP_Roles();
 	foreach ($roles->get_names() as $group => $vals) {
 		$aGroup=$authLDAPGroups[$group];
-		echo '<div class="row">'
+		echo "<div class='row'>"
 			. '    <span class="description">' . $vals . '</span>'
 			. '    <span class="element">'
 			. '         <input type="text" name="authLDAPGroups['.$group.']" value="'.$aGroup.'" />'
@@ -270,7 +279,7 @@ authLdapForm;
 			. '     <p class="authLDAPDescription">What LDAP-Groups shall be matched to the '.$vals.'-Role?</p>'
 			. '     <p class="authLDAPDescription">Please provide a coma-separated list of values</p>'
 			. '     <p class="authLDAPDefault">This field is empty by default</p>'
-			. '</div';
+			. '</div>';
 	}
 
 	echo <<<authLdapForm3
@@ -578,6 +587,5 @@ function authLDAP_show_password_fields()
 
 
 add_action('admin_menu', 'authldap_addmenu');
-add_action('admin_head', 'authldap_addcss');
 add_filter('show_password_fields', 'authLDAP_show_password_fields');
 add_filter('authenticate', 'authLdap_login', 10, 3);
