@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth
 Requires at least: 2.5.0
-Tested up to: 3.0.3
+Tested up to: 4.0.1
 Stable tag: trunk
 
 Use your existing LDAP flexible as authentication backend for WordPress
@@ -36,7 +36,14 @@ For more Information on the configuration have a look at http://andreas.heigl.or
 
 Go to http://andreas.heigl.org/cat/dev/wp/authldap
 
+= Where can I report issues with the plugin? =
+
+Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
+
 == Changelog ==
+= 1.2.1 =
+* Fixed an issue with group-ids
+* Moved the code to GitHub (https://github.com/heiglandreas/authLdap)
 = 1.1.0 =
 * Changed the login-process. Now users that are not allowed to login due to
 missing group-memberships are not created within your blog as was the standard
