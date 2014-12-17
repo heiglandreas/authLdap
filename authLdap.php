@@ -334,8 +334,20 @@ authLdapForm3;
  * @conf boolean authLDAPDebug true, if debug messages should be logged, false if not. Defaluts to false
  * @todo add the other configuration parameters here
  */
-function authLdap_login($foo, $username, $password, $already_md5 = false)
+function authLdap_login($user, $username, $password, $already_md5 = false)
 {
+	// don't do anything when authLDAP is disabled
+	if (! get_option("authLDAP")) {
+		authldap_debug('LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)');
+		return $user;
+	}
+
+	authldap_debug("User '$username' logging in");
+
+	if ($username == 'admin') {
+		authldap_debug('Doing nothing for possible local user admin');
+		return $user;
+	}
 
 	global $wpdb, $error;
 	try {
@@ -359,10 +371,12 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 		}
 
 		if (! $username) {
+			authldap_debug('Username not supplied: return false');
 			return false;
 		}
 
 		if (! $password) {
+			authldap_debug('Password not supplied: return false');
 			$error = __('<strong>Error</strong>: The password field is empty.');
 			return false;
 		}
@@ -386,169 +400,150 @@ function authLdap_login($foo, $username, $password, $already_md5 = false)
 			$authLDAPGroupFilter = '(&(objectClass=posixGroup)(memberUid=%s))';
 		}
 
-		// Keep the admin user local in case all LDAP servers go down
-		if (($authLDAP) && ($username != "admin")) {
-			 authldap_debug("User '$username' logging in");
 
-			// If already_md5 is TRUE, then we're getting the user/password from the cookie. As we don't want to store LDAP passwords in any
-			// form, we've already replaced the password with the hashed username and LDAP_COOKIE_MARKER
-			if ($already_md5) {
-				if ($password == md5($username).md5($ldapCookieMarker)) {
-					authldap_debug('cookie authentication');
-					return true;
-				}
-			}
-
-			// No cookie, so have to authenticate them via LDAP
-			//$authLDAPURI = 'ldap:/foo:bar@server/trallala';
-			$result = false;
-			try {
-				authldap_debug('about to do LDAP authentication');
-				$server = new LDAP($authLDAPURI, $authLDAPDebug);
-				$result = $server->Authenticate ($username, $password, $authLDAPFilter);
-			} catch (Exception $e) {
-				authldap_debug('LDAP authentication failed. Exception: ' . $e->getMessage());
-				return false;
-			}
-			// The user is positively matched against the ldap
-			if (true === $result) {
-				authldap_debug('LDAP authentication successfull');
-				$attributes = array ($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr);
-				try {
-					$attribs = $server->search(sprintf($authLDAPFilter, $username), $attributes);
-					// First get all the relevant group informations so we can see if
-					// whether have been changes in group association of the user
-					if (! isset($attribs[0]['dn'])) {
-						authldap_debug('could nog get user attributes from LDAP');
-						throw new UnexpectedValueException ('dn has not been returned');
-					}
-
-					// To allow searches based on the DN instead of the uid, we replace the
-					// string %dn% with the users DN.
-					$authLDAPGroupFilter = str_replace('%dn%', $attribs[0]['dn'], $authLDAPGroupFilter);
-					authldap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
-					$groups = $server->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
-				} catch(Exception $e) {
-					return false;
-				}
-				$grp = array();
-				for ($i = 0; $i < $groups ['count']; $i++) {
-					for ($k = 0; $k < $groups[$i][strtolower($authLDAPGroupAttr)]['count']; $k++) {
-						$grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
-					}
-				}
-
-				authldap_debug('LDAP groups: ' . json_encode($grp));
-
-				// Check whether the user is member of one of the groups that are
-				// allowed acces to the blog. If the user is not member of one of
-				// The groups throw her out! ;-)
-				// If the user is member of more than one group only the first one
-				// will be taken into account!
-
-				$role = '';
-				foreach ($authLDAPGroups as $key => $val) {
-					$currentGroup = explode(',', $val);
-					// Remove whitespaces around the group-ID
-					$currentGroup = array_map('trim', $currentGroup);
-					if (0 < count(array_intersect($currentGroup, $grp))) {
-						$role = $key;
-						break;
-					}
-				}
-
-				if (empty($role)) {
-					// Sorry, but you are not in any group that is allowed access
-					trigger_error('no group found');
-					authldap_debug('user is not in any group that is allowed access');
-					return false;
-				}
-
-				// from here on, the user has access!
-				// now, lets update some user details
-				$user_info = array();
-				$user_info['user_login'] = $username;
-				$user_info['role'] = $role;
-				$user_info['user_email'] = '';
-
-				// first name
-				if (isset($attribs[0][strtolower($authLDAPNameAttr)][0])) {
-					$user_info['first_name'] = $attribs[0][strtolower($authLDAPNameAttr)][0];
-					$user_info['display_name'] = $user_info['first_name'];
-				}
-
-				// last name
-				if (isset($attribs[0][strtolower($authLDAPSecName)][0])) {
-					$user_info['last_name'] = $attribs[0][strtolower($authLDAPSecName)][0];
-				}
-
-				// mail address
-				if (isset($attribs[0][strtolower($authLDAPMailAttr)][0])) {
-					$user_info['user_email'] = $attribs[0][strtolower($authLDAPMailAttr)][0];
-				}
-
-				// website
-				if (isset($attribs[0][strtolower($authLDAPWebAttr)][0])) {
-					$user_info['user_url'] = $attribs[0][strtolower($authLDAPWebAttr)][0];
-				}
-
-				// optionally store the password into the wordpress database
-				if (get_option('authLDAPCachePW')) {
-					$user_info['user_pass'] = wp_hash_password($password);
-				} else {
-					// clear the password
-					$user_info['user_pass'] = '';
-				}
-
-				// find out whether the user is already present in the database
-				$login = $wpdb->get_row("SELECT ID, user_login, user_pass FROM $wpdb->users WHERE user_login = '$username'");
-
-				if ($login) {
-					// found user in the database
-					authldap_debug('The LDAP user has an entry in the WP-Database');
-					$user_info['ID'] = $login->ID;
-				} else {
-					// new wordpress account will be created
-					authldap_debug('The LDAP user does not have an entry in the WP-Database, a new WP account will be created');
-
-					// set initial mail address if not provided by ldap
-					if (empty($user_info['user_email'])) {
-						$user_info['user_email'] = $username . '@example.com';
-					}
-				}
-
-				// if the user exists, wp_insert_user will update the existing user record
-				$userid = wp_insert_user($user_info);
-
-				authldap_debug('user id = ' . $userid);
-
-				// return a user object upon positive authorization
-				return new WP_User( $userid);
-			}
-			// If the user is not positively matched against the ldap, it can either
-			// have been wrong credentials to the ldap or it can be a local user
-			// that is only present in the WP-Database.
-			// therefore we just do nothing more here, but check for a local account
-		} // if (LDAP_ENABLED)
-
-		if (! $login) {
-			$error = __('<strong>Error</strong>: Invalid Credentials.');
-			return false;
-		} else {
-			// If the password is already_md5, it has been double hashed.
-			// Otherwise, it is plain text.
-			if (($already_md5 && ($login->user_login == $username)
-				&&  (md5($login->user_pass) == $password))
-				|| (($login->user_login == $username)
-				&& ($login->user_pass == md5($password)))) {
+		// If already_md5 is TRUE, then we're getting the user/password from the cookie. As we don't want to store LDAP passwords in any
+		// form, we've already replaced the password with the hashed username and LDAP_COOKIE_MARKER
+		if ($already_md5) {
+			if ($password == md5($username).md5($ldapCookieMarker)) {
+				authldap_debug('cookie authentication');
 				return true;
-			} else {
-				$error = __('<strong>Error</strong>: Invalid Credentials.');
-				$pwd = '';
-				return false;
 			}
 		}
+
+		// No cookie, so have to authenticate them via LDAP
+		//$authLDAPURI = 'ldap:/foo:bar@server/trallala';
+		$result = false;
+		try {
+			authldap_debug('about to do LDAP authentication');
+			$server = new LDAP($authLDAPURI, $authLDAPDebug);
+			$result = $server->Authenticate ($username, $password, $authLDAPFilter);
+		} catch (Exception $e) {
+			authldap_debug('LDAP authentication failed with exception: ' . $e->getMessage());
+			return false;
+		}
+
+		if (true !== $result) {
+			authldap_debug('LDAP authentication failed');
+			// TODO what to return? WP_User object, true, false, even an WP_Error object... all seem to fall back to normal wp user authentication
+			return;
+		}
+
+		authldap_debug('LDAP authentication successfull');
+		$attributes = array ($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr);
+		try {
+			$attribs = $server->search(sprintf($authLDAPFilter, $username), $attributes);
+			// First get all the relevant group informations so we can see if
+			// whether have been changes in group association of the user
+			if (! isset($attribs[0]['dn'])) {
+				authldap_debug('could not get user attributes from LDAP');
+				throw new UnexpectedValueException ('dn has not been returned');
+			}
+
+			// To allow searches based on the DN instead of the uid, we replace the
+			// string %dn% with the users DN.
+			$authLDAPGroupFilter = str_replace('%dn%', $attribs[0]['dn'], $authLDAPGroupFilter);
+			authldap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
+			$groups = $server->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
+		} catch(Exception $e) {
+			authldap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
+			return false;
+		}
+
+		$grp = array();
+		for ($i = 0; $i < $groups ['count']; $i++) {
+			for ($k = 0; $k < $groups[$i][strtolower($authLDAPGroupAttr)]['count']; $k++) {
+				$grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
+			}
+		}
+
+		authldap_debug('LDAP groups: ' . json_encode($grp));
+
+		// Check whether the user is member of one of the groups that are
+		// allowed acces to the blog. If the user is not member of one of
+		// The groups throw her out! ;-)
+		// If the user is member of more than one group only the first one
+		// will be taken into account!
+
+		$role = '';
+		foreach ($authLDAPGroups as $key => $val) {
+			$currentGroup = explode(',', $val);
+			// Remove whitespaces around the group-ID
+			$currentGroup = array_map('trim', $currentGroup);
+			if (0 < count(array_intersect($currentGroup, $grp))) {
+				$role = $key;
+				break;
+			}
+		}
+
+		if (empty($role)) {
+			// Sorry, but you are not in any group that is allowed access
+			trigger_error('no group found');
+			authldap_debug('user is not in any group that is allowed access');
+			return false;
+		}
+
+		// from here on, the user has access!
+		// now, lets update some user details
+		$user_info = array();
+		$user_info['user_login'] = $username;
+		$user_info['role'] = $role;
+		$user_info['user_email'] = '';
+
+		// first name
+		if (isset($attribs[0][strtolower($authLDAPNameAttr)][0])) {
+			$user_info['first_name'] = $attribs[0][strtolower($authLDAPNameAttr)][0];
+			$user_info['display_name'] = $user_info['first_name'];
+		}
+
+		// last name
+		if (isset($attribs[0][strtolower($authLDAPSecName)][0])) {
+			$user_info['last_name'] = $attribs[0][strtolower($authLDAPSecName)][0];
+		}
+
+		// mail address
+		if (isset($attribs[0][strtolower($authLDAPMailAttr)][0])) {
+			$user_info['user_email'] = $attribs[0][strtolower($authLDAPMailAttr)][0];
+		}
+
+		// website
+		if (isset($attribs[0][strtolower($authLDAPWebAttr)][0])) {
+			$user_info['user_url'] = $attribs[0][strtolower($authLDAPWebAttr)][0];
+		}
+
+		// optionally store the password into the wordpress database
+		if (get_option('authLDAPCachePW')) {
+			$user_info['user_pass'] = wp_hash_password($password);
+		} else {
+			// clear the password
+			$user_info['user_pass'] = '';
+		}
+
+		// find out whether the user is already present in the database
+		$login = $wpdb->get_row("SELECT ID, user_login, user_pass FROM $wpdb->users WHERE user_login = '$username'");
+
+		if ($login) {
+			// found user in the database
+			authldap_debug('The LDAP user has an entry in the WP-Database');
+			$user_info['ID'] = $login->ID;
+		} else {
+			// new wordpress account will be created
+			authldap_debug('The LDAP user does not have an entry in the WP-Database, a new WP account will be created');
+
+			// set initial mail address if not provided by ldap
+			if (empty($user_info['user_email'])) {
+				$user_info['user_email'] = $username . '@example.com';
+			}
+		}
+
+		// if the user exists, wp_insert_user will update the existing user record
+		$userid = wp_insert_user($user_info);
+
+		authldap_debug('user id = ' . $userid);
+
+		// return a user object upon positive authorization
+		return new WP_User( $userid);
 	} catch (Exception $e) {
+		authldap_debug($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
 		trigger_error($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
 	}
 }
