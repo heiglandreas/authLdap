@@ -1,12 +1,10 @@
 .row {
 	overflow: hidden; 
 	padding-top: 10px; 
-	width: 800px;
 }
 
 .description {
 	float: left; 
-	width: 200px;
 	text-align: right; 
 	font-weight: bold;
 }
@@ -14,7 +12,6 @@
 .element {
 	float: right; 
 	text-align: left; 
-	width: 600px;
 }
 
 .authLDAPDescription, .authLDAPDefault{
