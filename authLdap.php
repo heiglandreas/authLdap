@@ -8,7 +8,7 @@ Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
 
-require_once dirname ( __FILE__ ) . '/ldap.php';
+require_once dirname( __FILE__ ) . '/ldap.php';
 require_once ABSPATH . 'wp-includes/registration.php';
 
 function authldap_debug($message) {
@@ -416,7 +416,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		try {
 			authldap_debug('about to do LDAP authentication');
 			$server = new LDAP($authLDAPURI, $authLDAPDebug);
-			$result = $server->Authenticate ($username, $password, $authLDAPFilter);
+			$result = $server->Authenticate($username, $password, $authLDAPFilter);
 		} catch (Exception $e) {
 			authldap_debug('LDAP authentication failed with exception: ' . $e->getMessage());
 			return false;
@@ -429,14 +429,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		}
 
 		authldap_debug('LDAP authentication successfull');
-		$attributes = array ($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr);
+		$attributes = array($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr);
 		try {
 			$attribs = $server->search(sprintf($authLDAPFilter, $username), $attributes);
 			// First get all the relevant group informations so we can see if
 			// whether have been changes in group association of the user
 			if (! isset($attribs[0]['dn'])) {
 				authldap_debug('could not get user attributes from LDAP');
-				throw new UnexpectedValueException ('dn has not been returned');
+				throw new UnexpectedValueException('dn has not been returned');
 			}
 
 			// To allow searches based on the DN instead of the uid, we replace the
@@ -540,6 +540,9 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
 		authldap_debug('user id = ' . $userid);
 
+		// flag the user as an ldap user so we can hide the password fields in the user profile
+		update_user_meta($userid, 'authLDAP', true);
+
 		// return a user object upon positive authorization
 		return new WP_User( $userid);
 	} catch (Exception $e) {
@@ -605,7 +608,7 @@ endif;
  */
 function authLDAP_show_password_fields()
 {
-	if (! array_key_exists ('user_ID', $GLOBALS)) {
+	if (! array_key_exists('user_ID', $GLOBALS)) {
 		get_currentuserinfo();
 	}
 
