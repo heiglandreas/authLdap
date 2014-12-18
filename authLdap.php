@@ -1,6 +1,6 @@
 <?php
 /*
-lugin Name: AuthLDAP
+Plugin Name: AuthLDAP
 Plugin URI: https://github.com/heiglandreas/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
 Version: 1.2.1
