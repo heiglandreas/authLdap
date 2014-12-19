@@ -22,7 +22,7 @@ to allow wordpress to always use the correct data. You only have to administer y
 also log in when the LDAP-backend currently is gone.
 * Role-Aware: You can map Wordpress' roles to values of an existing LDAP-attribute.
 
-For more Information on the configuration have a look at http://andreas.heigl.org/cat/dev/wp/authldap
+For more Information on the configuration have a look at https://github.com/heiglandreas/authLdap
 
 == Installation ==
 
@@ -34,7 +34,7 @@ For more Information on the configuration have a look at http://andreas.heigl.or
 
 = Where can I find more Informations about the plugin? =
 
-Go to http://andreas.heigl.org/cat/dev/wp/authldap
+Go to https://github.com/heiglandreas/authLdap
 
 = Where can I report issues with the plugin? =
 
