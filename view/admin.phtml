@@ -255,7 +255,7 @@
                         </label>
                     </th>
                     <td>
-                        <input type="text" name="authLDAPGroups['.$group.']" value="<?php echo $aGroup; ?>" />
+                        <input type="text" name="authLDAPGroups[<?php echo $group; ?>]" value="<?php echo $aGroup; ?>" />
                         <p class="description">What LDAP-Groups shall be matched to the <?php echo $vals; ?>-Role?</p>
                         <p class="description">Please provide a coma-separated list of values</p>
                         <p class="description">This field is empty by default</p>
