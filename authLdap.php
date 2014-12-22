@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: https://github.com/heiglandreas/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.2.1
+Version: 1.3.0
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
@@ -49,6 +49,7 @@ function authldap_optionsPanel()
         echo "<div class='updated'><p>Saved Options!</p></div>";
     }
 
+    // Do some initialization for the admin-view
     $authLDAP             = get_option("authLDAP");
     $authLDAPCachePW      = get_option("authLDAPCachePW");
     $authLDAPCookieMarker = get_option("authLDAPCookieMarker");
@@ -66,18 +67,12 @@ function authldap_optionsPanel()
 
     if ($authLDAP) {
         $tChecked = ' checked="checked"';
-    } else {
-        $fChecked =  'checked="checked"';
     }
     if ($authLDAPDebug) {
         $tDebugChecked = ' checked="checked"';
-    } else {
-        $fDebugChecked =  'checked="checked"';
     }
     if ($authLDAPCachePW) {
         $tPWChecked = ' checked="checked"';
-    } else {
-        $fPWChecked =  'checked="checked"';
     }
 
     $action = $_SERVER['REQUEST_URI'];
@@ -86,236 +81,8 @@ function authldap_optionsPanel()
             . 'WebServer. Therefore Everything you can alter here does not '
             . 'make any sense!</div>';
     }
-    echo <<<authLdapForm
-    <div class="wrap">
-     <h2>AuthLDAP Options</h2>
-     <form method="post" id="authLDAP_options" action="$action">
 
-
-      <h3 class="title">General Usage of authLDAP</h3>
-      <fieldset class="options">
-
-       <div class="row">
-        <span class="description">Enable Authentication via LDAP?</span>
-        <span class="element">
-         <input type='radio' name='authLDAPAuth' value='1'$tChecked/> Yes<br />
-         <input type='radio' name='authLDAPAuth' value='0'$fChecked/> No
-        </span>
-       </div>
-
-       <div class="row">
-        <span class="description">Debug AuthLDAP?</span>
-        <span class="element">
-         <input type='radio' name='authLDAPDebug' value='1'$tDebugChecked/> Yes<br />
-         <input type='radio' name='authLDAPDebug' value='0'$fDebugChecked/> No
-        </span>
-       </div>
-
-       <div class="row">
-        <span class="description">Save entered passwords in the wordpress user table?</span>
-        <span class="element">
-         <input type='radio' name='authLDAPCachePW' value='1'$tPWChecked/> Yes<br />
-         <input type='radio' name='authLDAPCachePW' value='0'$fPWChecked/> No
-        </span>
-       </div>
-
-
-      </fieldset>
-
-
-      <h3 class="title">General Server Settings</h3>
-      <fieldset class="options">
-
-       <div class="row">
-        <span class="description">LDAP URI</span>
-        <span class="element">
-         <input type='text' name='authLDAPURI' value='$authLDAPURI' style='width: 300px;'/>
-        </span>
-        <p class="authLDAPDescription">
-         The <abbr title="Uniform Ressource Identifier">URI</abbr>
-         for connecting to the LDAP-Server. This usualy takes the form
-         <var>&lt;scheme&gt;://&lt;user&gt;:&lt;password&gt;@&lt;server&gt;/&lt;path&gt;</var>
-         according to RFC 1738.</p><p class="authLDAPDescription">
-         In this case it schould be something like
-         <var>ldap://uid=adminuser,dc=example,c=com:secret@ldap.example.com/dc=basePath,dc=example,c=com</var>.
-        </p>
-        <p class="authLDAPDescription">
-          If your LDAP accepts anonymous login, you can ommit the user and
-          password-Part of the URI
-            </p>
-       </div>
-
-       <div class="row">
-        <span class="description">Filter</span>
-        <span class="element">
-         <input type='text' name='authLDAPFilter' value='$authLDAPFilter' style='width: 450px;'/>
-        </span>
-        <p class="authLDAPDescription">
-         Please provide a valid filter that can be used for querying the
-         <abbr title="Lightweight Directory Access Protocol">LDAP</abbr>
-         for the correct user. For more information on this
-         feature have a look at <a href="http://andreas.heigl.org/cat/dev/wp/authldap">http://andreas.heigl.org/cat/dev/wp/authldap</a>
-        </p>
-        <p class="authLDAPDescription">
-         This field <strong>should</strong> include the string <var>%s</var>
-         that will be replaced with the username provided during log-in
-        </p>
-        <p class="authLDAPDescription">
-         If you leave this field empty it defaults to <strong>(uid=%s)</strong>
-        </p>
-       </div>
-
-      </fieldset>
-
-      <h3 class="title">Settings for creating new Users</h3>
-      <fieldset class="options">
-
-       <div class="row">
-        <span class="description">Name-Attribute</span>
-        <span class="element">
-         <input type='text' name='authLDAPNameAttr' value='$authLDAPNameAttr' style='width: 450px;'/><br />
-        </span>
-        <p class="authLDAPDescription">
-         Which Attribute from the LDAP contains the Full or the First name
-         of the user trying to log in.
-        </p>
-        <p class="authLDAPDefault">
-         This defaults to <strong>name</strong>
-        </p>
-       </div>
-
-       <div class="row">
-        <span class="description">Second Name Attribute</span>
-        <span class="element">
-         <input type='text' name='authLDAPSecName' value='$authLDAPSecName' />
-        </span>
-        <p class="authLDAPDescription">
-         If the above Name-Attribute only contains the First Name of the
-         user you can here specify an Attribute that contains the second name.
-        </p>
-        <p class="authLDAPDefault">
-         This field is empty by default
-        </p>
-       </div>
-
-       <div class="row">
-        <span class="description">User-ID Attribute</span>
-        <span class="element">
-         <input type='text' name='authLDAPUidAttr' value='$authLDAPUidAttr' />
-        </span>
-        <p class="authLDAPDescription">
-         Please give the Attribute, that is used to identify the user. This
-         should be the same as you used in the above <em>Filter</em>-Option
-        </p>
-        <p class="authLDAPDefault">
-         This field defaults to <strong>uid</strong>
-        </p>
-       </div>
-
-       <div class="row">
-        <span class="description">Mail Attribute</span>
-        <span class="element">
-         <input type='text' name='authLDAPMailAttr' value='$authLDAPMailAttr' />
-        </span>
-        <p class="authLDAPDescription">
-         Which Attribute holds the eMail-Address of the user?
-        </p>
-        <p class="authLDAPDescription">
-         If more than one eMail-Address are stored in the LDAP, only the first given is used
-        </p>
-        <p class="authLDAPDefault">
-         This field defaults to <strong>mail</strong>
-        </p>
-       </div>
-
-       <div class="row">
-        <span class="description">Web-Attribute</span>
-        <span class="element">
-         <input type='text' name='authLDAPWebAttr' value='$authLDAPWebAttr' />
-        </span>
-        <p class="authLDAPDescription">
-         If your users have a personal page (URI) stored in the LDAP, it can
-         be provided here.
-        </p>
-        <p class="authLDAPDefault">
-         This field is empty by default
-        </p>
-       </div>
-
-      </fieldset>
-
-
-      <h3 class="title">Groups for Roles</h3> 
-      <fieldset class="options">
-
-       <div class="row">
-        <span class="description">Group-Attribute</span>
-        <span class="element">
-         <input type='text' name='authLDAPGroupAttr' value='$authLDAPGroupAttr' />
-        </span>
-        <p class="authLDAPDescription">
-         This is the attribute that defines the Group-ID that can be matched
-         against the Groups defined further down
-        </p>
-        <p class="authLDAPDefault">
-         This field defaults to <strong>gidNumber</strong>
-        </p>
-       </div>
-
-       <div class="row">
-        <span class="description">Group-Filter</span>
-        <span class="element">
-         <input type='text' name='authLDAPGroupFilter' value='$authLDAPGroupFilter' />
-        </span>
-        <p class="authLDAPDescription">
-         Here you can add the filter for selecting groups for ther
-         currentlly logged in user
-        </p>
-        <p class="authLDAPDescription">
-         The Filter should contain the string %s which will be replaced by
-         the login-name of the currently logged in user
-        </p>
-        <p class="authLDAPDescription">
-         Alternatively the string <code>%dn%</code> will be replaced by the
-         DN of the currently logged in user. This can be helpfull if
-         group-memberships are defined with DNs rather than UIDs
-        </p>
-        <p class="authLDAPDefault">This field defaults to
-         <strong>(&amp;(objectClass=posixGroup)(memberUid=%s))</strong>
-        </p>
-       </div>
-
-      </fieldset>
-
-          <h3 class="title">Role - group mapping</h3>
-      <fieldset class="options">
-authLdapForm;
-
-    $roles = new WP_Roles();
-    foreach ($roles->get_names() as $group => $vals) {
-        $aGroup=$authLDAPGroups[$group];
-        echo "<div class='row'>"
-            . '    <span class="description">' . $vals . '</span>'
-            . '    <span class="element">'
-            . '         <input type="text" name="authLDAPGroups['.$group.']" value="'.$aGroup.'" />'
-            . '     </span>'
-            . '     <p class="authLDAPDescription">What LDAP-Groups shall be matched to the '.$vals.'-Role?</p>'
-            . '     <p class="authLDAPDescription">Please provide a coma-separated list of values</p>'
-            . '     <p class="authLDAPDefault">This field is empty by default</p>'
-            . '</div>';
-    }
-
-    echo <<<authLdapForm3
-      </fieldset>
-      <fieldset class="buttons">
-       <p class="submit">
-        <input type="submit" name="ldapOptionsSave" value="Save" />
-       </p>
-      </fieldset>
-     </form>
-    </div>
-authLdapForm3;
-
+    include dirname(__FILE__) . '/view/admin.phtml';
 }
 
 

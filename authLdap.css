@@ -3,19 +3,7 @@
 	padding-top: 10px; 
 }
 
-.description {
-	float: left; 
-	text-align: right; 
-	font-weight: bold;
-}
-
 .element {
 	float: right; 
 	text-align: left; 
 }
-
-.authLDAPDescription, .authLDAPDefault{
-	padding: 2px 2px 2px 150px;
-	margin: 0px;
-	}
-	
