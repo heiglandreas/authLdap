@@ -133,7 +133,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $authLDAPGroupFilter    = get_option('authLDAPGroupFilter');
 
         if ($authLDAP && !$authLDAPCookieMarker) {
-            update_option("authLDAPCookierMarker", "LDAP");
+            update_option("authLDAPCookieMarker", "LDAP");
             $authLDAPCookieMarker = get_option("authLDAPCookieMarker");
         }
 
