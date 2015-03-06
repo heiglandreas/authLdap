@@ -192,6 +192,26 @@
                         </p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="authLDAPDefaultRole">Default Role</label>
+                    </th>
+                    <td>
+                        <select name="authLDAPDefaultRole">
+                            <option value="" <?php echo ( $authLDAPDefaultRole == '' ? 'selected="selected"' : '' ); ?>>
+                                None (deny access)
+                            </option>
+<?php foreach ($roles->get_names() as $group => $vals) : ?>
+                            <option value="<?php echo $group; ?>" <?php echo ( $authLDAPDefaultRole == $group ? 'selected="selected"' : '' ); ?>>
+                                <?php echo $vals; ?>
+                            </option>
+<?php endforeach; ?>
+                        </select>
+                        <p class="description">
+                           Here you can select the default role for users. If you enable LDAP Groups below, they will take precedence over the Default Role.
+                        </p>
+                    </td>
+                </tr>
             </table>
         </fieldset>
 
@@ -199,6 +219,18 @@
         <h3 class="title">Groups for Roles</h3>
         <fieldset class="options">
             <table class="form-table">
+                <tr>
+                    <th>
+                        <label for="authLDAPGroupEnable">Use LDAP Groups to map to Roles?</label>
+                    </th>
+                    <td>
+                        <input type="hidden" name="authLDAPGroupEnable" value="0"/>
+                        <input type='checkbox' name='authLDAPGroupEnable' value='1'<?php echo $tGroupChecked; ?>/>
+                        <p class="description">
+                            Search LDAP for user's groups an map to Wordpress Roles.
+                        </p>
+                    </td>
+                </tr>
                 <tr>
                     <th scope="row">
                         <label for="authLDAPGroupAttr">Group-Attribute</label>
@@ -235,26 +267,6 @@
                         </p>
                         <p class="description">This field defaults to
                             <strong>(&amp;(objectClass=posixGroup)(memberUid=%s))</strong>
-                        </p>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <label for="authLDAPDefaultRole">Default Role</label>
-                    </th>
-                    <td>
-                        <select name="authLDAPDefaultRole">
-                            <option value="" <?php echo ( $authLDAPDefaultRole == '' ? 'selected="selected"' : '' ); ?>>
-                                None (deny access)
-                            </option>
-<?php foreach ($roles->get_names() as $group => $vals) : ?>
-                            <option value="<?php echo $group; ?>" <?php echo ( $authLDAPDefaultRole == $group ? 'selected="selected"' : '' ); ?>>
-                                <?php echo $vals; ?>
-                            </option>
-<?php endforeach; ?>
-                        </select>
-                        <p class="description">
-                           Here you can select the default role for users that can not be matched using groups.
                         </p>
                     </td>
                 </tr>
