@@ -56,16 +56,16 @@ function authldap_optionsPanel()
     }
 
     // Do some initialization for the admin-view
-    $authLDAP             = get_option("authLDAP");
-    $authLDAPCachePW      = get_option("authLDAPCachePW");
-    $authLDAPCookieMarker = get_option("authLDAPCookieMarker");
-    $authLDAPURI          = get_option("authLDAPURI");
-    $authLDAPFilter       = get_option("authLDAPFilter");
-    $authLDAPNameAttr     = get_option("authLDAPNameAttr");
-    $authLDAPSecName      = get_option("authLDAPSecName");
-    $authLDAPMailAttr     = get_option("authLDAPMailAttr");
-    $authLDAPUidAttr      = get_option("authLDAPUidAttr");
-    $authLDAPWebAttr      = get_option("authLDAPWebAttr");
+    $authLDAP             = get_option('authLDAP');
+    $authLDAPCachePW      = get_option('authLDAPCachePW');
+    $authLDAPCookieMarker = get_option('authLDAPCookieMarker');
+    $authLDAPURI          = get_option('authLDAPURI');
+    $authLDAPFilter       = get_option('authLDAPFilter');
+    $authLDAPNameAttr     = get_option('authLDAPNameAttr');
+    $authLDAPSecName      = get_option('authLDAPSecName');
+    $authLDAPMailAttr     = get_option('authLDAPMailAttr');
+    $authLDAPUidAttr      = get_option('authLDAPUidAttr');
+    $authLDAPWebAttr      = get_option('authLDAPWebAttr');
     $authLDAPGroups       = get_option('authLDAPGroups');
     $authLDAPDebug        = get_option('authLDAPDebug');
     $authLDAPGroupAttr    = get_option('authLDAPGroupAttr');
@@ -146,7 +146,7 @@ function authLdap_get_server() {
 function authLdap_login($user, $username, $password, $already_md5 = false)
 {
     // don't do anything when authLDAP is disabled
-    if (! get_option("authLDAP")) {
+    if (! get_option('authLDAP')) {
         authldap_debug('LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)');
         return $user;
     }
@@ -160,20 +160,20 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
     global $wpdb, $error;
     try {
-        $authLDAP               = get_option("authLDAP");
-        $authLDAPCookieMarker   = get_option("authLDAPCookieMarker");
-        $authLDAPFilter         = get_option("authLDAPFilter");
-        $authLDAPNameAttr       = get_option("authLDAPNameAttr");
-        $authLDAPSecName        = get_option("authLDAPSecName");
-        $authLDAPMailAttr       = get_option("authLDAPMailAttr");
-        $authLDAPUidAttr        = get_option("authLDAPUidAttr");
-        $authLDAPWebAttr        = get_option("authLDAPWebAttr");
+        $authLDAP               = get_option('authLDAP');
+        $authLDAPCookieMarker   = get_option('authLDAPCookieMarker');
+        $authLDAPFilter         = get_option('authLDAPFilter');
+        $authLDAPNameAttr       = get_option('authLDAPNameAttr');
+        $authLDAPSecName        = get_option('authLDAPSecName');
+        $authLDAPMailAttr       = get_option('authLDAPMailAttr');
+        $authLDAPUidAttr        = get_option('authLDAPUidAttr');
+        $authLDAPWebAttr        = get_option('authLDAPWebAttr');
         $authLDAPDefaultRole    = get_option('authLDAPDefaultRole');
         $authLDAPGroupEnable    = get_option('authLDAPGroupEnable', true);
 
         if ($authLDAP && !$authLDAPCookieMarker) {
-            update_option("authLDAPCookieMarker", "LDAP");
-            $authLDAPCookieMarker = get_option("authLDAPCookieMarker");
+            update_option('authLDAPCookieMarker', 'LDAP');
+            $authLDAPCookieMarker = get_option('authLDAPCookieMarker');
         }
 
         if (! $username) {
@@ -404,10 +404,10 @@ if (! function_exists('wp_setcookie')):
 
 function wp_setcookie($username, $password, $already_md5 = false, $home = '', $siteurl = '')
 {
-    $ldapCookieMarker = get_option("ldapCookieMarker");
-    $ldapAuth = get_option("ldapAuth");
+    $ldapCookieMarker = get_option('ldapCookieMarker');
+    $ldapAuth = get_option('ldapAuth');
 
-    if (($ldapAuth) && ($username != "admin")) {
+    if (($ldapAuth) && ($username != 'admin')) {
         $password = md5($username).md5($ldapCookieMarker);
     } else {
         if (!$already_md5) {
