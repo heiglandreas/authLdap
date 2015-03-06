@@ -201,7 +201,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         authldap_debug('LDAP authentication successfull');
-        $attributes = array($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr);
+        $attributes = array_filter(array($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr));
         try {
             $attribs = $server->search(sprintf($authLDAPFilter, $username), $attributes);
             // First get all the relevant group informations so we can see if
