@@ -82,6 +82,9 @@ class LDAP
         if ( isset ( $url['pass'] ) ) {
             $this -> _password = $url['pass'];
         }
+        if ( isset ( $url['port'] ) ) {
+            $this -> _port = $url['port'];
+        }
 	}
 
     /**
@@ -99,7 +102,8 @@ class LDAP
 			if ( 389 == $this -> _port ) {
 				$this -> _port = 636;
 			}
-            $this->_ch = @ldap_connect ( $this->_scheme . '://' . $this->_server, $this -> _port  );
+			// when URL is used, port is ignored, see http://php.net/manual/en/function.ldap-connect.php
+            $this->_ch = @ldap_connect ( $this->_scheme . '://' . $this->_server . ':' . $this -> _port  );
         }
 		if ( ! $this->_ch ){
             throw new AuthLDAP_Exception ( 'Could not connect to the server' );
