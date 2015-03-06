@@ -316,7 +316,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 }
 
 /**
- * Get LDAP groups for user an map to role
+ * Get LDAP groups for user and map to role
  *
  * @param string $username
  * @param string $dn
