@@ -249,15 +249,13 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             // If the user is member of more than one group only the first one
             // will be taken into account!
 
-            if ($authLDAPGroupEnable) {
-                foreach ($authLDAPGroups as $key => $val) {
-                    $currentGroup = explode(',', $val);
-                    // Remove whitespaces around the group-ID
-                    $currentGroup = array_map('trim', $currentGroup);
-                    if (0 < count(array_intersect($currentGroup, $grp))) {
-                        $role = $key;
-                        break;
-                    }
+            foreach ($authLDAPGroups as $key => $val) {
+                $currentGroup = explode(',', $val);
+                // Remove whitespaces around the group-ID
+                $currentGroup = array_map('trim', $currentGroup);
+                if (0 < count(array_intersect($currentGroup, $grp))) {
+                    $role = $key;
+                    break;
                 }
             }
         }
