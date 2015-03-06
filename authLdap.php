@@ -264,7 +264,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         // if we don't have a role yet, use default role
         if (empty($role) && !empty($authLDAPDefaultRole)) {
-            authldap_debug('user is no groups, set default role');
+            authldap_debug('no role yet, set default role');
             $role = $authLDAPDefaultRole;
         }
 
