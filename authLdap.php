@@ -25,6 +25,10 @@ function authldap_addmenu()
     }
 }
 
+function authldap_get_post($name, $default = '')
+{
+    return isset($_POST[$name]) ? $_POST[$name] : $default;
+}
 
 function authldap_optionsPanel()
 {
@@ -32,21 +36,21 @@ function authldap_optionsPanel()
     wp_enqueue_style('authLdap-style', plugin_dir_url(__FILE__) . 'authLdap.css');
 
     if ($_POST['ldapOptionsSave']) {
-        update_option('authLDAP',            $_POST['authLDAPAuth']);
-        update_option('authLDAPCachePW',     $_POST['authLDAPCachePW']);
-        update_option('authLDAPURI',         $_POST['authLDAPURI']);
-        update_option('authLDAPFilter',      $_POST['authLDAPFilter']);
-        update_option('authLDAPNameAttr',    $_POST['authLDAPNameAttr']);
-        update_option('authLDAPSecName',     $_POST['authLDAPSecName']);
-        update_option('authLDAPUidAttr',     $_POST['authLDAPUidAttr']);
-        update_option('authLDAPMailAttr',    $_POST['authLDAPMailAttr']);
-        update_option('authLDAPWebAttr',     $_POST['authLDAPWebAttr']);
-        update_option('authLDAPGroups',      $_POST['authLDAPGroups']);
-        update_option('authLDAPDebug',       $_POST['authLDAPDebug']);
-        update_option('authLDAPGroupAttr',   $_POST['authLDAPGroupAttr']);
-        update_option('authLDAPGroupFilter', $_POST['authLDAPGroupFilter']);
-        update_option('authLDAPDefaultRole', $_POST['authLDAPDefaultRole']);
-        update_option('authLDAPGroupEnable', $_POST['authLDAPGroupEnable']);
+        update_option('authLDAP',            authldap_get_post('authLDAPAuth', false));
+        update_option('authLDAPCachePW',     authldap_get_post('authLDAPCachePW', false));
+        update_option('authLDAPURI',         authldap_get_post('authLDAPURI'));
+        update_option('authLDAPFilter',      authldap_get_post('authLDAPFilter'));
+        update_option('authLDAPNameAttr',    authldap_get_post('authLDAPNameAttr'));
+        update_option('authLDAPSecName',     authldap_get_post('authLDAPSecName'));
+        update_option('authLDAPUidAttr',     authldap_get_post('authLDAPUidAttr'));
+        update_option('authLDAPMailAttr',    authldap_get_post('authLDAPMailAttr'));
+        update_option('authLDAPWebAttr',     authldap_get_post('authLDAPWebAttr'));
+        update_option('authLDAPGroups',      authldap_get_post('authLDAPGroups', array()));
+        update_option('authLDAPDebug',       authldap_get_post('authLDAPDebug', false));
+        update_option('authLDAPGroupAttr',   authldap_get_post('authLDAPGroupAttr'));
+        update_option('authLDAPGroupFilter', authldap_get_post('authLDAPGroupFilter'));
+        update_option('authLDAPDefaultRole', authldap_get_post('authLDAPDefaultRole'));
+        update_option('authLDAPGroupEnable', authldap_get_post('authLDAPGroupEnable', false));
 
         echo "<div class='updated'><p>Saved Options!</p></div>";
     }

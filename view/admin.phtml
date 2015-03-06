@@ -39,8 +39,7 @@
                         <label for="authLDAPAuth" >Enable Authentication via LDAP?</label>
                     </th>
                     <td>
-                        <input type="hidden" name="authLDAPAuth" value="0"/>
-                        <input type='checkbox' name='authLDAPAuth' value='1'<?php echo $tChecked; ?>/>
+                        <input type='checkbox' name='authLDAPAuth' id='authLDAPAuth' value='1'<?php echo $tChecked; ?>/>
                     </td>
                 </tr>
                 <tr>
@@ -48,8 +47,7 @@
                         <label for="authLDAPDebug">Debug AuthLDAP?</label>
                     </th>
                     <td>
-                        <input type='hidden' name='authLDAPDebug' value='0'/>
-                        <input type='checkbox' name='authLDAPDebug' value='1'<?php echo $tDebugChecked; ?>/>
+                        <input type='checkbox' name='authLDAPDebug' id='authLDAPDebug' value='1'<?php echo $tDebugChecked; ?>/>
                     </td>
                 </tr>
                 <tr>
@@ -57,8 +55,7 @@
                         <label for="authLDAPCachePW">Save entered passwords in the wordpress user table?</label>
                     </th>
                     <td>
-                        <input type='hidden' name='authLDAPCachePW' value='0'/>
-                        <input type='checkbox' name='authLDAPCachePW' value='1'<?php echo $tPWChecked; ?>/>
+                        <input type='checkbox' name='authLDAPCachePW' id='authLDAPCachePW' value='1'<?php echo $tPWChecked; ?>/>
                     </td>
                 </tr>
             </table>
@@ -71,7 +68,8 @@
                         <label for="authLDAPURI">LDAP URI</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPURI' placeholder="LDAP-URI" class="regular-text" value='<?php echo $authLDAPURI; ?>'/>
+                        <input type='text' name='authLDAPURI' id='authLDAPURI' placeholder="LDAP-URI"
+                          class="regular-text" value='<?php echo $authLDAPURI; ?>'/>
                         <p class="description">
                             The <abbr title="Uniform Ressource Identifier">URI</abbr>
                             for connecting to the LDAP-Server. This usualy takes the form
@@ -92,7 +90,8 @@
                         <label for="authLDAPFilter" class="description">Filter</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPFilter' placeholder="(uid=%s)" class="regular-text" value='<?php echo $authLDAPFilter; ?>'/>
+                        <input type='text' name='authLDAPFilter' id='authLDAPFilter' placeholder="(uid=%s)"
+                          class="regular-text" value='<?php echo $authLDAPFilter; ?>'/>
                         <p class="description">
                             Please provide a valid filter that can be used for querying the
                             <abbr title="Lightweight Directory Access Protocol">LDAP</abbr>
@@ -119,7 +118,8 @@
                         <label for="authLDAPNameAttr">Name-Attribute</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPNameAttr' placeholder="name" class="regular-text" value='<?php echo $authLDAPNameAttr; ?>'/><br />
+                        <input type='text' name='authLDAPNameAttr' id='authLDAPNameAttr' placeholder="name"
+                          class="regular-text" value='<?php echo $authLDAPNameAttr; ?>'/><br />
                         <p class="description">
                             Which Attribute from the LDAP contains the Full or the First name
                             of the user trying to log in.
@@ -135,7 +135,8 @@
                         <label for="authLDAPSecName">Second Name Attribute</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPSecName' placeholder="" class="regular-text" value='<?php echo $authLDAPSecName; ?>' />
+                        <input type='text' name='authLDAPSecName' id='authLDAPSecName' placeholder=""
+                          class="regular-text" value='<?php echo $authLDAPSecName; ?>' />
                         <p class="description">
                             If the above Name-Attribute only contains the First Name of the
                             user you can here specify an Attribute that contains the second name.
@@ -150,7 +151,8 @@
                         <label for="authLDAPUidAttr">User-ID Attribute</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPUidAttr' placeholder="uid" class="regular-text" value='<?php echo $authLDAPUidAttr; ?>' />
+                        <input type='text' name='authLDAPUidAttr' id='authLDAPUidAttr' placeholder="uid"
+                          class="regular-text" value='<?php echo $authLDAPUidAttr; ?>' />
                         <p class="description">
                             Please give the Attribute, that is used to identify the user. This
                             should be the same as you used in the above <em>Filter</em>-Option
@@ -165,7 +167,8 @@
                         <label for="authLDAPMailAttr">Mail Attribute</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPMailAttr' placeholder="mail" class="regular-text" value='<?php echo $authLDAPMailAttr; ?>' />
+                        <input type='text' name='authLDAPMailAttr' id='authLDAPMailAttr' placeholder="mail"
+                          class="regular-text" value='<?php echo $authLDAPMailAttr; ?>' />
                         <p class="description">
                             Which Attribute holds the eMail-Address of the user?
                         </p>
@@ -182,7 +185,8 @@
                         <label for="authLDAPWebAttr">Web-Attribute</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPWebAttr' placeholder="" class="regular-text" value='<?php echo $authLDAPWebAttr; ?>' />
+                        <input type='text' name='authLDAPWebAttr' id='authLDAPWebAttr' placeholder=""
+                          class="regular-text" value='<?php echo $authLDAPWebAttr; ?>' />
                         <p class="description">
                             If your users have a personal page (URI) stored in the LDAP, it can
                             be provided here.
@@ -197,7 +201,7 @@
                         <label for="authLDAPDefaultRole">Default Role</label>
                     </th>
                     <td>
-                        <select name="authLDAPDefaultRole">
+                        <select name="authLDAPDefaultRole" id="authLDAPDefaultRole">
                             <option value="" <?php echo ( $authLDAPDefaultRole == '' ? 'selected="selected"' : '' ); ?>>
                                 None (deny access)
                             </option>
@@ -224,8 +228,7 @@
                         <label for="authLDAPGroupEnable">Use LDAP Groups to map to Roles?</label>
                     </th>
                     <td>
-                        <input type="hidden" name="authLDAPGroupEnable" value="0"/>
-                        <input type='checkbox' name='authLDAPGroupEnable' value='1'<?php echo $tGroupChecked; ?>/>
+                        <input type='checkbox' name='authLDAPGroupEnable' id='authLDAPGroupEnable' value='1'<?php echo $tGroupChecked; ?>/>
                         <p class="description">
                             Search LDAP for user's groups and map to Wordpress Roles.
                         </p>
@@ -236,7 +239,8 @@
                         <label for="authLDAPGroupAttr">Group-Attribute</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPGroupAttr' placeholder="gidNumber" class="regular-text" value='<?php echo $authLDAPGroupAttr; ?>' />
+                        <input type='text' name='authLDAPGroupAttr' id='authLDAPGroupAttr' placeholder="gidNumber"
+                          class="regular-text" value='<?php echo $authLDAPGroupAttr; ?>' />
                         <p class="description">
                             This is the attribute that defines the Group-ID that can be matched
                             against the Groups defined further down
@@ -251,7 +255,8 @@
                         <label for="authLDAPGroupFilter">Group-Filter</label>
                     </th>
                     <td>
-                        <input type='text' name='authLDAPGroupFilter' placeholder="(&amp;(objectClass=posixGroup)(memberUid=%s))" class="regular-text" value='<?php echo $authLDAPGroupFilter; ?>' />
+                        <input type='text' name='authLDAPGroupFilter' id='authLDAPGroupFilter' placeholder="(&amp;(objectClass=posixGroup)(memberUid=%s))"
+                          class="regular-text" value='<?php echo $authLDAPGroupFilter; ?>' />
                         <p class="description">
                             Here you can add the filter for selecting groups for ther
                             currentlly logged in user
@@ -286,7 +291,8 @@
                         </label>
                     </th>
                     <td>
-                        <input type="text" name="authLDAPGroups[<?php echo $group; ?>]" value="<?php echo $aGroup; ?>" />
+                        <input type="text" name="authLDAPGroups[<?php echo $group; ?>]" id="authLDAPGroups[<?php echo $group; ?>]"
+                          value="<?php echo $aGroup; ?>" />
                         <p class="description">What LDAP-Groups shall be matched to the <?php echo $vals; ?>-Role?</p>
                         <p class="description">Please provide a coma-separated list of values</p>
                         <p class="description">This field is empty by default</p>
