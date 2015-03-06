@@ -305,7 +305,12 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         // find out whether the user is already present in the database
-        $login = $wpdb->get_row("SELECT ID, user_login, user_pass FROM $wpdb->users WHERE user_login = '$username'");
+        $login = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT ID, user_login, user_pass FROM $wpdb->users WHERE user_login = %s",
+                $username
+            )
+        );
 
         if ($login) {
             // found user in the database
