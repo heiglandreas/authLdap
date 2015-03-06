@@ -247,6 +247,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             }
         }
         if (empty($role) && !empty($authLDAPDefaultRole)) {
+            authldap_debug('user is no groups, set default role');
             $role = $authLDAPDefaultRole;
         }
 
@@ -257,6 +258,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             return false;
         } else {
             $roles = new WP_Roles();
+            // not sure if this is needed, but it can't hurt
             if (!$roles->is_role($role)) {
                 trigger_error('no group found');
                 authldap_debug('role is invalid');
