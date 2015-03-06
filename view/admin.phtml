@@ -238,6 +238,26 @@
                         </p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="authLDAPDefaultRole">Default Role</label>
+                    </th>
+                    <td>
+                        <select name="authLDAPDefaultRole">
+                            <option value="" <?php echo ( $authLDAPDefaultRole == '' ? 'selected="selected"' : '' ); ?>>
+                                None (deny access)
+                            </option>
+<?php foreach ($roles->get_names() as $group => $vals) : ?>
+                            <option value="<?php echo $group; ?>" <?php echo ( $authLDAPDefaultRole == $group ? 'selected="selected"' : '' ); ?>>
+                                <?php echo $vals; ?>
+                            </option>
+<?php endforeach; ?>
+                        </select>
+                        <p class="description">
+                           Here you can select the default role for users that can not be matched using groups.
+                        </p>
+                    </td>
+                </tr>
             </table>
         </fieldset>
 
@@ -245,7 +265,6 @@
         <fieldset class="options">
             <table class="form-table">
 <?php
-    $roles = new WP_Roles();
     foreach ($roles->get_names() as $group => $vals) :
         $aGroup=$authLDAPGroups[$group]; ?>
                 <tr>

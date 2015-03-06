@@ -45,6 +45,7 @@ function authldap_optionsPanel()
         update_option('authLDAPDebug',       $_POST['authLDAPDebug']);
         update_option('authLDAPGroupAttr',   $_POST['authLDAPGroupAttr']);
         update_option('authLDAPGroupFilter', $_POST['authLDAPGroupFilter']);
+        update_option('authLDAPDefaultRole', $_POST['authLDAPDefaultRole']);
 
         echo "<div class='updated'><p>Saved Options!</p></div>";
     }
@@ -64,6 +65,7 @@ function authldap_optionsPanel()
     $authLDAPDebug        = get_option('authLDAPDebug');
     $authLDAPGroupAttr    = get_option('authLDAPGroupAttr');
     $authLDAPGroupFilter  = get_option('authLDAPGroupFilter');
+    $authLDAPDefaultRole  = get_option('authLDAPDefaultRole');
 
     if ($authLDAP) {
         $tChecked = ' checked="checked"';
@@ -74,6 +76,8 @@ function authldap_optionsPanel()
     if ($authLDAPCachePW) {
         $tPWChecked = ' checked="checked"';
     }
+
+    $roles = new WP_Roles();
 
     $action = $_SERVER['REQUEST_URI'];
     if (! extension_loaded('ldap')) {
@@ -131,6 +135,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $authLDAPDebug          = get_option('authLDAPDebug');
         $authLDAPGroupAttr      = get_option('authLDAPGroupAttr');
         $authLDAPGroupFilter    = get_option('authLDAPGroupFilter');
+        $authLDAPDefaultRole    = get_option('authLDAPDefaultRole');
 
         if ($authLDAP && !$authLDAPCookieMarker) {
             update_option("authLDAPCookieMarker", "LDAP");
@@ -241,12 +246,22 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
                 break;
             }
         }
+        if (empty($role) && !empty($authLDAPDefaultRole)) {
+            $role = $authLDAPDefaultRole;
+        }
 
         if (empty($role)) {
             // Sorry, but you are not in any group that is allowed access
             trigger_error('no group found');
             authldap_debug('user is not in any group that is allowed access');
             return false;
+        } else {
+            $roles = new WP_Roles();
+            if (!$roles->is_role($role)) {
+                trigger_error('no group found');
+                authldap_debug('role is invalid');
+                return false;
+            }
         }
 
         // from here on, the user has access!
