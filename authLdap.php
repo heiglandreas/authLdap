@@ -129,8 +129,15 @@ function authLdap_get_server() {
  * @param boolean $already_md5
  * @return boolean true, if login was successfull or false, if it wasn't
  * @conf boolean authLDAP true, if authLDAP should be used, false if not. Defaults to false
- * @conf boolean authLDAPDebug true, if debug messages should be logged, false if not. Defaluts to false
- * @todo add the other configuration parameters here
+ * @conf string authLDAPCookieMarker (unused?)
+ * @conf string authLDAPFilter LDAP filter to use to find correct user, defaults to '(uid=%s)'
+ * @conf string authLDAPNameAttr LDAP attribute containing user (display) name, defaults to 'name'
+ * @conf string authLDAPSecName LDAP attribute containing second name, defaults to ''
+ * @conf string authLDAPMailAttr LDAP attribute containing user e-mail, defaults to 'mail'
+ * @conf string authLDAPUidAttr LDAP attribute containing user id (the username we log on with), defaults to 'uid'
+ * @conf string authLDAPWebAttr LDAP attribute containing user website, defaults to ''
+ * @conf string authLDAPDefaultRole default role for authenticated user, defaults to ''
+ * @conf boolean authLDAPGroupEnable true, if we try to map LDAP groups to Wordpress roles
  */
 function authLdap_login($user, $username, $password, $already_md5 = false)
 {
@@ -157,7 +164,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $authLDAPMailAttr       = get_option("authLDAPMailAttr");
         $authLDAPUidAttr        = get_option("authLDAPUidAttr");
         $authLDAPWebAttr        = get_option("authLDAPWebAttr");
-        $authLDAPDebug          = get_option('authLDAPDebug');
         $authLDAPDefaultRole    = get_option('authLDAPDefaultRole');
         $authLDAPGroupEnable    = get_option('authLDAPGroupEnable', true);
 
