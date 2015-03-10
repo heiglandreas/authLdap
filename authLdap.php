@@ -46,6 +46,7 @@ function authldap_optionsPanel()
         update_option('authLDAPGroupAttr',   $_POST['authLDAPGroupAttr']);
         update_option('authLDAPGroupFilter', $_POST['authLDAPGroupFilter']);
         update_option('authLDAPDefaultRole', $_POST['authLDAPDefaultRole']);
+        update_option('authLDAPGroupEnable', $_POST['authLDAPGroupEnable']);
 
         echo "<div class='updated'><p>Saved Options!</p></div>";
     }
@@ -66,6 +67,7 @@ function authldap_optionsPanel()
     $authLDAPGroupAttr    = get_option('authLDAPGroupAttr');
     $authLDAPGroupFilter  = get_option('authLDAPGroupFilter');
     $authLDAPDefaultRole  = get_option('authLDAPDefaultRole');
+    $authLDAPGroupEnable  = get_option('authLDAPGroupEnable', true);
 
     if ($authLDAP) {
         $tChecked = ' checked="checked"';
@@ -75,6 +77,9 @@ function authldap_optionsPanel()
     }
     if ($authLDAPCachePW) {
         $tPWChecked = ' checked="checked"';
+    }
+    if ($authLDAPGroupEnable) {
+        $tGroupChecked = ' checked="checked"';
     }
 
     $roles = new WP_Roles();
@@ -87,6 +92,28 @@ function authldap_optionsPanel()
     }
 
     include dirname(__FILE__) . '/view/admin.phtml';
+}
+
+/**
+ * get a LDAP server object
+ *
+ * throws exception if there is a problem connecting
+ *
+ * @return object LDAP server object
+ * @conf boolean authLDAPDebug true, if debugging should be turned on
+ * @conf string authLDAPURI LDAP server URI
+ */
+function authLdap_get_server() {
+    static $_server = null;
+    if (is_null($_server)) {
+        $authLDAPDebug = get_option('authLDAPDebug');
+        $authLDAPURI   = get_option('authLDAPURI');
+
+        //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
+        authldap_debug('connect to LDAP server');
+        $_server = new LDAP($authLDAPURI, $authLDAPDebug);
+    }
+    return $_server;
 }
 
 
@@ -102,8 +129,15 @@ function authldap_optionsPanel()
  * @param boolean $already_md5
  * @return boolean true, if login was successfull or false, if it wasn't
  * @conf boolean authLDAP true, if authLDAP should be used, false if not. Defaults to false
- * @conf boolean authLDAPDebug true, if debug messages should be logged, false if not. Defaluts to false
- * @todo add the other configuration parameters here
+ * @conf string authLDAPCookieMarker (unused?)
+ * @conf string authLDAPFilter LDAP filter to use to find correct user, defaults to '(uid=%s)'
+ * @conf string authLDAPNameAttr LDAP attribute containing user (display) name, defaults to 'name'
+ * @conf string authLDAPSecName LDAP attribute containing second name, defaults to ''
+ * @conf string authLDAPMailAttr LDAP attribute containing user e-mail, defaults to 'mail'
+ * @conf string authLDAPUidAttr LDAP attribute containing user id (the username we log on with), defaults to 'uid'
+ * @conf string authLDAPWebAttr LDAP attribute containing user website, defaults to ''
+ * @conf string authLDAPDefaultRole default role for authenticated user, defaults to ''
+ * @conf boolean authLDAPGroupEnable true, if we try to map LDAP groups to Wordpress roles
  */
 function authLdap_login($user, $username, $password, $already_md5 = false)
 {
@@ -124,18 +158,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
     try {
         $authLDAP               = get_option("authLDAP");
         $authLDAPCookieMarker   = get_option("authLDAPCookieMarker");
-        $authLDAPURI            = get_option("authLDAPURI");
         $authLDAPFilter         = get_option("authLDAPFilter");
         $authLDAPNameAttr       = get_option("authLDAPNameAttr");
         $authLDAPSecName        = get_option("authLDAPSecName");
         $authLDAPMailAttr       = get_option("authLDAPMailAttr");
         $authLDAPUidAttr        = get_option("authLDAPUidAttr");
         $authLDAPWebAttr        = get_option("authLDAPWebAttr");
-        $authLDAPGroups         = get_option('authLDAPGroups');
-        $authLDAPDebug          = get_option('authLDAPDebug');
-        $authLDAPGroupAttr      = get_option('authLDAPGroupAttr');
-        $authLDAPGroupFilter    = get_option('authLDAPGroupFilter');
         $authLDAPDefaultRole    = get_option('authLDAPDefaultRole');
+        $authLDAPGroupEnable    = get_option('authLDAPGroupEnable', true);
 
         if ($authLDAP && !$authLDAPCookieMarker) {
             update_option("authLDAPCookieMarker", "LDAP");
@@ -165,13 +195,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         if (! $authLDAPUidAttr) {
             $authLDAPUidAttr = 'uid';
         }
-        if (! $authLDAPGroupAttr) {
-            $authLDAPGroupAttr = 'gidNumber';
-        }
-        if (! $authLDAPGroupFilter) {
-            $authLDAPGroupFilter = '(&(objectClass=posixGroup)(memberUid=%s))';
-        }
-
 
         // If already_md5 is TRUE, then we're getting the user/password from the cookie. As we don't want to store LDAP passwords in any
         // form, we've already replaced the password with the hashed username and LDAP_COOKIE_MARKER
@@ -183,12 +206,10 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         // No cookie, so have to authenticate them via LDAP
-        //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
         $result = false;
         try {
             authldap_debug('about to do LDAP authentication');
-            $server = new LDAP($authLDAPURI, $authLDAPDebug);
-            $result = $server->Authenticate($username, $password, $authLDAPFilter);
+            $result = authLdap_get_server()->Authenticate($username, $password, $authLDAPFilter);
         } catch (Exception $e) {
             authldap_debug('LDAP authentication failed with exception: ' . $e->getMessage());
             return false;
@@ -203,51 +224,28 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         authldap_debug('LDAP authentication successfull');
         $attributes = array_filter(array($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr));
         try {
-            $attribs = $server->search(sprintf($authLDAPFilter, $username), $attributes);
+            $attribs = authLdap_get_server()->search(sprintf($authLDAPFilter, $username), $attributes);
             // First get all the relevant group informations so we can see if
             // whether have been changes in group association of the user
             if (! isset($attribs[0]['dn'])) {
                 authldap_debug('could not get user attributes from LDAP');
                 throw new UnexpectedValueException('dn has not been returned');
             }
-
-            // To allow searches based on the DN instead of the uid, we replace the
-            // string %dn% with the users DN.
-            $authLDAPGroupFilter = str_replace('%dn%', $attribs[0]['dn'], $authLDAPGroupFilter);
-            authldap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
-            $groups = $server->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
+            $dn = $attribs[0]['dn'];
         } catch(Exception $e) {
-            authldap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
+            authldap_debug('Exception getting LDAP user: ' . $e->getMessage());
             return false;
         }
 
-        $grp = array();
-        for ($i = 0; $i < $groups ['count']; $i++) {
-            for ($k = 0; $k < $groups[$i][strtolower($authLDAPGroupAttr)]['count']; $k++) {
-                $grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
-            }
-        }
-
-        authldap_debug('LDAP groups: ' . json_encode($grp));
-
-        // Check whether the user is member of one of the groups that are
-        // allowed acces to the blog. If the user is not member of one of
-        // The groups throw her out! ;-)
-        // If the user is member of more than one group only the first one
-        // will be taken into account!
-
         $role = '';
-        foreach ($authLDAPGroups as $key => $val) {
-            $currentGroup = explode(',', $val);
-            // Remove whitespaces around the group-ID
-            $currentGroup = array_map('trim', $currentGroup);
-            if (0 < count(array_intersect($currentGroup, $grp))) {
-                $role = $key;
-                break;
-            }
+        // do some group mapping
+        if ($authLDAPGroupEnable) {
+            $role = authLdap_groupmap($username, $dn);
         }
+
+        // if we don't have a role yet, use default role
         if (empty($role) && !empty($authLDAPDefaultRole)) {
-            authldap_debug('user is no groups, set default role');
+            authldap_debug('no role yet, set default role');
             $role = $authLDAPDefaultRole;
         }
 
@@ -333,6 +331,68 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         authldap_debug($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
         trigger_error($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
     }
+}
+
+/**
+ * Get LDAP groups for user and map to role
+ *
+ * @param string $username
+ * @param string $dn
+ * @return string role, empty string if no mapping found, first found role otherwise
+ * @conf array authLDAPGroups, associative array, role => ldap_group
+ * @conf string authLDAPGroupAttr, ldap attribute that holds name of group
+ * @conf string authLDAPGroupFilter, LDAP filter to find groups. can contain %s and %dn% placeholders 
+ */
+function authLdap_groupmap($username, $dn)
+{
+    $authLDAPGroups         = get_option('authLDAPGroups');
+    $authLDAPGroupAttr      = get_option('authLDAPGroupAttr');
+    $authLDAPGroupFilter    = get_option('authLDAPGroupFilter');
+    if (! $authLDAPGroupAttr) {
+        $authLDAPGroupAttr = 'gidNumber';
+    }
+    if (! $authLDAPGroupFilter) {
+        $authLDAPGroupFilter = '(&(objectClass=posixGroup)(memberUid=%s))';
+    }
+
+    try {
+        // To allow searches based on the DN instead of the uid, we replace the
+        // string %dn% with the users DN.
+        $authLDAPGroupFilter = str_replace('%dn%', $dn, $authLDAPGroupFilter);
+        authldap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
+        $groups = authLdap_get_server()->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
+    } catch(Exception $e) {
+        authldap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
+        return '';
+    }
+
+    $grp = array();
+    for ($i = 0; $i < $groups ['count']; $i++) {
+        for ($k = 0; $k < $groups[$i][strtolower($authLDAPGroupAttr)]['count']; $k++) {
+            $grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
+        }
+    }
+    
+    authldap_debug('LDAP groups: ' . json_encode($grp));
+    
+    // Check whether the user is member of one of the groups that are
+    // allowed acces to the blog. If the user is not member of one of
+    // The groups throw her out! ;-)
+    // If the user is member of more than one group only the first one
+    // will be taken into account!
+
+    $role = '';    
+    foreach ($authLDAPGroups as $key => $val) {
+        $currentGroup = explode(',', $val);
+        // Remove whitespaces around the group-ID
+        $currentGroup = array_map('trim', $currentGroup);
+        if (0 < count(array_intersect($currentGroup, $grp))) {
+            $role = $key;
+            break;
+        }
+    }
+
+    return $role;
 }
 
 
