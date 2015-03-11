@@ -36,7 +36,7 @@
             <table class="form-table">
                 <tr>
                     <th>
-                        <label for="authLDAPAuth" >Enable Authentication via LDAP?</label>
+                        <label for="authLDAPAuth">Enable Authentication via LDAP?</label>
                     </th>
                     <td>
                         <input type="checkbox" name="authLDAPAuth" id="authLDAPAuth" value="1"<?php echo $tChecked; ?>/>
@@ -212,7 +212,8 @@
 <?php endforeach; ?>
                         </select>
                         <p class="description">
-                           Here you can select the default role for users. If you enable LDAP Groups below, they will take precedence over the Default Role.
+                           Here you can select the default role for users.
+                           If you enable LDAP Groups below, they will take precedence over the Default Role.
                         </p>
                     </td>
                 </tr>
@@ -255,7 +256,8 @@
                         <label for="authLDAPGroupFilter">Group-Filter</label>
                     </th>
                     <td>
-                        <input type="text" name="authLDAPGroupFilter" id="authLDAPGroupFilter" placeholder="(&amp;(objectClass=posixGroup)(memberUid=%s))"
+                        <input type="text" name="authLDAPGroupFilter" id="authLDAPGroupFilter"
+                          placeholder="(&amp;(objectClass=posixGroup)(memberUid=%s))"
                           class="regular-text" value="<?php echo $authLDAPGroupFilter; ?>" />
                         <p class="description">
                             Here you can add the filter for selecting groups for ther
