@@ -354,7 +354,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
  */
 function authLdap_groupmap($username, $dn)
 {
-    $authLDAPGroups         = get_option('authLDAPGroups');
+    $authLDAPGroups         = get_option('authLDAPGroups', array());
     $authLDAPGroupAttr      = get_option('authLDAPGroupAttr');
     $authLDAPGroupFilter    = get_option('authLDAPGroupFilter');
     if (! $authLDAPGroupAttr) {
@@ -362,6 +362,11 @@ function authLdap_groupmap($username, $dn)
     }
     if (! $authLDAPGroupFilter) {
         $authLDAPGroupFilter = '(&(objectClass=posixGroup)(memberUid=%s))';
+    }
+
+    if (!is_array($authLDAPGroups) || count(array_filter(array_values($authLDAPGroups))) == 0) {
+        authLdap_debug('No group names defined');
+        return '';
     }
 
     try {
