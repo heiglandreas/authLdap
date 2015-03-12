@@ -226,9 +226,22 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         authLdap_debug('LDAP authentication successfull');
-        $attributes = array_filter(array($authLDAPNameAttr, $authLDAPSecName, $authLDAPMailAttr, $authLDAPWebAttr));
+        $attributes = array_values(
+            array_filter(
+                array(
+                    $authLDAPNameAttr,
+                    $authLDAPSecName,
+                    $authLDAPMailAttr,
+                    $authLDAPWebAttr
+                )
+            )
+        );
+
         try {
-            $attribs = authLdap_get_server()->search(sprintf($authLDAPFilter, $username), $attributes);
+            $attribs = authLdap_get_server()->search(
+                sprintf($authLDAPFilter, $username),
+                $attributes
+            );
             // First get all the relevant group informations so we can see if
             // whether have been changes in group association of the user
             if (! isset($attribs[0]['dn'])) {
