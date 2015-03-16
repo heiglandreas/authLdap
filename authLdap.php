@@ -147,6 +147,7 @@ function authLdap_get_server() {
  * @conf string authLDAPWebAttr LDAP attribute containing user website, defaults to ''
  * @conf string authLDAPDefaultRole default role for authenticated user, defaults to ''
  * @conf boolean authLDAPGroupEnable true, if we try to map LDAP groups to Wordpress roles
+ * @conf boolean authLDAPGroupOverUser true, if LDAP Groups have precedence over existing user roles
  */
 function authLdap_login($user, $username, $password, $already_md5 = false)
 {
