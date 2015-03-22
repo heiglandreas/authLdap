@@ -367,7 +367,9 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
  */
 function authLdap_groupmap($username, $dn)
 {
-    $authLDAPGroups         = get_option('authLDAPGroups', array());
+    $authLDAPGroups         = authLdap_sort_roles_by_capabilities(
+        get_option('authLDAPGroups', array())
+    );
     $authLDAPGroupAttr      = get_option('authLDAPGroupAttr');
     $authLDAPGroupFilter    = get_option('authLDAPGroupFilter');
     if (! $authLDAPGroupAttr) {
@@ -487,6 +489,51 @@ function authLdap_show_password_fields()
         return false;
     }
     return true;
+}
+
+/**
+ * Sort the given roles by number of capabilities
+ *
+ * @param array $roles
+ *
+ * @return array
+ */
+function authLdap_sort_roles_by_capabilities($roles)
+{
+    global $wpdb;
+    $myRoles = get_option($wpdb->get_blog_prefix() . 'user_roles');
+
+    authLdap_debug(print_r($roles, true));
+    uasort($myRoles, 'authLdap_sortByCapabilitycount');
+
+    $return = array();
+
+    foreach ($myRoles as $key => $role) {
+        if (isset($roles[$key])) {
+            $return[$key] = $roles[$key];
+        }
+    }
+
+    authLdap_debug(print_r($return, true));
+    return $return;
+}
+
+/**
+ * Sort according to the number of capabilities
+ *
+ * @param $a
+ * @param $b
+ */
+function authLdap_sortByCapabilitycount($a, $b)
+{
+    if (count($a['capabilities']) > count($b['capabilities'])) {
+        return -1;
+    }
+    if (count($a['capabilities']) < count($b['capabilities'])) {
+        return 1;
+    }
+
+    return 0;
 }
 
 add_action('admin_menu', 'authLdap_addmenu');
