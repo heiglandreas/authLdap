@@ -262,7 +262,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         // if the user exists, use that role
-        $role = authLdap_user_role($username);
+        $uid = authLdap_get_uid($username);
+        $role = authLdap_user_role($uid);
 
         // do some group mapping
         if ($authLDAPGroupEnable) {
@@ -330,8 +331,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             $user_info['user_pass'] = '';
         }
 
-        // check if user already exists
-        $uid = authLdap_get_uid($username);
+        // add uid if user exists
         if ($uid) {
             // found user in the database
             authLdap_debug('The LDAP user has an entry in the WP-Database');
@@ -372,24 +372,20 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
  */
 function authLdap_get_uid($username) {
     global $wpdb;
-    static $cache = array();
 
-    if (!isset($cache[$username])) {
-        // find out whether the user is already present in the database
-        $uid = $wpdb->get_var(
-            $wpdb->prepare(
-                "SELECT ID FROM {$wpdb->users} WHERE user_login = %s",
-                $username
-            )
-        );
-        if ($uid) {
-            authLdap_debug("Existing user, uid = {$uid}");
-            $cache[$username] = $uid;
-        } else {
-            $cache[$username] = null;
-        }
+    // find out whether the user is already present in the database
+    $uid = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT ID FROM {$wpdb->users} WHERE user_login = %s",
+            $username
+        )
+    );
+    if ($uid) {
+        authLdap_debug("Existing user, uid = {$uid}");
+        return $uid;
+    } else {
+        return  null;
     }
-    return $cache[$username];
 }
 
 /**
@@ -397,13 +393,11 @@ function authLdap_get_uid($username) {
  *
  * Returns empty string if not found.
  *
- * @param string $username username
+ * @param int $uid wordpress user id
  * @return string role, empty if none found
  */
-function authLdap_user_role($username) {
+function authLdap_user_role($uid) {
     global $wpdb;
-
-    $uid = authLdap_get_uid($username);
 
     if (!$uid) {
         return '';
