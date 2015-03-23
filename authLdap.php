@@ -261,17 +261,20 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             return false;
         }
 
-        // if the user exists, use that role
         $uid = authLdap_get_uid($username);
-        $role = authLdap_user_role($uid);
+        $role = '';
 
-        // do some group mapping
-        if ($authLDAPGroupEnable) {
-            $temp_role = authLdap_groupmap($username, $dn);
-            if (!empty($temp_role) && ($authLDAPGroupOverUser || empty($role))) {
-                authLdap_debug('Set role from group mapping: ' . $temp_role);
-                $role = $temp_role;
-            }
+        // we only need this if either LDAP groups are disabled or
+        // if the WordPress role of the user overrides LDAP groups
+        if (!$authLDAPGroupEnable || !$authLDAPGroupOverUser) {
+            $role = authLdap_user_role($uid);
+        }
+
+        // do LDAP group mapping if needed
+        // (if LDAP groups override worpress user role, $role is still empty)
+        if (empty($role) && $authLDAPGroupEnable) {
+            $role = authLdap_groupmap($username, $dn);
+            authLdap_debug('role from group mapping: ' . $role);
         }
 
         // if we don't have a role yet, use default role
