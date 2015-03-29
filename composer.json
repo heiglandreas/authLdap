@@ -1,0 +1,24 @@
+{
+    "name" : "org_heigl/authLdap",
+    "type" : "library",
+    "description": "Enables wordpress-authentication via LDAP",
+    "keywords": ["ldap","authenticate", "auth", "wordpress"],
+    "homepage": "http://github.com/heiglandreas/authLdap",
+    "license": "MIT",
+    "authors": [{
+        "name": "Andreas Heigl",
+        "email": "andreas@heigl.org",
+        "homepage": "http://andreas.heigl.org",
+        "role": "Developer"
+    }],
+    "require" : {
+        "php" : ">=5.5"
+    },
+    "require-dev": {
+        "10up/wp_mock": "dev-master",
+        "phpunit/phpunit": "~4.5",
+        "mockery/mockery": "0.9.*",
+        "codeclimate/php-test-reporter": "0.1.*",
+        "squizlabs/php_codesniffer": "~2.3"
+    }
+}

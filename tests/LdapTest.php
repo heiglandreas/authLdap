@@ -30,7 +30,6 @@
  * @since 21.09.2010
  */
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 /** ldap */
 require_once 'ldap.php';
 
