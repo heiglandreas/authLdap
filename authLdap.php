@@ -351,6 +351,11 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         // if the user exists, wp_insert_user will update the existing user record
         $userid = wp_insert_user($user_info);
+        if (is_wp_error($userid)) {
+            authLdap_debug('Error creating user : ' . $userid->get_error_message());
+            trigger_error('Error creating user: ' . $userid->get_error_message());
+            return $userid;
+        }
 
         authLdap_debug('user id = ' . $userid);
 
