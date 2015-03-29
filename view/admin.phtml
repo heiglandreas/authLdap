@@ -223,8 +223,11 @@
 <?php endforeach; ?>
                         </select>
                         <p class="description">
-                           Here you can select the default role for users.
-                           If you enable LDAP Groups below, they will take precedence over the Default Role.
+                            Here you can select the default role for users.
+                            If you enable LDAP Groups below, they will take precedence over the Default Role.
+                        </p>
+                        <p class="description">
+                            Existing users will retain their roles unless overriden by LDAP Groups below.
                         </p>
                     </td>
                 </tr>
@@ -236,7 +239,29 @@
         <h3 class="title">Groups for Roles</h3>
         <fieldset class="options">
             <table class="form-table">
-                 <tr>
+                <tr>
+                    <th>
+                        <label for="authLDAPGroupEnable">Use LDAP Groups to map to Roles?</label>
+                    </th>
+                    <td>
+                        <input type="checkbox" name="authLDAPGroupEnable" id="authLDAPGroupEnable" value="1"<?php echo $tGroupChecked; ?>/>
+                        <p class="description">
+                            Search LDAP for user's groups and map to Wordpress Roles.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="authLDAPGroupOverUser">LDAP Groups override role of existing users?</label>
+                    </th>
+                    <td>
+                        <input type="checkbox" name="authLDAPGroupOverUser" id="authLDAPGroupOverUser" value="1"<?php echo $tGroupOverUserChecked; ?>/>
+                        <p class="description">
+                            If role determined by LDAP Group differs from existing Wordpress User's role, use LDAP Group.
+                        </p>
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row">
                         <label for="authLDAPGroupAttr">Group-Attribute</label>
                     </th>
