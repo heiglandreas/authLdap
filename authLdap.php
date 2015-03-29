@@ -8,10 +8,11 @@ Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
 
-require_once dirname( __FILE__ ) . '/ldap.php';
+require_once dirname(__FILE__) . '/ldap.php';
 require_once ABSPATH . 'wp-includes/registration.php';
 
-function authLdap_debug($message) {
+function authLdap_debug($message)
+{
     if (get_option('authLDAPDebug')) {
         error_log('[AuthLDAP] ' . $message, 0);
     }
@@ -36,21 +37,21 @@ function authLdap_options_panel()
     wp_enqueue_style('authLdap-style', plugin_dir_url(__FILE__) . 'authLdap.css');
 
     if ($_POST['ldapOptionsSave']) {
-        update_option('authLDAP',              authLdap_get_post('authLDAPAuth', false));
-        update_option('authLDAPCachePW',       authLdap_get_post('authLDAPCachePW', false));
-        update_option('authLDAPURI',           authLdap_get_post('authLDAPURI'));
-        update_option('authLDAPFilter',        authLdap_get_post('authLDAPFilter'));
-        update_option('authLDAPNameAttr',      authLdap_get_post('authLDAPNameAttr'));
-        update_option('authLDAPSecName',       authLdap_get_post('authLDAPSecName'));
-        update_option('authLDAPUidAttr',       authLdap_get_post('authLDAPUidAttr'));
-        update_option('authLDAPMailAttr',      authLdap_get_post('authLDAPMailAttr'));
-        update_option('authLDAPWebAttr',       authLdap_get_post('authLDAPWebAttr'));
-        update_option('authLDAPGroups',        authLdap_get_post('authLDAPGroups', array()));
-        update_option('authLDAPDebug',         authLdap_get_post('authLDAPDebug', false));
-        update_option('authLDAPGroupAttr',     authLdap_get_post('authLDAPGroupAttr'));
-        update_option('authLDAPGroupFilter',   authLdap_get_post('authLDAPGroupFilter'));
-        update_option('authLDAPDefaultRole',   authLdap_get_post('authLDAPDefaultRole'));
-        update_option('authLDAPGroupEnable',   authLdap_get_post('authLDAPGroupEnable', false));
+        update_option('authLDAP', authLdap_get_post('authLDAPAuth', false));
+        update_option('authLDAPCachePW', authLdap_get_post('authLDAPCachePW', false));
+        update_option('authLDAPURI', authLdap_get_post('authLDAPURI'));
+        update_option('authLDAPFilter', authLdap_get_post('authLDAPFilter'));
+        update_option('authLDAPNameAttr', authLdap_get_post('authLDAPNameAttr'));
+        update_option('authLDAPSecName', authLdap_get_post('authLDAPSecName'));
+        update_option('authLDAPUidAttr', authLdap_get_post('authLDAPUidAttr'));
+        update_option('authLDAPMailAttr', authLdap_get_post('authLDAPMailAttr'));
+        update_option('authLDAPWebAttr', authLdap_get_post('authLDAPWebAttr'));
+        update_option('authLDAPGroups', authLdap_get_post('authLDAPGroups', array()));
+        update_option('authLDAPDebug', authLdap_get_post('authLDAPDebug', false));
+        update_option('authLDAPGroupAttr', authLdap_get_post('authLDAPGroupAttr'));
+        update_option('authLDAPGroupFilter', authLdap_get_post('authLDAPGroupFilter'));
+        update_option('authLDAPDefaultRole', authLdap_get_post('authLDAPDefaultRole'));
+        update_option('authLDAPGroupEnable', authLdap_get_post('authLDAPGroupEnable', false));
         update_option('authLDAPGroupOverUser', authLdap_get_post('authLDAPGroupOverUser', false));
 
         echo "<div class='updated'><p>Saved Options!</p></div>";
@@ -112,7 +113,8 @@ function authLdap_options_panel()
  * @conf boolean authLDAPDebug true, if debugging should be turned on
  * @conf string authLDAPURI LDAP server URI
  */
-function authLdap_get_server() {
+function authLdap_get_server()
+{
     static $_server = null;
     if (is_null($_server)) {
         $authLDAPDebug = get_option('authLDAPDebug');
@@ -371,7 +373,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         update_user_meta($userid, 'authLDAP', true);
 
         // return a user object upon positive authorization
-        return new WP_User( $userid);
+        return new WP_User($userid);
     } catch (Exception $e) {
         authLdap_debug($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
         trigger_error($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
@@ -386,7 +388,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
  * @param string $username username
  * @param string user id, null if not found
  */
-function authLdap_get_uid($username) {
+function authLdap_get_uid($username)
+{
     global $wpdb;
 
     // find out whether the user is already present in the database
@@ -412,7 +415,8 @@ function authLdap_get_uid($username) {
  * @param int $uid wordpress user id
  * @return string role, empty if none found
  */
-function authLdap_user_role($uid) {
+function authLdap_user_role($uid)
+{
     global $wpdb;
 
     if (!$uid) {
@@ -441,7 +445,7 @@ function authLdap_user_role($uid) {
  * @return string role, empty string if no mapping found, first found role otherwise
  * @conf array authLDAPGroups, associative array, role => ldap_group
  * @conf string authLDAPGroupAttr, ldap attribute that holds name of group
- * @conf string authLDAPGroupFilter, LDAP filter to find groups. can contain %s and %dn% placeholders 
+ * @conf string authLDAPGroupFilter, LDAP filter to find groups. can contain %s and %dn% placeholders
  */
 function authLdap_groupmap($username, $dn)
 {
@@ -468,7 +472,7 @@ function authLdap_groupmap($username, $dn)
         $authLDAPGroupFilter = str_replace('%dn%', $dn, $authLDAPGroupFilter);
         authLdap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
         $groups = authLdap_get_server()->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
-    } catch(Exception $e) {
+    } catch (Exception $e) {
         authLdap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
         return '';
     }
@@ -488,7 +492,7 @@ function authLdap_groupmap($username, $dn)
     // If the user is member of more than one group only the first one
     // will be taken into account!
 
-    $role = '';    
+    $role = '';
     foreach ($authLDAPGroups as $key => $val) {
         $currentGroup = explode(',', $val);
         // Remove whitespaces around the group-ID
@@ -504,43 +508,42 @@ function authLdap_groupmap($username, $dn)
 }
 
 
-if (! function_exists('wp_setcookie')):
+if (! function_exists('wp_setcookie')) :
+    function wp_setcookie($username, $password, $already_md5 = false, $home = '', $siteurl = '')
+    {
+        $ldapCookieMarker = get_option('ldapCookieMarker');
+        $ldapAuth = get_option('ldapAuth');
 
-function wp_setcookie($username, $password, $already_md5 = false, $home = '', $siteurl = '')
-{
-    $ldapCookieMarker = get_option('ldapCookieMarker');
-    $ldapAuth = get_option('ldapAuth');
+        if (($ldapAuth) && ($username != 'admin')) {
+            $password = md5($username).md5($ldapCookieMarker);
+        } else {
+            if (!$already_md5) {
+                $password = md5(md5($password)); // Double hash the password in the cookie.
+            }
+        }
 
-    if (($ldapAuth) && ($username != 'admin')) {
-        $password = md5($username).md5($ldapCookieMarker);
-    } else {
-        if (!$already_md5) {
-            $password = md5( md5($password) ); // Double hash the password in the cookie.
+        if (empty($home)) {
+            $cookiepath = COOKIEPATH;
+        } else {
+            $cookiepath = preg_replace('|https?://[^/]+|i', '', $home . '/');
+        }
+
+        if (empty($siteurl)) {
+            $sitecookiepath = SITECOOKIEPATH;
+            $cookiehash = COOKIEHASH;
+        } else {
+            $sitecookiepath = preg_replace('|https?://[^/]+|i', '', $siteurl . '/');
+            $cookiehash = md5($siteurl);
+        }
+
+        setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $cookiepath);
+        setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $cookiepath);
+
+        if ($cookiepath != $sitecookiepath) {
+            setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $sitecookiepath);
+            setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $sitecookiepath);
         }
     }
-
-    if (empty($home)) {
-        $cookiepath = COOKIEPATH;
-    } else {
-        $cookiepath = preg_replace('|https?://[^/]+|i', '', $home . '/' );
-    }
-
-    if (empty($siteurl)) {
-        $sitecookiepath = SITECOOKIEPATH;
-        $cookiehash = COOKIEHASH;
-    } else {
-        $sitecookiepath = preg_replace('|https?://[^/]+|i', '', $siteurl . '/' );
-        $cookiehash = md5($siteurl);
-    }
-
-    setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $cookiepath);
-    setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $cookiepath);
-
-    if ($cookiepath != $sitecookiepath) {
-        setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $sitecookiepath);
-        setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $sitecookiepath);
-    }
-}
 endif;
 
 
