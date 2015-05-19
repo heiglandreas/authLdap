@@ -1,5 +1,7 @@
 # authLDAP
 
+[![Join the chat at https://gitter.im/heiglandreas/authLdap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/heiglandreas/authLdap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Use your existing LDAP as authentication-backend for your wordpress!
 
 [![WordPress Stats](https://img.shields.io/wordpress/plugin/dt/authldap.svg)](https://wordpress.org/plugins/authldap/stats/)
