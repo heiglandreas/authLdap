@@ -625,16 +625,16 @@ function authLdap_getOptions($reload = false)
             'Enabled'       => false,
             'CachePW'       => false,
             'URI'           => '',
-            'Filter'        => '(uid=%s)',
-            'NameAttr'      => 'name',
+            'Filter'        => '', // '(uid=%s)'
+            'NameAttr'      => '', // 'name'
             'SecName'       => '',
-            'UidAttr'       => 'uid',
-            'MailAttr'      => 'mail',
+            'UidAttr'       => '', // 'uid'
+            'MailAttr'      => '', // 'mail'
             'WebAttr'       => '',
             'Groups'        => array(),
             'Debug'         => false,
-            'GroupAttr'     => 'gidNumber',
-            'GroupFilter'   => '(&(objectClass=posixGroup)(memberUid=%s))',
+            'GroupAttr'     => '', // 'gidNumber'
+            'GroupFilter'   => '', // '(&(objectClass=posixGroup)(memberUid=%s))'
             'DefaultRole'   => '',
             'GroupEnable'   => true,
             'GroupOverUser' => true,
