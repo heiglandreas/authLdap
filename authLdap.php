@@ -443,7 +443,7 @@ function authLdap_user_role($uid) {
  * @conf string authLDAPGroupAttr, ldap attribute that holds name of group
  * @conf string authLDAPGroupFilter, LDAP filter to find groups. can contain %s and %dn% placeholders 
  */
-function authLdap_groupmap($username, $dn, $realuid)
+function authLdap_groupmap($username, $dn)
 {
     $authLDAPGroups         = authLdap_sort_roles_by_capabilities(
         get_option('authLDAPGroups', array())
