@@ -177,7 +177,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $authLDAPDefaultRole    = get_option('authLDAPDefaultRole');
         $authLDAPGroupEnable    = get_option('authLDAPGroupEnable', true);
         $authLDAPGroupOverUser  = get_option('authLDAPGroupOverUser', true);
-        $authLDAPRealUID        = 'uid';
 
         if ($authLDAP && !$authLDAPCookieMarker) {
             update_option('authLDAPCookieMarker', 'LDAP');
@@ -241,7 +240,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
                     $authLDAPSecName,
                     $authLDAPMailAttr,
                     $authLDAPWebAttr,
-                    $authLDAPRealUID
+                    $authLDAPUidAttr
                 )
             )
         );
@@ -257,14 +256,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
                 authLdap_debug('could not get user attributes from LDAP');
                 throw new UnexpectedValueException('dn has not been returned');
             }
-            if (! isset($attribs[0]['uid'][0])) {
+            if (! isset($attribs[0][strtolower($authLDAPUidAttr)][0])) {
                 authLdap_debug('could not get user attributes from LDAP');
-                throw new UnexpectedValueException('uid has not been returned');
+                throw new UnexpectedValueException('The user-ID attribute has not been returned');
                 
             }
             
             $dn = $attribs[0]['dn'];
-            $realuid = $attribs[0]['uid'][0];
+            $realuid = $attribs[0][strtolower($authLDAPUidAttr)][0];
         } catch(Exception $e) {
             authLdap_debug('Exception getting LDAP user: ' . $e->getMessage());
             return false;
@@ -282,7 +281,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // do LDAP group mapping if needed
         // (if LDAP groups override worpress user role, $role is still empty)
         if (empty($role) && $authLDAPGroupEnable) {
-            $role = authLdap_groupmap($username, $dn, $realuid);
+            $role = authLdap_groupmap($realuid, $dn);
             authLdap_debug('role from group mapping: ' . $role);
         }
 
@@ -464,18 +463,6 @@ function authLdap_groupmap($username, $dn, $realuid)
     }
 
     try {
-        // To allow searches based on LDAP uid instead of the one used in Filter input, we replace the
-        // string %uid% with the users UID.
-        $authLDAPGroupFilter = str_replace('%uid%', $realuid, $authLDAPGroupFilter);
-        authLdap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
-        $groups = authLdap_get_server()->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
-    } catch(Exception $e) {
-        authLdap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
-        return '';
-    }
-
-
-    try {
         // To allow searches based on the DN instead of the uid, we replace the
         // string %dn% with the users DN.
         $authLDAPGroupFilter = str_replace('%dn%', $dn, $authLDAPGroupFilter);
@@ -485,8 +472,6 @@ function authLdap_groupmap($username, $dn, $realuid)
         authLdap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
         return '';
     }
-
-    
 
     $grp = array();
     for ($i = 0; $i < $groups ['count']; $i++) {
