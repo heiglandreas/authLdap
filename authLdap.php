@@ -239,7 +239,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
                     $authLDAPNameAttr,
                     $authLDAPSecName,
                     $authLDAPMailAttr,
-                    $authLDAPWebAttr
+                    $authLDAPWebAttr,
+                    $authLDAPUidAttr
                 )
             )
         );
@@ -255,13 +256,20 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
                 authLdap_debug('could not get user attributes from LDAP');
                 throw new UnexpectedValueException('dn has not been returned');
             }
+            if (! isset($attribs[0][strtolower($authLDAPUidAttr)][0])) {
+                authLdap_debug('could not get user attributes from LDAP');
+                throw new UnexpectedValueException('The user-ID attribute has not been returned');
+                
+            }
+            
             $dn = $attribs[0]['dn'];
+            $realuid = $attribs[0][strtolower($authLDAPUidAttr)][0];
         } catch(Exception $e) {
             authLdap_debug('Exception getting LDAP user: ' . $e->getMessage());
             return false;
         }
 
-        $uid = authLdap_get_uid($username);
+        $uid = authLdap_get_uid($realuid);
         $role = '';
 
         // we only need this if either LDAP groups are disabled or
@@ -273,7 +281,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // do LDAP group mapping if needed
         // (if LDAP groups override worpress user role, $role is still empty)
         if (empty($role) && $authLDAPGroupEnable) {
-            $role = authLdap_groupmap($username, $dn);
+            $role = authLdap_groupmap($realuid, $dn);
             authLdap_debug('role from group mapping: ' . $role);
         }
 
@@ -301,7 +309,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // from here on, the user has access!
         // now, lets update some user details
         $user_info = array();
-        $user_info['user_login'] = $username;
+        $user_info['user_login'] = $realuid;
         $user_info['role'] = $role;
         $user_info['user_email'] = '';
 
