@@ -269,7 +269,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             return false;
         }
 
-        $uid = authLdap_get_uid($username);
+        $uid = authLdap_get_uid($realuid);
         $role = '';
 
         // we only need this if either LDAP groups are disabled or
@@ -309,7 +309,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // from here on, the user has access!
         // now, lets update some user details
         $user_info = array();
-        $user_info['user_login'] = $username;
+        $user_info['user_login'] = $realuid;
         $user_info['role'] = $role;
         $user_info['user_email'] = '';
 
