@@ -182,6 +182,8 @@ class LDAP
 	    if ( ! is_Resource ( $this->_ch ) ) {
             throw new AuthLDAP_Exception('No resource handle avbailable' );
         }
+        // Force binding with our dsa / anonymous account
+        $this->bind();
         $result = @ldap_search ($this->_ch, $this->_baseDn, $filter, $attributes);
         if ( $result === false ){
             throw new AuthLDAP_Exception('no result found');
