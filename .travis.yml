@@ -1,0 +1,31 @@
+# Travic-CI-Config file for authLdap
+#
+language: php
+php:
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - hhvm
+  - hhvm-nightly
+
+before_script:
+ - ./.travis.install.sh
+
+script:
+# - ./vendor/bin/phpcs --standard=PSR2 ldap.php authLdap.php tests/
+ - ./vendor/bin/phpunit --configuration=phpunit.travis.xml
+
+addons:
+ code_climate:
+  repo_token:
+    secure: "hTiIK/8Jn3NlinsTZlO2SDYPXBw0Nv7Ss6kz60iSkS4mxZ9byVY9GnhwkyZEw+e32h1DFV6DIEPLTUJXUxSBeH/71PzM046sr764fHifHJDqUkKa+2CM1mQgMxB0JhCs6MKySsJOmobwg9g9Mvng8s5fOomMv1Xmb502ldkE4Vw="
+
+matrix:
+  fast_finish : true
+  allow_failures:
+      - php: 7.0
+      - php: hhvm-nightly
+
+after_script:
+ - ./.travis.after.sh

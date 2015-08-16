@@ -7,6 +7,8 @@ Use your existing LDAP as authentication-backend for your wordpress!
 [![WordPress Stats](https://img.shields.io/wordpress/plugin/dt/authldap.svg)](https://wordpress.org/plugins/authldap/stats/)
 [![WordPress Version](https://img.shields.io/wordpress/plugin/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
 [![WordPress testet](https://img.shields.io/wordpress/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
+[![Code Climate](https://codeclimate.com/github/heiglandreas/authLdap/badges/gpa.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
+[![Test Coverage](https://codeclimate.com/github/heiglandreas/authLdap/badges/coverage.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
 
 So what are the differences to other Wordpress-LDAP-Authentication-Plugins?
 
