@@ -228,6 +228,11 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             return false;
         }
 
+        // Rebind with the default credentials after the user has been loged in
+        // Otherwise the credentials of the user trying to login will be used
+        // This fixes #55
+        authLdap_get_server()->bind();
+
         if (true !== $result) {
             authLdap_debug('LDAP authentication failed');
             // TODO what to return? WP_User object, true, false, even an WP_Error object... all seem to fall back to normal wp user authentication
