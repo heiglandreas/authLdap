@@ -347,6 +347,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             // found user in the database
             authLdap_debug('The LDAP user has an entry in the WP-Database');
             $user_info['ID'] = $uid;
+            unset ($user_info['display_name']);
+            $userid = wp_update_user($user_info);
         } else {
             // new wordpress account will be created
             authLdap_debug('The LDAP user does not have an entry in the WP-Database, a new WP account will be created');
@@ -355,10 +357,10 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             if (empty($user_info['user_email'])) {
                 $user_info['user_email'] = $username . '@example.com';
             }
+            $userid = wp_insert_user($user_info);
         }
 
         // if the user exists, wp_insert_user will update the existing user record
-        $userid = wp_insert_user($user_info);
         if (is_wp_error($userid)) {
             authLdap_debug('Error creating user : ' . $userid->get_error_message());
             trigger_error('Error creating user: ' . $userid->get_error_message());
