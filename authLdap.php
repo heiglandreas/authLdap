@@ -54,8 +54,11 @@ function authLdap_options_panel()
             'GroupEnable'   => authLdap_get_post('authLDAPGroupEnable', false),
             'GroupOverUser' => authLdap_get_post('authLDAPGroupOverUser', false),
         );
-        authLdap_setOptions($new_options);
-        echo "<div class='updated'><p>Saved Options!</p></div>";
+        if (authLdap_set_options($new_options)) {
+            echo "<div class='updated'><p>Saved Options!</p></div>";
+        } else {
+            echo "<div class='error'><p>Could not save Options!</p></div>";
+        }
     }
 
     // Do some initialization for the admin-view
@@ -704,7 +707,7 @@ function authLdap_get_option($optionname) {
 /**
  * Set new options
  */
-function authLdap_setOptions($new_options = array()) {
+function authLdap_set_options($new_options = array()) {
     // initialize the options with what we currently have
     $options = authLdap_load_options();
 
@@ -714,10 +717,16 @@ function authLdap_setOptions($new_options = array()) {
     }
 
     // store options
-    update_option('authLDAPOptions', $options);
+    if (update_option('authLDAPOptions', $options)) {
 
-    // reload the option cache
-    authLdap_load_options(true);
+        // reload the option cache
+        authLdap_load_options(true);
+
+        return true;
+    } else {
+        // could not set options
+        return false;
+    }
 }
 
 add_action('admin_menu', 'authLdap_addmenu');
