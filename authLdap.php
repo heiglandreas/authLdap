@@ -12,7 +12,7 @@ require_once dirname( __FILE__ ) . '/ldap.php';
 require_once ABSPATH . 'wp-includes/registration.php';
 
 function authLdap_debug($message) {
-    if (authLdap_getOptions()['Debug']) {
+    if (authLdap_get_option('Debug')) {
         error_log('[AuthLDAP] ' . $message, 0);
     }
 }
@@ -59,22 +59,22 @@ function authLdap_options_panel()
     }
 
     // Do some initialization for the admin-view
-    $authLDAP              = authLdap_getOptions()['Enabled'];
-    $authLDAPCachePW       = authLdap_getOptions()['CachePW'];
-    $authLDAPURI           = authLdap_getOptions()['URI'];
-    $authLDAPFilter        = authLdap_getOptions()['Filter'];
-    $authLDAPNameAttr      = authLdap_getOptions()['NameAttr'];
-    $authLDAPSecName       = authLdap_getOptions()['SecName'];
-    $authLDAPMailAttr      = authLdap_getOptions()['MailAttr'];
-    $authLDAPUidAttr       = authLdap_getOptions()['UidAttr'];
-    $authLDAPWebAttr       = authLdap_getOptions()['WebAttr'];
-    $authLDAPGroups        = authLdap_getOptions()['Groups'];
-    $authLDAPDebug         = authLdap_getOptions()['Debug'];
-    $authLDAPGroupAttr     = authLdap_getOptions()['GroupAttr'];
-    $authLDAPGroupFilter   = authLdap_getOptions()['GroupFilter'];
-    $authLDAPDefaultRole   = authLdap_getOptions()['DefaultRole'];
-    $authLDAPGroupEnable   = authLdap_getOptions()['GroupEnable'];
-    $authLDAPGroupOverUser = authLdap_getOptions()['GroupOverUser'];
+    $authLDAP              = authLdap_get_option('Enabled');
+    $authLDAPCachePW       = authLdap_get_option('CachePW');
+    $authLDAPURI           = authLdap_get_option('URI');
+    $authLDAPFilter        = authLdap_get_option('Filter');
+    $authLDAPNameAttr      = authLdap_get_option('NameAttr');
+    $authLDAPSecName       = authLdap_get_option('SecName');
+    $authLDAPMailAttr      = authLdap_get_option('MailAttr');
+    $authLDAPUidAttr       = authLdap_get_option('UidAttr');
+    $authLDAPWebAttr       = authLdap_get_option('WebAttr');
+    $authLDAPGroups        = authLdap_get_option('Groups');
+    $authLDAPDebug         = authLdap_get_option('Debug');
+    $authLDAPGroupAttr     = authLdap_get_option('GroupAttr');
+    $authLDAPGroupFilter   = authLdap_get_option('GroupFilter');
+    $authLDAPDefaultRole   = authLdap_get_option('DefaultRole');
+    $authLDAPGroupEnable   = authLdap_get_option('GroupEnable');
+    $authLDAPGroupOverUser = authLdap_get_option('GroupOverUser');
 
     if ($authLDAP) {
         $tChecked = ' checked="checked"';
@@ -116,8 +116,8 @@ function authLdap_options_panel()
 function authLdap_get_server() {
     static $_server = null;
     if (is_null($_server)) {
-        $authLDAPDebug = authLdap_getOptions()['Debug'];
-        $authLDAPURI   = authLdap_getOptions()['URI'];
+        $authLDAPDebug = authLdap_get_option('Debug');
+        $authLDAPURI   = authLdap_get_option('URI');
 
         //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
         authLdap_debug('connect to LDAP server');
@@ -152,7 +152,7 @@ function authLdap_get_server() {
 function authLdap_login($user, $username, $password, $already_md5 = false)
 {
     // don't do anything when authLDAP is disabled
-    if (! authLdap_getOptions()['Enabled']) {
+    if (! authLdap_get_option('Enabled')) {
         authLdap_debug('LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)');
         return $user;
     }
@@ -166,16 +166,16 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
     global $wpdb, $error;
     try {
-        $authLDAP               = authLdap_getOptions()['Enabled'];
-        $authLDAPFilter         = authLdap_getOptions()['Filter'];
-        $authLDAPNameAttr       = authLdap_getOptions()['NameAttr'];
-        $authLDAPSecName        = authLdap_getOptions()['SecName'];
-        $authLDAPMailAttr       = authLdap_getOptions()['MailAttr'];
-        $authLDAPUidAttr        = authLdap_getOptions()['UidAttr'];
-        $authLDAPWebAttr        = authLdap_getOptions()['WebAttr'];
-        $authLDAPDefaultRole    = authLdap_getOptions()['DefaultRole'];
-        $authLDAPGroupEnable    = authLdap_getOptions()['GroupEnable'];
-        $authLDAPGroupOverUser  = authLdap_getOptions()['GroupOverUser'];
+        $authLDAP               = authLdap_get_option('Enabled');
+        $authLDAPFilter         = authLdap_get_option('Filter');
+        $authLDAPNameAttr       = authLdap_get_option('NameAttr');
+        $authLDAPSecName        = authLdap_get_option('SecName');
+        $authLDAPMailAttr       = authLdap_get_option('MailAttr');
+        $authLDAPUidAttr        = authLdap_get_option('UidAttr');
+        $authLDAPWebAttr        = authLdap_get_option('WebAttr');
+        $authLDAPDefaultRole    = authLdap_get_option('DefaultRole');
+        $authLDAPGroupEnable    = authLdap_get_option('GroupEnable');
+        $authLDAPGroupOverUser  = authLdap_get_option('GroupOverUser');
 
         if (! $username) {
             authLdap_debug('Username not supplied: return false');
@@ -321,7 +321,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         // optionally store the password into the wordpress database
-        if (authLdap_getOptions()['CachePW']) {
+        if (authLdap_get_option('CachePW')) {
             $user_info['user_pass'] = wp_hash_password($password);
         } else {
             // clear the password
@@ -432,10 +432,10 @@ function authLdap_user_role($uid) {
 function authLdap_groupmap($username, $dn)
 {
     $authLDAPGroups         = authLdap_sort_roles_by_capabilities(
-        authLdap_getOptions()['Groups']
+        authLdap_get_option('Groups')
     );
-    $authLDAPGroupAttr      = authLdap_getOptions()['GroupAttr'];
-    $authLDAPGroupFilter    = authLdap_getOptions()['GroupFilter'];
+    $authLDAPGroupAttr      = authLdap_get_option('GroupAttr');
+    $authLDAPGroupFilter    = authLdap_get_option('GroupFilter');
     if (! $authLDAPGroupAttr) {
         $authLDAPGroupAttr = 'gidNumber';
     }
@@ -495,7 +495,7 @@ if (! function_exists('wp_setcookie')):
 function wp_setcookie($username, $password, $already_md5 = false, $home = '', $siteurl = '')
 {
     $ldapCookieMarker = 'LDAP';
-    $ldapAuth = authLdap_getOptions()['Enabled'];
+    $ldapAuth = authLdap_get_option('Enabled');
 
     if (($ldapAuth) && ($username != 'admin')) {
         $password = md5($username).md5($ldapCookieMarker);
@@ -602,11 +602,11 @@ function authLdap_sortByCapabilitycount($a, $b)
 }
 
 /**
- * Get Array of Options
+ * Load AuthLDAP Options
  *
  * Sets and stores defaults if options are not up to date
  */
-function authLdap_getOptions($reload = false)
+function authLdap_load_options($reload = false)
 {
     static $options = null;
 
@@ -689,11 +689,24 @@ function authLdap_getOptions($reload = false)
 }
 
 /**
+ * Get an individual option
+ */
+function authLdap_get_option($optionname) {
+    $options = authLdap_load_options();
+    if (isset($options[$optionname])) {
+        return $options[$optionname];
+    } else {
+        authLdap_debug('option name invalid: ' . $optionname);
+        return null;
+    }
+}
+
+/**
  * Set new options
  */
 function authLdap_setOptions($new_options = array()) {
     // initialize the options with what we currently have
-    $options = authLdap_getOptions();
+    $options = authLdap_load_options();
 
     // set the new options supplied
     foreach ($new_options as $key => $value) {
@@ -704,7 +717,7 @@ function authLdap_setOptions($new_options = array()) {
     update_option('authLDAPOptions', $options);
 
     // reload the option cache
-    authLdap_getOptions(true);
+    authLdap_load_options(true);
 }
 
 add_action('admin_menu', 'authLdap_addmenu');
