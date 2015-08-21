@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth
 Requires at least: 2.5.0
-Tested up to: 4.1
+Tested up to: 4.2.4
 Stable tag: trunk
 
 Use your existing LDAP flexible as authentication backend for WordPress

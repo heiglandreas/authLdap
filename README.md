@@ -7,6 +7,8 @@ Use your existing LDAP as authentication-backend for your wordpress!
 [![WordPress Stats](https://img.shields.io/wordpress/plugin/dt/authldap.svg)](https://wordpress.org/plugins/authldap/stats/)
 [![WordPress Version](https://img.shields.io/wordpress/plugin/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
 [![WordPress testet](https://img.shields.io/wordpress/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
+[![Code Climate](https://codeclimate.com/github/heiglandreas/authLdap/badges/gpa.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
+[![Test Coverage](https://codeclimate.com/github/heiglandreas/authLdap/badges/coverage.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
 
 So what are the differences to other Wordpress-LDAP-Authentication-Plugins?
 
@@ -62,3 +64,31 @@ wonderfull plugin of Alistair Young from http://www.weblogs.uhi.ac.uk/sm00ay/?p=
 
 * **Group-Attribute** This is the attribute that defines the Group-ID that can be matched against the Groups defined further down This field defaults to gidNumber.
 * **Group-Filter** Here you can add the filter for selecting groups for the currentlly logged in user The Filter should contain the string %s which will be replaced by the login-name of the currently logged in
+
+
+## FAQ
+
+<dl>
+    <dt>Can I change a users password with this plugin?</dt>
+    <dd>Short Answer: <strong>No</strong>!<br>Long Answer: As the users credentials are not
+    only used for a wordpress-site when you authenticate against an LDAP but for
+    many other services also chances are great that there is a centralized place
+    where password-changes shall be made. We'll later allow inclusion of a link
+    to such a place but currently it's not available. And as password-hashing and
+    where to store it requires deeper insight into the LDAP-Server then most users
+    have and admins are willing to give, password changes are out of scope of this
+    plugin. If you know exactyl what you do, you might want to have a look at
+    <a href="https://github.com/heiglandreas/authLdap/issues/54#issuecomment-125851029">
+    issue 54</a>
+    wherer a way of adding it is described!
+    </dd>
+    <dt>Can I add a user to the LDAP when she creates a user-account on wordpress?</dt>
+    <dd>Short Answer: <strong>No</strong>!<br>Long Answer: Even though that is technically possible
+    it's not in the scope of this plugin. As creating a user in an LDAP often involves
+    an administrative process that has already been implemented in your departments
+    administration it doesn't make sense to rebuild that - in most cases highly
+    individual - process in this plugin. If you know exactly what you do, have a look at
+    <a href="https://github.com/heiglandreas/authLdap/issues/65">issue 65</a>
+    where <a href="https://github.com/wtfiwtz">wtfiwtz</a> shows how to implement that feature.
+    </dd>
+    </dl>

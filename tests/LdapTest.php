@@ -30,7 +30,6 @@
  * @since 21.09.2010
  */
 
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'TestHelper.php';
 /** ldap */
 require_once 'ldap.php';
 
@@ -44,9 +43,9 @@ class LdapTest extends PHPUnit_Framework_TestCase
      */
     public function testInstantiateLdapClass($expected, $given)
     {
-        $ldap = new LDAP($expected[0],$expected[1]);
-        foreach ( $given as $key=>$value ) {
-            $this -> assertAttributeEquals($value,'_' . $key,$ldap);
+        $ldap = new LDAP($expected[0], $expected[1]);
+        foreach ($given as $key => $value) {
+            $this -> assertAttributeEquals($value, '_' . $key, $ldap);
         }
     }
 
@@ -57,7 +56,7 @@ class LdapTest extends PHPUnit_Framework_TestCase
      */
     public function testExceptionsWhenInstantiatingLdapClass($expected)
     {
-        new LDAP ( $expected );
+        new LDAP($expected);
     }
 
     public function dpInstantiateLdapClass()
@@ -116,7 +115,7 @@ class LdapTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function dpExceptionsWhenInstantiatingLdapClass ()
+    public function dpExceptionsWhenInstantiatingLdapClass()
     {
         return array (
                 array('ldap://ldap.example.org'),
