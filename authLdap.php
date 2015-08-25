@@ -428,7 +428,7 @@ function authLdap_user_role($uid)
         return '';
     }
 
-    $meta_value = $wpdb->get_var("SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = 'wp_capabilities' AND user_id = {$uid}");
+    $meta_value = $wpdb->get_var("SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = '{$wpdb->prefix}capabilities' AND user_id = {$uid}");
 
     if (!$meta_value) {
         return '';
