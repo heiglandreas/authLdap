@@ -323,7 +323,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // first name
         if (isset($attribs[0][strtolower($authLDAPNameAttr)][0])) {
             $user_info['first_name'] = $attribs[0][strtolower($authLDAPNameAttr)][0];
-            $user_info['display_name'] = $user_info['first_name'];
         }
 
         // last name
@@ -362,6 +361,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             if (empty($user_info['user_email'])) {
                 $user_info['user_email'] = $username . '@example.com';
             }
+            $user_info['display_name'] = $user_info['first_name'];
         }
 
         // if the user exists, wp_insert_user will update the existing user record
