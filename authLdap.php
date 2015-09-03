@@ -35,7 +35,7 @@ function authLdap_options_panel()
     // inclusde style sheet
     wp_enqueue_style('authLdap-style', plugin_dir_url(__FILE__) . 'authLdap.css');
 
-    if ($_POST['ldapOptionsSave']) {
+    if (( $_SERVER['REQUEST_METHOD'] == 'POST' ) && array_key_exists('ldapOptionsSave', $_POST)) {
         update_option('authLDAP', authLdap_get_post('authLDAPAuth', false));
         update_option('authLDAPCachePW', authLdap_get_post('authLDAPCachePW', false));
         update_option('authLDAPURI', authLdap_get_post('authLDAPURI'));
