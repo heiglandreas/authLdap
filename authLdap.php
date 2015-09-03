@@ -75,21 +75,11 @@ function authLdap_options_panel()
     $authLDAPGroupEnable   = get_option('authLDAPGroupEnable', true);
     $authLDAPGroupOverUser = get_option('authLDAPGroupOverUser', true);
 
-    if ($authLDAP) {
-        $tChecked = ' checked="checked"';
-    }
-    if ($authLDAPDebug) {
-        $tDebugChecked = ' checked="checked"';
-    }
-    if ($authLDAPCachePW) {
-        $tPWChecked = ' checked="checked"';
-    }
-    if ($authLDAPGroupEnable) {
-        $tGroupChecked = ' checked="checked"';
-    }
-    if ($authLDAPGroupOverUser) {
-        $tGroupOverUserChecked = ' checked="checked"';
-    }
+    $tChecked              = ($authLDAP)               ? ' checked="checked"' : '';
+    $tDebugChecked         = ($authLDAPDebug)          ? ' checked="checked"' : '';
+    $tPWChecked            = ($authLDAPCachePW)        ? ' checked="checked"' : '';
+    $tGroupChecked         = ($authLDAPGroupEnable)    ? ' checked="checked"' : '';
+    $tGroupOverUserChecked = ($authLDAPGroupOverUser)  ? ' checked="checked"' : '';
 
     $roles = new WP_Roles();
 
