@@ -9,7 +9,6 @@ Author URI: http://andreas.heigl.org
 */
 
 require_once dirname(__FILE__) . '/ldap.php';
-require_once ABSPATH . 'wp-includes/registration.php';
 
 function authLdap_debug($message)
 {
@@ -22,7 +21,7 @@ function authLdap_debug($message)
 function authLdap_addmenu()
 {
     if (function_exists('add_options_page')) {
-        add_options_page('AuthLDAP', 'AuthLDAP', 9, basename(__FILE__), 'authLdap_options_panel');
+        add_options_page('AuthLDAP', 'AuthLDAP', 'manage_options', basename(__FILE__), 'authLdap_options_panel');
     }
 }
 
