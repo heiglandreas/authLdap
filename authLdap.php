@@ -9,7 +9,6 @@ Author URI: http://andreas.heigl.org
 */
 
 require_once dirname(__FILE__) . '/ldap.php';
-require_once ABSPATH . 'wp-includes/registration.php';
 
 function authLdap_debug($message)
 {
@@ -22,7 +21,7 @@ function authLdap_debug($message)
 function authLdap_addmenu()
 {
     if (function_exists('add_options_page')) {
-        add_options_page('AuthLDAP', 'AuthLDAP', 9, basename(__FILE__), 'authLdap_options_panel');
+        add_options_page('AuthLDAP', 'AuthLDAP', 'manage_options', basename(__FILE__), 'authLdap_options_panel');
     }
 }
 
@@ -36,7 +35,7 @@ function authLdap_options_panel()
     // inclusde style sheet
     wp_enqueue_style('authLdap-style', plugin_dir_url(__FILE__) . 'authLdap.css');
 
-    if ($_POST['ldapOptionsSave']) {
+    if (($_SERVER['REQUEST_METHOD'] == 'POST') && array_key_exists('ldapOptionsSave', $_POST)) {
         update_option('authLDAP', authLdap_get_post('authLDAPAuth', false));
         update_option('authLDAPCachePW', authLdap_get_post('authLDAPCachePW', false));
         update_option('authLDAPURI', authLdap_get_post('authLDAPURI'));
@@ -76,21 +75,11 @@ function authLdap_options_panel()
     $authLDAPGroupEnable   = get_option('authLDAPGroupEnable', true);
     $authLDAPGroupOverUser = get_option('authLDAPGroupOverUser', true);
 
-    if ($authLDAP) {
-        $tChecked = ' checked="checked"';
-    }
-    if ($authLDAPDebug) {
-        $tDebugChecked = ' checked="checked"';
-    }
-    if ($authLDAPCachePW) {
-        $tPWChecked = ' checked="checked"';
-    }
-    if ($authLDAPGroupEnable) {
-        $tGroupChecked = ' checked="checked"';
-    }
-    if ($authLDAPGroupOverUser) {
-        $tGroupOverUserChecked = ' checked="checked"';
-    }
+    $tChecked              = ($authLDAP)               ? ' checked="checked"' : '';
+    $tDebugChecked         = ($authLDAPDebug)          ? ' checked="checked"' : '';
+    $tPWChecked            = ($authLDAPCachePW)        ? ' checked="checked"' : '';
+    $tGroupChecked         = ($authLDAPGroupEnable)    ? ' checked="checked"' : '';
+    $tGroupOverUserChecked = ($authLDAPGroupOverUser)  ? ' checked="checked"' : '';
 
     $roles = new WP_Roles();
 
@@ -271,7 +260,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             
             $dn = $attribs[0]['dn'];
             $realuid = $attribs[0][strtolower($authLDAPUidAttr)][0];
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             authLdap_debug('Exception getting LDAP user: ' . $e->getMessage());
             return false;
         }
