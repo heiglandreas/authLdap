@@ -309,7 +309,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // first name
         if (isset($attribs[0][strtolower($authLDAPNameAttr)][0])) {
             $user_info['first_name'] = $attribs[0][strtolower($authLDAPNameAttr)][0];
-            $user_info['display_name'] = $user_info['first_name'];
         }
 
         // last name
@@ -327,6 +326,18 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             $user_info['user_url'] = $attribs[0][strtolower($authLDAPWebAttr)][0];
         }
 
+        // display name, nickname, nicename
+        if (array_key_exists('first_name', $user_info)) {
+            $user_info['display_name'] = $user_info['first_name'];
+            $user_info['nickname'] = $user_info['first_name'];
+            $user_info['user_nicename'] = sanitize_title_with_dashes($user_info['first_name']);
+            if (array_key_exists('last_name', $user_info)) {
+                $user_info['display_name'] .= ' ' . $user_info['last_name'];
+                $user_info['nickname'] .= ' ' . $user_info['last_name'];
+                $user_info['user_nicename'] .= '_' . sanitize_title_with_dashes($user_info['last_name']);
+            }
+        }
+
         // optionally store the password into the wordpress database
         if (authLdap_get_option('CachePW')) {
             $user_info['user_pass'] = wp_hash_password($password);
@@ -340,7 +351,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             // found user in the database
             authLdap_debug('The LDAP user has an entry in the WP-Database');
             $user_info['ID'] = $uid;
-            unset ($user_info['display_name']);
+            unset ($user_info['display_name'], $user_info['nickname']);
             $userid = wp_update_user($user_info);
         } else {
             // new wordpress account will be created
