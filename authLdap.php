@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: https://github.com/heiglandreas/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.4.9
+Version: 1.4.10
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
@@ -640,7 +640,6 @@ function authLdap_load_options($reload = false)
 
     // check if option version has changed (or if it's there at all)
     if (!isset($options['Version']) || ($options['Version'] != $option_version_plugin)) {
-
         // defaults for all options
         $options_default = array(
             'Enabled'       => false,
@@ -712,7 +711,8 @@ function authLdap_load_options($reload = false)
 /**
  * Get an individual option
  */
-function authLdap_get_option($optionname) {
+function authLdap_get_option($optionname)
+{
     $options = authLdap_load_options();
     if (isset($options[$optionname])) {
         return $options[$optionname];
@@ -725,7 +725,8 @@ function authLdap_get_option($optionname) {
 /**
  * Set new options
  */
-function authLdap_set_options($new_options = array()) {
+function authLdap_set_options($new_options = array())
+{
     // initialize the options with what we currently have
     $options = authLdap_load_options();
 
@@ -736,7 +737,6 @@ function authLdap_set_options($new_options = array()) {
 
     // store options
     if (update_option('authLDAPOptions', $options)) {
-
         // reload the option cache
         authLdap_load_options(true);
 

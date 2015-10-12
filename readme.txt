@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth
 Requires at least: 2.5.0
-Tested up to: 4.3
+Tested up to: 4.3.1
 Stable tag: trunk
 
 Use your existing LDAP flexible as authentication backend for WordPress
@@ -41,6 +41,12 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 1.4.10 =
+* Cleanup by removing deprecated code
+* Fixes issues with undefined variables
+* Enables internal option-versioning
+* Setting users nickname initially to the realname instead of the uid
+* Fixes display of password-change possibility in users profile-page
 = 1.4.9 =
 * Fixed an issue with changing display name on every login
 * Use proper way of looking up user-roles in setups w/o DB-prefix
