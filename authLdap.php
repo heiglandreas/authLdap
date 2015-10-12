@@ -565,13 +565,13 @@ endif;
  * he isn't
  * @conf boolean authLDAP
  */
-function authLdap_show_password_fields()
+function authLdap_show_password_fields($return, $user)
 {
-    if (! array_key_exists('user_ID', $GLOBALS)) {
-        get_currentuserinfo();
+    if (null === $user) {
+        return true;
     }
 
-    if (get_usermeta($GLOBALS['user_ID'], 'authLDAP')) {
+    if (get_usermeta($user->ID, 'authLDAP')) {
         return false;
     }
     return true;
