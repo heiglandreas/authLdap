@@ -578,6 +578,32 @@ function authLdap_show_password_fields($return, $user)
 }
 
 /**
+ * This function disables the password reset for a user.
+ *
+ * It does not make sense to authenticate via LDAP and then allow the user to
+ * reset the password only in the wordpress database. And changing the password
+ * LDAP-wide can not be the scope of Wordpress!
+ *
+ * Whether the user is an LDAP-User or not is determined using the authLDAP-Flag
+ * of the users meta-informations
+ *
+ * @author chaplina (https://github.com/chaplina)
+ * @conf boolean authLDAP
+ * @return false, if the user is an LDAP-User, true if he isn't
+ */
+function authLdap_allow_password_reset($return, $userid)
+{
+    if (!(isset($userid))) {
+        return true;
+    }
+
+    if (get_user_meta($userid, 'authLDAP')) {
+        return false;
+    }
+    return $return;
+}
+
+/**
  * Sort the given roles by number of capabilities
  *
  * @param array $roles
@@ -748,5 +774,6 @@ function authLdap_set_options($new_options = array())
 }
 
 add_action('admin_menu', 'authLdap_addmenu');
-add_filter('show_password_fields', 'authLdap_show_password_fields');
+add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
+add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);
 add_filter('authenticate', 'authLdap_login', 10, 3);
