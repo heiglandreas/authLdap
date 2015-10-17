@@ -128,6 +128,7 @@ function authLdap_get_server()
  * For this we store the hashed passwords in the WP_Database to ensure working
  * conditions even without an LDAP-Connection
  *
+ * @param null|WP_User|WP_Error
  * @param string $username
  * @param string $password
  * @param boolean $already_md5
@@ -148,6 +149,16 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
     // don't do anything when authLDAP is disabled
     if (! authLdap_get_option('Enabled')) {
         authLdap_debug('LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)');
+        return $user;
+    }
+
+    // If the user has already been authenticated (only in that case we get a
+    // WP_User-Object as $user) we skip LDAP-authentication and simply return
+    // the existing user-object
+    if ($user instanceof WP_User) {
+        authLdap_debug(sprintf(
+            'User %s has already been authenticated - skipping LDAP-Authentication',
+            $user->get('nickname')));
         return $user;
     }
 
