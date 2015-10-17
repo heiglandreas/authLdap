@@ -72,6 +72,6 @@ until Version 1.0.3 - Thanks to alex@tayts.com
 retrieved from the LDAP from me@example.com to $username@example.com so that
 a new user can be created even though the mail address already exists in your
 blog - Also thanks to alex@tayts.com
-* Added support for WordPress-Table-prefixes as the capabilities of a user 
+* Added support for WordPress-Table-prefixes as the capabilities of a user
 are interlany stored in a field that is named "$tablePrefix_capabilities" -
 again thanks to alex@tayts.com and also to sim0n of silicium.mine.nu

@@ -575,14 +575,15 @@ endif;
  */
 function authLdap_show_password_fields($return, $user)
 {
-    if (null === $user) {
+    if (! $user) {
         return true;
     }
 
-    if (get_usermeta($user->ID, 'authLDAP')) {
+    if (get_user_meta($user->ID, 'authLDAP')) {
         return false;
     }
-    return true;
+
+    return $return;
 }
 
 /**
