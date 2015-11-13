@@ -1,0 +1,14 @@
+svn
+build.xml
+tests
+VERSION
+Vagrantfile
+phpunit.*
+composer.*
+vendor
+tests
+report*
+build
+bin
+*~
+.*
