@@ -12,9 +12,9 @@ require_once dirname(__FILE__) . '/ldap.php';
 
 function authLdap_debug($message)
 {
-    if (authLdap_get_option('Debug')) {
+//    if (authLdap_get_option('Debug')) {
         error_log('[AuthLDAP] ' . $message, 0);
-    }
+//    }
 }
 
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ajaxComments" default="build" basedir=".">
+    <loadfile property = "version" file = "VERSION">
+        <filterchain>
+            <striplinebreaks/>
+        </filterchain>
+    </loadfile>
+    <target name="bumpversion">
+        <echo>Bumping version to ${version}</echo>
+        <reflexive>
+            <fileset dir=".">
+                <include name="index.php"/>
+            </fileset>
+            <filterchain>
+                <replaceregexp>
+                    <regexp pattern="Version:.*" replace="Version: ${version}"/>
+                </replaceregexp>
+            </filterchain>
+        </reflexive>
+    </target>
+    <target name="build" depends="bumpversion,deploy.git,deploy.svn"/>
+    <target name="deploy.svn">
+        <property file=".svnAccess" prefix="svnaccess" logoutput="true"/>
+        <filesync
+                rsyncPath="rsync"
+                destinationDir="${project.basedir}/svn/trunk"
+                sourceDir="${project.basedir}/"
+                verbose="true"
+                excludeFile="${project.basedir}/.rsyncIgnore"
+                />
+        <foreach param="dirname" target="svn.addFile">
+            <fileset dir="${project.basedir}/svn/trunk">
+                <include name="**/*"/>
+            </fileset>
+        </foreach>
+        <echo message="${svnaccess.username}"/>
+        <svncommit
+            username="${svnaccess.username}"
+            password="${svnaccess.password}"
+            workingcopy="${project.basedir}/svn"
+            message="Bumps version to ${version}"
+            nocache="true"
+            />
+        <echo message="Committed revision: ${svn.committedrevision}"/>
+    </target>
+
+    <target name="svn.addFile">
+        <trycatch>
+            <try>
+                <svninfo workingcopy="${project.basedir}/svn/trunk/${dirname}"/>
+            </try>
+            <catch>
+                <exec command="svn add ${project.basedir}/svn/trunk/${dirname}"/>
+                <echo>${dirname}</echo>
+            </catch>
+            <finally>
+
+            </finally>
+        </trycatch>
+        <echo>${svn.info}</echo>
+    </target>
+    <target name="deploy.git">
+        <gitcommit repository="." allFiles="true" message="Bumps version to ${version}"/>
+        <gittag name="${version}" repository="." sign="true" message="Version ${version}"/>
+        <gitpush repository="." tags="true" destination="origin"/>
+    </target>
+</project>
