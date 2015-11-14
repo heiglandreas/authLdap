@@ -1,20 +1,29 @@
 # Travic-CI-Config file for authLdap
 #
+sudo: false
 language: php
 php:
   - 5.4
   - 5.5
   - 5.6
   - 7.0
+  - nightly
   - hhvm
   - hhvm-nightly
 
+env:
+  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=0 WP_TEST_URL=http://localhost:12000 WP_TEST_USER=test WP_TEST_USER_PASS=test
+  - WP_PROJECT_TYPE=plugin WP_VERSION=latest WP_MULTISITE=1 WP_TEST_URL=http://localhost:12000 WP_TEST_USER=test WP_TEST_USER_PASS=test
+
 before_script:
  - ./.travis.install.sh
+ - git clone https://github.com/Seravo/wordpress-test-template wp-tests
+ - bash wp-tests/bin/install-wp-tests.sh test root '' localhost $WP_VERSION
 
 script:
 # - ./vendor/bin/phpcs --standard=PSR2 ldap.php authLdap.php tests/
- - ./vendor/bin/phpunit --configuration=phpunit.travis.xml
+# - ./vendor/bin/phpunit --configuration=phpunit.travis.xml
+ - cd wp-tests/spec && bundle exec rspec test.rb
 
 addons:
  code_climate:
@@ -24,7 +33,8 @@ addons:
 matrix:
   fast_finish : true
   allow_failures:
-      - php: 7.0
+      - php: nightly
+      - php: hhvm
       - php: hhvm-nightly
 
 after_script:
