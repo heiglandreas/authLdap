@@ -41,6 +41,8 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 1.5.0 =
+* Adds Multisite-Setup-possibilities
 = 1.4.10 =
 * Cleanup by removing deprecated code
 * Fixes issues with undefined variables
