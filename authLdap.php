@@ -267,7 +267,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // do LDAP group mapping if needed
         if ($authLDAPGroupEnable) {
             $roles_ldap = authLdap_groupmap($realuid, $dn);
-            authLdap_debug('roles from group mapping: ' . implode(', ', $role));
+            authLdap_debug('roles from group mapping: ' . implode(', ', $roles_ldap));
 
             if ($authLDAPGroupOverUser) {
                 $roles = $roles_ldap;
@@ -426,13 +426,13 @@ function authLdap_user_roles($uid)
     global $wpdb;
 
     if (!$uid) {
-        return '';
+        return array( );
     }
 
     $meta_value = $wpdb->get_var("SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = '{$wpdb->prefix}capabilities' AND user_id = {$uid}");
 
     if (!$meta_value) {
-        return '';
+        return array( );
     }
 
     $capabilities = unserialize($meta_value);
@@ -468,7 +468,7 @@ function authLdap_groupmap($username, $dn)
 
     if (!is_array($authLDAPGroups) || count(array_filter(array_values($authLDAPGroups))) == 0) {
         authLdap_debug('No group names defined');
-        return '';
+        return array( );
     }
 
     try {
@@ -479,7 +479,7 @@ function authLdap_groupmap($username, $dn)
         $groups = authLdap_get_server()->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
     } catch (Exception $e) {
         authLdap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
-        return '';
+        return array( );
     }
 
     $grp = array();
