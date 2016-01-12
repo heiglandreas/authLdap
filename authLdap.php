@@ -264,7 +264,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $uid = authLdap_get_uid($realuid);
         $roles = authLdap_user_roles($uid);
 
-        // do LDAP group mapping if needed
+        // do LDAP group mapping if neededre
         if ($authLDAPGroupEnable) {
             $roles_ldap = authLdap_groupmap($realuid, $dn);
             authLdap_debug('roles from group mapping: ' . implode(', ', $roles_ldap));
@@ -419,7 +419,7 @@ function authLdap_get_uid($username)
  * Returns empty string if not found.
  *
  * @param int $uid wordpress user id
- * @return string role, empty if none found
+ * @return array roles, empty if none found
  */
 function authLdap_user_roles($uid)
 {
@@ -447,7 +447,7 @@ function authLdap_user_roles($uid)
  *
  * @param string $username
  * @param string $dn
- * @return string role, empty string if no mapping found, first found role otherwise
+ * @return array roles, empty if no mapping found
  * @conf array authLDAPGroups, associative array, role => ldap_group
  * @conf string authLDAPGroupAttr, ldap attribute that holds name of group
  * @conf string authLDAPGroupFilter, LDAP filter to find groups. can contain %s and %dn% placeholders
