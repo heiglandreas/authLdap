@@ -264,7 +264,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $uid = authLdap_get_uid($realuid);
         $roles = authLdap_user_roles($uid);
 
-        // do LDAP group mapping if neededre
+        // do LDAP group mapping if needed
         if ($authLDAPGroupEnable) {
             $roles_ldap = authLdap_groupmap($realuid, $dn);
             authLdap_debug('roles from group mapping: ' . implode(', ', $roles_ldap));
