@@ -267,7 +267,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // do LDAP group mapping if needed
         if ($authLDAPGroupEnable) {
             $roles_ldap = authLdap_groupmap($realuid, $dn);
-            authLdap_debug('roles from group mapping: ' . implode(', ', $roles_ldap));
+            authLdap_debug('Roles from group mapping: ' . implode(', ', $roles_ldap));
 
             if ($authLDAPGroupOverUser) {
                 $roles = $roles_ldap;
@@ -349,6 +349,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         if ($uid) {
             // found user in the database
             authLdap_debug('The LDAP user has an entry in the WP-Database');
+            $user_info['ID'] = $uid;
             unset ($user_info['display_name'], $user_info['nickname']);
             $userid = wp_update_user($user_info);
 
@@ -364,8 +365,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
         
         if (is_wp_error($userid)) {
-            authLdap_debug('Error creating user : ' . $userid->get_error_message());
-            trigger_error('Error creating user: ' . $userid->get_error_message());
+            authLdap_debug('Error creating/updating user: ' . $userid->get_error_message());
+            trigger_error('Error creating/updating user: '  . $userid->get_error_message());
             return $userid;
         }
 
@@ -374,12 +375,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // Remove any roles deemed no longer applicable.
         foreach ($roles_wp as $r) {
             if (!in_array($r, $roles)) {
+                authLdap_debug("Removing role: $r ...");
                 $user->remove_role($r);
             }
         }
         // Add any new roles.
         foreach ($roles as $r) {
             if (!in_array($r, $roles_wp)) {
+                authLdap_debug("Adding role: $r ...");
                 $user->add_role($r);
             }
         }
@@ -574,7 +577,7 @@ endif;
  * he isn't
  * @conf boolean authLDAP
  */
-function authLdap_show_password_fields($show, $user)
+function authLdap_show_password_fields($show, $user=null)
 {
     if (is_null($user)) {
         return true;
