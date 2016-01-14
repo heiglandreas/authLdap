@@ -262,7 +262,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         $uid = authLdap_get_uid($realuid);
-        $roles = authLdap_user_roles($uid);
+        $roles = $roles_wp = authLdap_user_roles($uid);
 
         // do LDAP group mapping if needed
         if ($authLDAPGroupEnable) {
@@ -349,7 +349,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         if ($uid) {
             // found user in the database
             authLdap_debug('The LDAP user has an entry in the WP-Database');
-            $userid = $uid;
+            unset ($user_info['display_name'], $user_info['nickname']);
+            $userid = wp_update_user($user_info);
 
         } else {
             // new wordpress account will be created
@@ -360,17 +361,27 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
                 $user_info['user_email'] = $username . '@example.com';
             }
             $userid = wp_insert_user($user_info);
-            if (is_wp_error($userid)) {
-                authLdap_debug('Error creating user : ' . $userid->get_error_message());
-                trigger_error('Error creating user: ' . $userid->get_error_message());
-                return $userid;
-            }
+        }
+        
+        if (is_wp_error($userid)) {
+            authLdap_debug('Error creating user : ' . $userid->get_error_message());
+            trigger_error('Error creating user: ' . $userid->get_error_message());
+            return $userid;
         }
 
         $user = new WP_User($userid);
-        $user->set_role(''); // removes all existing roles.
-        foreach ($roles as $role) {
-            $user->add_role($role);
+        
+        // Remove any roles deemed no longer applicable.
+        foreach ($roles_wp as $r) {
+            if (!in_array($r, $roles)) {
+                $user->remove_role($r);
+            }
+        }
+        // Add any new roles.
+        foreach ($roles as $r) {
+            if (!in_array($r, $roles_wp)) {
+                $user->add_role($r);
+            }
         }
 
         authLdap_debug('user id = ' . $userid);
@@ -563,7 +574,7 @@ endif;
  * he isn't
  * @conf boolean authLDAP
  */
-function authLdap_show_password_fields($user)
+function authLdap_show_password_fields($show, $user)
 {
     if (is_null($user)) {
         return true;
