@@ -47,6 +47,7 @@ function authLdap_options_panel()
             'MailAttr'      => authLdap_get_post('authLDAPMailAttr'),
             'WebAttr'       => authLdap_get_post('authLDAPWebAttr'),
             'Groups'        => authLdap_get_post('authLDAPGroups', array()),
+            'GroupSeparator'=> authLdap_get_post('authLDAPGroupSeparator', ','),
             'Debug'         => authLdap_get_post('authLDAPDebug', false),
             'GroupAttr'     => authLdap_get_post('authLDAPGroupAttr'),
             'GroupFilter'   => authLdap_get_post('authLDAPGroupFilter'),
@@ -72,6 +73,7 @@ function authLdap_options_panel()
     $authLDAPUidAttr       = authLdap_get_option('UidAttr');
     $authLDAPWebAttr       = authLdap_get_option('WebAttr');
     $authLDAPGroups        = authLdap_get_option('Groups');
+    $authLDAPGroupSeparator= authLdap_get_option('GroupSeparator');
     $authLDAPDebug         = authLdap_get_option('Debug');
     $authLDAPGroupAttr     = authLdap_get_option('GroupAttr');
     $authLDAPGroupFilter   = authLdap_get_option('GroupFilter');
@@ -458,11 +460,15 @@ function authLdap_groupmap($username, $dn)
     );
     $authLDAPGroupAttr      = authLdap_get_option('GroupAttr');
     $authLDAPGroupFilter    = authLdap_get_option('GroupFilter');
+    $authLDAPGroupSeparator = authLdap_get_option('GroupSeparator');
     if (! $authLDAPGroupAttr) {
         $authLDAPGroupAttr = 'gidNumber';
     }
     if (! $authLDAPGroupFilter) {
         $authLDAPGroupFilter = '(&(objectClass=posixGroup)(memberUid=%s))';
+    }
+    if (! $authLDAPGroupSeparator) {
+        $authLDAPGroupSeparator = ',';
     }
 
     if (!is_array($authLDAPGroups) || count(array_filter(array_values($authLDAPGroups))) == 0) {
@@ -498,7 +504,7 @@ function authLdap_groupmap($username, $dn)
 
     $role = '';
     foreach ($authLDAPGroups as $key => $val) {
-        $currentGroup = explode(',', $val);
+        $currentGroup = explode($authLDAPGroupSeparator, $val);
         // Remove whitespaces around the group-ID
         $currentGroup = array_map('trim', $currentGroup);
         if (0 < count(array_intersect($currentGroup, $grp))) {
