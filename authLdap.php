@@ -340,7 +340,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         // optionally store the password into the wordpress database
         if (authLdap_get_option('CachePW')) {
-            $user_info['user_pass'] = wp_hash_password($password);
+            // Password will be hashed inside wp_update_user or wp_insert_user
+            $user_info['user_pass'] = $password;
         } else {
             // clear the password
             $user_info['user_pass'] = '';
