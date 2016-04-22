@@ -151,17 +151,17 @@ class LDAP
             $bind = @ldap_bind($this->_ch);
         }
         if (! $bind) {
-            throw new AuthLDAP_Exception('bind was not successfull');
+            throw new AuthLDAP_Exception('bind was not successfull: ' . ldap_error($this->_ch));
         }
         return $this;
     }
     
-    function getErrorNumber()
+    public function getErrorNumber()
     {
         return @ldap_errno($this->_ch);
     }
     
-    function getErrorText()
+    public function getErrorText()
     {
         return @ldap_error($this->_ch);
     }
@@ -177,7 +177,7 @@ class LDAP
      * @param array $attributes
      * @return array
      */
-    function search($filter, $attributes = array('uid'))
+    public function search($filter, $attributes = array('uid'))
     {
         if (! is_Resource($this->_ch)) {
             throw new AuthLDAP_Exception('No resource handle avbailable');
@@ -196,7 +196,7 @@ class LDAP
     /**
      * This method sets debugging to ON
      */
-    function debugOn()
+    public function debugOn()
     {
         $this->_debug = true;
         return $this;
@@ -205,7 +205,7 @@ class LDAP
     /**
      * This method sets debugging to OFF
      */
-    function debugOff()
+    public function debugOff()
     {
         $this->_debug = false;
         return $this;
@@ -242,7 +242,7 @@ class LDAP
     /**
      * $this method loggs errors if debugging is set to ON
      */
-    function logError()
+    public function logError()
     {
         if ($this->_debug) {
             $_v = debug_backtrace();
