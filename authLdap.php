@@ -356,11 +356,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         } else {
             // new wordpress account will be created
             authLdap_debug('The LDAP user does not have an entry in the WP-Database, a new WP account will be created');
-
-            // set initial mail address if not provided by ldap
-            if (empty($user_info['user_email'])) {
-                $user_info['user_email'] = $username . '@example.com';
-            }
+            
             $userid = wp_insert_user($user_info);
         }
 
