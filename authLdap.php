@@ -770,7 +770,28 @@ function authLdap_set_options($new_options = array())
     }
 }
 
+/**
+ * Do not send an email after changing the password or the email of the user!
+ *
+ * @param boolean $result      The initial resturn value
+ * @param array   $user        The old userdata
+ * @param array   $newUserData The changed userdata
+ *
+ * @return bool
+ */
+function authLdap_send_change_email($result, $user, $newUserData)
+{
+    if (get_usermeta($user['ID'], 'authLDAP')) {
+        return false;
+    }
+
+    return $result;
+}
+
 add_action('admin_menu', 'authLdap_addmenu');
 add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
 add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);
 add_filter('authenticate', 'authLdap_login', 10, 3);
+/** This only works from WP 4.3.0 on */
+add_filter('send_password_change_email', 'authLdap_send_change_email', 10, 3);
+add_filter('send_email_change_email', 'authLdap_send_change_email', 10, 3);
