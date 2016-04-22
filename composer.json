@@ -14,7 +14,8 @@
     "require" : {
         "php" : ">=5.4",
         "phing/phing": "^2.14",
-        "pear/versioncontrol_svn": "^0.5.2"
+        "pear/versioncontrol_svn": "^0.5.2",
+        "pear/versioncontrol_git": "dev-master"
     },
     "require-dev": {
         "10up/wp_mock": "dev-master",
