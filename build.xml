@@ -11,6 +11,7 @@
         <reflexive>
             <fileset dir=".">
                 <include name="index.php"/>
+                <include name="authLdap.php"/>
             </fileset>
             <filterchain>
                 <replaceregexp>
