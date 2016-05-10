@@ -525,46 +525,6 @@ function authLdap_groupmap($username, $dn)
     return $role;
 }
 
-
-if (! function_exists('wp_setcookie')) :
-    function wp_setcookie($username, $password, $already_md5 = false, $home = '', $siteurl = '')
-    {
-        $ldapCookieMarker = 'LDAP';
-        $ldapAuth = authLdap_get_option('Enabled');
-
-        if (($ldapAuth) && ($username != 'admin')) {
-            $password = md5($username).md5($ldapCookieMarker);
-        } else {
-            if (!$already_md5) {
-                $password = md5(md5($password)); // Double hash the password in the cookie.
-            }
-        }
-
-        if (empty($home)) {
-            $cookiepath = COOKIEPATH;
-        } else {
-            $cookiepath = preg_replace('|https?://[^/]+|i', '', $home . '/');
-        }
-
-        if (empty($siteurl)) {
-            $sitecookiepath = SITECOOKIEPATH;
-            $cookiehash = COOKIEHASH;
-        } else {
-            $sitecookiepath = preg_replace('|https?://[^/]+|i', '', $siteurl . '/');
-            $cookiehash = md5($siteurl);
-        }
-
-        setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $cookiepath);
-        setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $cookiepath);
-
-        if ($cookiepath != $sitecookiepath) {
-            setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $sitecookiepath);
-            setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $sitecookiepath);
-        }
-    }
-endif;
-
-
 /**
  * This function disables the password-change fields in the users preferences.
  *
