@@ -1,0 +1,16 @@
+dn: cn=group1,dc=example,dc=com
+objectclass: groupOfUniqueNames
+cn: group1
+uniqueMember: uid=user1,dc=example,dc=com
+
+dn: uid=user2,dc=example,dc=com
+objectClass: account
+objectClass: simpleSecurityObject
+uid: user2
+userPassword: user2
+
+dn: cn=group2,dc=example,dc=com
+objectclass: groupOfUniqueNames
+cn: group2
+uniqueMember: uid=user2,dc=example,dc=com
+
