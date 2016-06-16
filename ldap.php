@@ -33,9 +33,9 @@ class LDAP
     private $_scheme = 'ldap';
 
     private $_port = 389;
-    
+
     private $_baseDn = '';
-    
+
     private $_debug = false;
     /**
      * This property contains the connection handle to the ldap-server
@@ -43,12 +43,14 @@ class LDAP
      * @var Ressource
      */
     private $_ch = null;
-    
+
     private $_username = '';
-    
+
     private $_password = '';
-    
-    public function __construct($URI, $debug = false)
+
+    private $_starttls = false;
+
+    public function __construct($URI, $debug = false, $starttls = false)
     {
         $this->_debug=$debug;
         $url = parse_url($URI);
@@ -85,6 +87,7 @@ class LDAP
         if (isset ( $url['port'] )) {
             $this -> _port = $url['port'];
         }
+        $this->_starttls = $starttls;
     }
 
     /**
@@ -110,7 +113,10 @@ class LDAP
         }
         ldap_set_option($this->_ch, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($this->_ch, LDAP_OPT_REFERRALS, 0);
-
+        //if configured try to upgrade encryption to tls for ldap connections
+        if ($this->_starttls) {
+          ldap_start_tls($this->_ch);
+        }
         return $this;
     }
 
@@ -155,17 +161,17 @@ class LDAP
         }
         return $this;
     }
-    
+
     public function getErrorNumber()
     {
         return @ldap_errno($this->_ch);
     }
-    
+
     public function getErrorText()
     {
         return @ldap_error($this->_ch);
     }
-    
+
     /**
      * This method does the actual ldap-serch.
      *
@@ -192,7 +198,7 @@ class LDAP
         }
         return $this -> _info;
     }
-    
+
     /**
      * This method sets debugging to ON
      */
@@ -201,7 +207,7 @@ class LDAP
         $this->_debug = true;
         return $this;
     }
-        
+
     /**
      * This method sets debugging to OFF
      */
@@ -210,7 +216,7 @@ class LDAP
         $this->_debug = false;
         return $this;
     }
-    
+
     /**
      * This method authenticates the user <var>$username</var> using the
      * password <var>$password</var>
