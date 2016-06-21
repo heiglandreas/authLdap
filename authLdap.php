@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: https://github.com/heiglandreas/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.4.18
+Version: 1.4.17
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
@@ -40,6 +40,7 @@ function authLdap_options_panel()
             'Enabled'       => authLdap_get_post('authLDAPAuth', false),
             'CachePW'       => authLdap_get_post('authLDAPCachePW', false),
             'URI'           => authLdap_get_post('authLDAPURI'),
+            'StartTLS'      => authLdap_get_post('authLDAPStartTLS', false),
             'Filter'        => authLdap_get_post('authLDAPFilter'),
             'NameAttr'      => authLdap_get_post('authLDAPNameAttr'),
             'SecName'       => authLdap_get_post('authLDAPSecName'),
@@ -66,6 +67,7 @@ function authLdap_options_panel()
     $authLDAP              = authLdap_get_option('Enabled');
     $authLDAPCachePW       = authLdap_get_option('CachePW');
     $authLDAPURI           = authLdap_get_option('URI');
+    $authLDAPStartTLS      = authLdap_get_option('StartTLS');
     $authLDAPFilter        = authLdap_get_option('Filter');
     $authLDAPNameAttr      = authLdap_get_option('NameAttr');
     $authLDAPSecName       = authLdap_get_option('SecName');
@@ -86,6 +88,7 @@ function authLdap_options_panel()
     $tPWChecked            = ($authLDAPCachePW)        ? ' checked="checked"' : '';
     $tGroupChecked         = ($authLDAPGroupEnable)    ? ' checked="checked"' : '';
     $tGroupOverUserChecked = ($authLDAPGroupOverUser)  ? ' checked="checked"' : '';
+    $tStartTLSChecked      = ($authLDAPStartTLS)       ? ' checked="checked"' : '';
 
     $roles = new WP_Roles();
 
@@ -114,10 +117,11 @@ function authLdap_get_server()
     if (is_null($_server)) {
         $authLDAPDebug = authLdap_get_option('Debug');
         $authLDAPURI   = authLdap_get_option('URI');
+        $authLDAPStartTLS = authLdap_get_option('StartTLS');
 
         //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
         authLdap_debug('connect to LDAP server');
-        $_server = new LDAP($authLDAPURI, $authLDAPDebug);
+        $_server = new LDAP($authLDAPURI, $authLDAPDebug, $authLDAPStartTLS);
     }
     return $_server;
 }
@@ -265,9 +269,9 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             if (! isset($attribs[0][strtolower($authLDAPUidAttr)][0])) {
                 authLdap_debug('could not get user attributes from LDAP');
                 throw new UnexpectedValueException('The user-ID attribute has not been returned');
-                
+
             }
-            
+
             $dn = $attribs[0]['dn'];
             $realuid = $attribs[0][strtolower($authLDAPUidAttr)][0];
         } catch (Exception $e) {
@@ -370,7 +374,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         } else {
             // new wordpress account will be created
             authLdap_debug('The LDAP user does not have an entry in the WP-Database, a new WP account will be created');
-            
+
             $userid = wp_insert_user($user_info);
         }
 
@@ -501,9 +505,9 @@ function authLdap_groupmap($username, $dn)
             $grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
         }
     }
-    
+
     authLdap_debug('LDAP groups: ' . json_encode($grp));
-    
+
     // Check whether the user is member of one of the groups that are
     // allowed acces to the blog. If the user is not member of one of
     // The groups throw her out! ;-)
