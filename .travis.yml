@@ -2,30 +2,34 @@
 #
 language: php
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - hhvm
-  - hhvm-nightly
+ - 5.4
+ - 5.5
+ - 5.6
+ - 7.0
+ - hhvm
+ - nightly
 
 before_script:
  - ./.travis.install.sh
+ - phpenv config-add .ci/php.ini || return 0
+ - .ci/OpenLDAP_run.sh
+ - .ci/load_fixtures.sh
+
 
 script:
 # - ./vendor/bin/phpcs --standard=PSR2 ldap.php authLdap.php tests/
- - ./vendor/bin/phpunit --configuration=phpunit.travis.xml
+- ./vendor/bin/phpunit --configuration=phpunit.travis.xml
 
 addons:
- code_climate:
-  repo_token:
-    secure: "hTiIK/8Jn3NlinsTZlO2SDYPXBw0Nv7Ss6kz60iSkS4mxZ9byVY9GnhwkyZEw+e32h1DFV6DIEPLTUJXUxSBeH/71PzM046sr764fHifHJDqUkKa+2CM1mQgMxB0JhCs6MKySsJOmobwg9g9Mvng8s5fOomMv1Xmb502ldkE4Vw="
+ apt:
+  packages:
+   - slapd
+   - ldap-utils
 
 matrix:
-  fast_finish : true
-  allow_failures:
-      - php: 7.0
-      - php: hhvm-nightly
+ fast_finish : true
+ allow_failures:
+     - php: nightly
 
 after_script:
- - ./.travis.after.sh
+- ./.travis.after.sh

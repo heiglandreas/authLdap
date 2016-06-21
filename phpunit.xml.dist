@@ -6,7 +6,7 @@
     Author     : heiglandreas
  -->
 
-<phpunit bootstrap="tests/bootstrap.php">
+<phpunit bootstrap="vendor/autoload.php">
     <testsuite name="authLdap Test-Suite">
         <directory>tests</directory>
     </testsuite>
