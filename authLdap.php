@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: https://github.com/heiglandreas/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.4.10
+Version: 1.4.17
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 */
@@ -40,6 +40,7 @@ function authLdap_options_panel()
             'Enabled'       => authLdap_get_post('authLDAPAuth', false),
             'CachePW'       => authLdap_get_post('authLDAPCachePW', false),
             'URI'           => authLdap_get_post('authLDAPURI'),
+            'StartTLS'      => authLdap_get_post('authLDAPStartTLS', false),
             'Filter'        => authLdap_get_post('authLDAPFilter'),
             'NameAttr'      => authLdap_get_post('authLDAPNameAttr'),
             'SecName'       => authLdap_get_post('authLDAPSecName'),
@@ -47,6 +48,7 @@ function authLdap_options_panel()
             'MailAttr'      => authLdap_get_post('authLDAPMailAttr'),
             'WebAttr'       => authLdap_get_post('authLDAPWebAttr'),
             'Groups'        => authLdap_get_post('authLDAPGroups', array()),
+            'GroupSeparator'=> authLdap_get_post('authLDAPGroupSeparator', ','),
             'Debug'         => authLdap_get_post('authLDAPDebug', false),
             'GroupAttr'     => authLdap_get_post('authLDAPGroupAttr'),
             'GroupFilter'   => authLdap_get_post('authLDAPGroupFilter'),
@@ -65,6 +67,7 @@ function authLdap_options_panel()
     $authLDAP              = authLdap_get_option('Enabled');
     $authLDAPCachePW       = authLdap_get_option('CachePW');
     $authLDAPURI           = authLdap_get_option('URI');
+    $authLDAPStartTLS      = authLdap_get_option('StartTLS');
     $authLDAPFilter        = authLdap_get_option('Filter');
     $authLDAPNameAttr      = authLdap_get_option('NameAttr');
     $authLDAPSecName       = authLdap_get_option('SecName');
@@ -72,6 +75,7 @@ function authLdap_options_panel()
     $authLDAPUidAttr       = authLdap_get_option('UidAttr');
     $authLDAPWebAttr       = authLdap_get_option('WebAttr');
     $authLDAPGroups        = authLdap_get_option('Groups');
+    $authLDAPGroupSeparator= authLdap_get_option('GroupSeparator');
     $authLDAPDebug         = authLdap_get_option('Debug');
     $authLDAPGroupAttr     = authLdap_get_option('GroupAttr');
     $authLDAPGroupFilter   = authLdap_get_option('GroupFilter');
@@ -84,6 +88,7 @@ function authLdap_options_panel()
     $tPWChecked            = ($authLDAPCachePW)        ? ' checked="checked"' : '';
     $tGroupChecked         = ($authLDAPGroupEnable)    ? ' checked="checked"' : '';
     $tGroupOverUserChecked = ($authLDAPGroupOverUser)  ? ' checked="checked"' : '';
+    $tStartTLSChecked      = ($authLDAPStartTLS)       ? ' checked="checked"' : '';
 
     $roles = new WP_Roles();
 
@@ -112,10 +117,11 @@ function authLdap_get_server()
     if (is_null($_server)) {
         $authLDAPDebug = authLdap_get_option('Debug');
         $authLDAPURI   = authLdap_get_option('URI');
+        $authLDAPStartTLS = authLdap_get_option('StartTLS');
 
         //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
         authLdap_debug('connect to LDAP server');
-        $_server = new LDAP($authLDAPURI, $authLDAPDebug);
+        $_server = new LDAP($authLDAPURI, $authLDAPDebug, $authLDAPStartTLS);
     }
     return $_server;
 }
@@ -128,6 +134,7 @@ function authLdap_get_server()
  * For this we store the hashed passwords in the WP_Database to ensure working
  * conditions even without an LDAP-Connection
  *
+ * @param null|WP_User|WP_Error
  * @param string $username
  * @param string $password
  * @param boolean $already_md5
@@ -148,6 +155,16 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
     // don't do anything when authLDAP is disabled
     if (! authLdap_get_option('Enabled')) {
         authLdap_debug('LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)');
+        return $user;
+    }
+
+    // If the user has already been authenticated (only in that case we get a
+    // WP_User-Object as $user) we skip LDAP-authentication and simply return
+    // the existing user-object
+    if ($user instanceof WP_User) {
+        authLdap_debug(sprintf(
+            'User %s has already been authenticated - skipping LDAP-Authentication',
+            $user->get('nickname')));
         return $user;
     }
 
@@ -339,7 +356,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         // optionally store the password into the wordpress database
         if (authLdap_get_option('CachePW')) {
-            $user_info['user_pass'] = wp_hash_password($password);
+            // Password will be hashed inside wp_update_user or wp_insert_user
+            $user_info['user_pass'] = $password;
         } else {
             // clear the password
             $user_info['user_pass'] = '';
@@ -357,13 +375,9 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             // new wordpress account will be created
             authLdap_debug('The LDAP user does not have an entry in the WP-Database, a new WP account will be created');
 
-            // set initial mail address if not provided by ldap
-            if (empty($user_info['user_email'])) {
-                $user_info['user_email'] = $username . '@example.com';
-            }
             $userid = wp_insert_user($user_info);
         }
-        
+
         if (is_wp_error($userid)) {
             authLdap_debug('Error creating/updating user: ' . $userid->get_error_message());
             trigger_error('Error creating/updating user: '  . $userid->get_error_message());
@@ -371,7 +385,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         $user = new WP_User($userid);
-        
+
         // Remove any roles deemed no longer applicable.
         foreach ($roles_wp as $r) {
             if (!in_array($r, $roles)) {
@@ -473,11 +487,15 @@ function authLdap_groupmap($username, $dn)
     );
     $authLDAPGroupAttr      = authLdap_get_option('GroupAttr');
     $authLDAPGroupFilter    = authLdap_get_option('GroupFilter');
+    $authLDAPGroupSeparator = authLdap_get_option('GroupSeparator');
     if (! $authLDAPGroupAttr) {
         $authLDAPGroupAttr = 'gidNumber';
     }
     if (! $authLDAPGroupFilter) {
         $authLDAPGroupFilter = '(&(objectClass=posixGroup)(memberUid=%s))';
+    }
+    if (! $authLDAPGroupSeparator) {
+        $authLDAPGroupSeparator = ',';
     }
 
     if (!is_array($authLDAPGroups) || count(array_filter(array_values($authLDAPGroups))) == 0) {
@@ -511,7 +529,7 @@ function authLdap_groupmap($username, $dn)
 
     $roles = array( );
     foreach ($authLDAPGroups as $key => $val) {
-        $currentGroup = explode(',', $val);
+        $currentGroup = explode($authLDAPGroupSeparator, $val);
         // Remove whitespaces around the group-ID
         $currentGroup = array_map('trim', $currentGroup);
         if (0 < count(array_intersect($currentGroup, $grp))) {
@@ -522,46 +540,6 @@ function authLdap_groupmap($username, $dn)
     authLdap_debug("Roles from LDAP group: ".implode(', ', $roles));
     return $roles;
 }
-
-
-if (! function_exists('wp_setcookie')) :
-    function wp_setcookie($username, $password, $already_md5 = false, $home = '', $siteurl = '')
-    {
-        $ldapCookieMarker = 'LDAP';
-        $ldapAuth = authLdap_get_option('Enabled');
-
-        if (($ldapAuth) && ($username != 'admin')) {
-            $password = md5($username).md5($ldapCookieMarker);
-        } else {
-            if (!$already_md5) {
-                $password = md5(md5($password)); // Double hash the password in the cookie.
-            }
-        }
-
-        if (empty($home)) {
-            $cookiepath = COOKIEPATH;
-        } else {
-            $cookiepath = preg_replace('|https?://[^/]+|i', '', $home . '/');
-        }
-
-        if (empty($siteurl)) {
-            $sitecookiepath = SITECOOKIEPATH;
-            $cookiehash = COOKIEHASH;
-        } else {
-            $sitecookiepath = preg_replace('|https?://[^/]+|i', '', $siteurl . '/');
-            $cookiehash = md5($siteurl);
-        }
-
-        setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $cookiepath);
-        setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $cookiepath);
-
-        if ($cookiepath != $sitecookiepath) {
-            setcookie('wordpressuser_'. $cookiehash, $username, time() + 31536000, $sitecookiepath);
-            setcookie('wordpresspass_'. $cookiehash, $password, time() + 31536000, $sitecookiepath);
-        }
-    }
-endif;
-
 
 /**
  * This function disables the password-change fields in the users preferences.
@@ -583,10 +561,37 @@ function authLdap_show_password_fields($show, $user=null)
         return true;
     }
 
-    if (get_usermeta($user->ID, 'authLDAP')) {
+    if (get_user_meta($user->ID, 'authLDAP')) {
         return false;
     }
-    return true;
+
+    return $return;
+}
+
+/**
+ * This function disables the password reset for a user.
+ *
+ * It does not make sense to authenticate via LDAP and then allow the user to
+ * reset the password only in the wordpress database. And changing the password
+ * LDAP-wide can not be the scope of Wordpress!
+ *
+ * Whether the user is an LDAP-User or not is determined using the authLDAP-Flag
+ * of the users meta-informations
+ *
+ * @author chaplina (https://github.com/chaplina)
+ * @conf boolean authLDAP
+ * @return false, if the user is an LDAP-User, true if he isn't
+ */
+function authLdap_allow_password_reset($return, $userid)
+{
+    if (!(isset($userid))) {
+        return true;
+    }
+
+    if (get_user_meta($userid, 'authLDAP')) {
+        return false;
+    }
+    return $return;
 }
 
 /**
@@ -759,6 +764,28 @@ function authLdap_set_options($new_options = array())
     }
 }
 
+/**
+ * Do not send an email after changing the password or the email of the user!
+ *
+ * @param boolean $result      The initial resturn value
+ * @param array   $user        The old userdata
+ * @param array   $newUserData The changed userdata
+ *
+ * @return bool
+ */
+function authLdap_send_change_email($result, $user, $newUserData)
+{
+    if (get_usermeta($user['ID'], 'authLDAP')) {
+        return false;
+    }
+
+    return $result;
+}
+
 add_action('admin_menu', 'authLdap_addmenu');
-add_filter('show_password_fields', 'authLdap_show_password_fields');
+add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
+add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);
 add_filter('authenticate', 'authLdap_login', 10, 3);
+/** This only works from WP 4.3.0 on */
+add_filter('send_password_change_email', 'authLdap_send_change_email', 10, 3);
+add_filter('send_email_change_email', 'authLdap_send_change_email', 10, 3);

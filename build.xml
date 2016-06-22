@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="ajaxComments" default="build" basedir=".">
+    <php expression="include('vendor/autoload.php')"/>
     <loadfile property = "version" file = "VERSION">
         <filterchain>
             <striplinebreaks/>
@@ -10,6 +11,7 @@
         <reflexive>
             <fileset dir=".">
                 <include name="index.php"/>
+                <include name="authLdap.php"/>
             </fileset>
             <filterchain>
                 <replaceregexp>

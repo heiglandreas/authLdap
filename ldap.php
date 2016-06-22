@@ -33,9 +33,9 @@ class LDAP
     private $_scheme = 'ldap';
 
     private $_port = 389;
-    
+
     private $_baseDn = '';
-    
+
     private $_debug = false;
     /**
      * This property contains the connection handle to the ldap-server
@@ -43,12 +43,14 @@ class LDAP
      * @var Ressource
      */
     private $_ch = null;
-    
+
     private $_username = '';
-    
+
     private $_password = '';
-    
-    public function __construct($URI, $debug = false)
+
+    private $_starttls = false;
+
+    public function __construct($URI, $debug = false, $starttls = false)
     {
         $this->_debug=$debug;
         $url = parse_url($URI);
@@ -85,6 +87,7 @@ class LDAP
         if (isset ( $url['port'] )) {
             $this -> _port = $url['port'];
         }
+        $this->_starttls = $starttls;
     }
 
     /**
@@ -110,7 +113,10 @@ class LDAP
         }
         ldap_set_option($this->_ch, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($this->_ch, LDAP_OPT_REFERRALS, 0);
-
+        //if configured try to upgrade encryption to tls for ldap connections
+        if ($this->_starttls) {
+          ldap_start_tls($this->_ch);
+        }
         return $this;
     }
 
@@ -151,21 +157,21 @@ class LDAP
             $bind = @ldap_bind($this->_ch);
         }
         if (! $bind) {
-            throw new AuthLDAP_Exception('bind was not successfull');
+            throw new AuthLDAP_Exception('bind was not successfull: ' . ldap_error($this->_ch));
         }
         return $this;
     }
-    
-    function getErrorNumber()
+
+    public function getErrorNumber()
     {
         return @ldap_errno($this->_ch);
     }
-    
-    function getErrorText()
+
+    public function getErrorText()
     {
         return @ldap_error($this->_ch);
     }
-    
+
     /**
      * This method does the actual ldap-serch.
      *
@@ -177,7 +183,7 @@ class LDAP
      * @param array $attributes
      * @return array
      */
-    function search($filter, $attributes = array('uid'))
+    public function search($filter, $attributes = array('uid'))
     {
         if (! is_Resource($this->_ch)) {
             throw new AuthLDAP_Exception('No resource handle avbailable');
@@ -192,25 +198,25 @@ class LDAP
         }
         return $this -> _info;
     }
-    
+
     /**
      * This method sets debugging to ON
      */
-    function debugOn()
+    public function debugOn()
     {
         $this->_debug = true;
         return $this;
     }
-        
+
     /**
      * This method sets debugging to OFF
      */
-    function debugOff()
+    public function debugOff()
     {
         $this->_debug = false;
         return $this;
     }
-    
+
     /**
      * This method authenticates the user <var>$username</var> using the
      * password <var>$password</var>
@@ -242,7 +248,7 @@ class LDAP
     /**
      * $this method loggs errors if debugging is set to ON
      */
-    function logError()
+    public function logError()
     {
         if ($this->_debug) {
             $_v = debug_backtrace();

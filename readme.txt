@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth
 Requires at least: 2.5.0
-Tested up to: 4.3.1
+Tested up to: 4.5
 Stable tag: trunk
 
 Use your existing LDAP flexible as authentication backend for WordPress
@@ -41,6 +41,16 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 1.4.14 =
+* Update to showing password-fields check (thanks to @chaplina)
+
+= 1.4.13 =
+* Removed generation of default email-address (thanks to @henryk)
+* Fixes password-hashing when caching passwords (thanks to @litinoveweedle)
+* Removes the possibility to reset a password for LDAP-based users (thanks to @chaplina)
+* Removes the password-change-Email from 4.3 on (thanks to @litinoveweedle)
+* Fixes double authentication-attempt (that resulted in failed authentication) (thanks to @litinoveweedle)
+
 = 1.4.10 =
 * Cleanup by removing deprecated code
 * Fixes issues with undefined variables
@@ -72,6 +82,6 @@ until Version 1.0.3 - Thanks to alex@tayts.com
 retrieved from the LDAP from me@example.com to $username@example.com so that
 a new user can be created even though the mail address already exists in your
 blog - Also thanks to alex@tayts.com
-* Added support for WordPress-Table-prefixes as the capabilities of a user 
+* Added support for WordPress-Table-prefixes as the capabilities of a user
 are interlany stored in a field that is named "$tablePrefix_capabilities" -
 again thanks to alex@tayts.com and also to sim0n of silicium.mine.nu
