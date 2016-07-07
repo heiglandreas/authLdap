@@ -107,23 +107,28 @@ function authLdap_options_panel()
  *
  * throws exception if there is a problem connecting
  *
- * @return object LDAP server object
  * @conf boolean authLDAPDebug true, if debugging should be turned on
- * @conf string authLDAPURI LDAP server URI
+ * @conf string  authLDAPURI LDAP server URI
+ *
+ * @return LDAP LDAP server object
  */
 function authLdap_get_server()
 {
-    static $_server = null;
-    if (is_null($_server)) {
+    static $_ldapserver = null;
+    if (is_null($_ldapserver)) {
         $authLDAPDebug = authLdap_get_option('Debug');
-        $authLDAPURI   = authLdap_get_option('URI');
+        $authLDAPURI   = explode(' ', authLdap_get_option('URI'));
         $authLDAPStartTLS = authLdap_get_option('StartTLS');
 
         //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
         authLdap_debug('connect to LDAP server');
-        $_server = new LDAP($authLDAPURI, $authLDAPDebug, $authLDAPStartTLS);
+        require_once dirname(__FILE__) . '/src/LdapList.php';
+        $_ldapserver = new \Org_Heigl\AuthLdap\LdapList();
+        foreach ($authLDAPURI as $uri) {
+            $_ldapserver->addLdap(new LDAP($authLDAPURI, $authLDAPDebug, $authLDAPStartTLS));
+        }
     }
-    return $_server;
+    return $_ldapserver;
 }
 
 

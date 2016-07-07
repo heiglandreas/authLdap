@@ -99,15 +99,12 @@ class LDAP
     public function connect()
     {
         $this -> disconnect();
-        if ('ldaps' != $this->_scheme) {
-            $this->_ch = @ldap_connect($this->_server, $this->_port);
-        } else {
-            if (389 == $this -> _port) {
-                $this -> _port = 636;
-            }
-            // when URL is used, port is ignored, see http://php.net/manual/en/function.ldap-connect.php
-            $this->_ch = @ldap_connect($this->_scheme . '://' . $this->_server . ':' . $this -> _port);
+        if ('ldaps' == $this->_scheme && 389 == $this->port) {
+            $this->port = 636;
         }
+
+        $this->_ch = @ldap_connect($this->_scheme . '://' . $this->_server . ':' . $this -> _port);
+
         if (! $this->_ch) {
             throw new AuthLDAP_Exception('Could not connect to the server');
         }
