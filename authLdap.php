@@ -125,7 +125,7 @@ function authLdap_get_server()
         require_once dirname(__FILE__) . '/src/LdapList.php';
         $_ldapserver = new \Org_Heigl\AuthLdap\LdapList();
         foreach ($authLDAPURI as $uri) {
-            $_ldapserver->addLdap(new LDAP($authLDAPURI, $authLDAPDebug, $authLDAPStartTLS));
+            $_ldapserver->addLdap(new LDAP($uri, $authLDAPDebug, $authLDAPStartTLS));
         }
     }
     return $_ldapserver;
