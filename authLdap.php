@@ -119,8 +119,10 @@ function authLdap_get_server()
     static $_ldapserver = null;
     if (is_null($_ldapserver)) {
         $authLDAPDebug = authLdap_get_option('Debug');
-
-        $authLDAPURI   = explode(authLdap_get_option('URISeparaator'), authLdap_get_option('URI'));
+        $authLDAPURI   = explode(
+            authLdap_get_option('URISeparator', ' '),
+            authLdap_get_option('URI')
+        );
         $authLDAPStartTLS = authLdap_get_option('StartTLS');
 
         //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
@@ -725,15 +727,19 @@ function authLdap_load_options($reload = false)
 /**
  * Get an individual option
  */
-function authLdap_get_option($optionname)
+function authLdap_get_option($optionname, $default = null)
 {
     $options = authLdap_load_options();
     if (isset($options[$optionname])) {
         return $options[$optionname];
-    } else {
-        authLdap_debug('option name invalid: ' . $optionname);
-        return null;
     }
+
+    if (null !== $default) {
+        return $default;
+    }
+
+    authLdap_debug('option name invalid: ' . $optionname);
+    return null;
 }
 
 /**
