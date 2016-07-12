@@ -97,6 +97,20 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>
+                        <label for="authLDAPURISeparator">LDAP URI-Separator</label>
+                    </th>
+                    <td>
+                        <input type="text" name="authLDAPURISeparator" id="authLDAPURISeparator" placeholder="LDAP-URI Separator"
+                               class="regular-text" value="<?php echo $authLDAPURISeparator; ?>"/>
+                        <p class="description">
+                            A separator that separates multiple LDAP-URIs from one another.
+                            You can use that feature to try to authenticate against multiple LDAP-Servers
+                            as long as they all have the same attribute-settings. The first LDAP-Server the user can
+                            authenticate against will be used to handle the user.
+                    </td>
+                </tr>
+                <tr>
                       <th>
                           <label for="authLDAPStartTLS" class="description">StartTLS</label>
                       </th>

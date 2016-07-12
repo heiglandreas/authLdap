@@ -1,13 +1,12 @@
-dn: cn=group3,dc=example,dc=com
+dn: cn=group4,dc=example,dc=com
 objectclass: groupOfUniqueNames
-cn: group3
-uniqueMember: uid=user2,dc=example,dc=com
-uniqueMember: uid=user3,dc=example,dc=com
+cn: group4
+uniqueMember: uid=user 4,dc=example,dc=com
 
-dn: uid=user3,dc=example,dc=com
+dn: uid=user 4,dc=example,dc=com
 objectClass: account
 objectClass: simpleSecurityObject
-uid: user3
+uid: user 4
 userPassword: user!"
 
 

@@ -40,6 +40,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
             ['user3', 'user!"', 'uid=%s'],
             ['Manager', 'insecure', 'cn=%s'],
             ['user1', 'user1', 'uid=%s'],
+            ['user 4', 'user!"', 'uid=%s'],
         ];
     }
 
@@ -53,5 +54,27 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
         } else {
             $this->assertFalse($ldap->authenticate($user, $newpassword, $filter));
         }
+    }
+
+    /** @dataProvider serchingForGroupsProvider */
+    public function testThatSearchingForGoupsWorks($filter, $user, $groups)
+    {
+        // (&(objectCategory=group)(member=<USER_DN>))
+        $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
+        $ldap->bind();
+        var_dump($ldap->search(sprintf($filter, $user), ['cn']));
+        $this->assertArraySubset($groups, $ldap->search(sprintf($filter, $user), ['cn']));
+
+    }
+
+    public function serchingForGroupsProvider()
+    {
+        return [
+            [
+                '(&(objectclass=groupOfUniqueNames)(uniqueMember=%s))',
+                'uid=user 4,dc=example,dc=com',
+                ['count' => 1, [], 'group4'],
+            ],
+        ];
     }
 }

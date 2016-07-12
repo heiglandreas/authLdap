@@ -40,6 +40,7 @@ function authLdap_options_panel()
             'Enabled'       => authLdap_get_post('authLDAPAuth', false),
             'CachePW'       => authLdap_get_post('authLDAPCachePW', false),
             'URI'           => authLdap_get_post('authLDAPURI'),
+            'URISeparator'  => authLdap_get_post('authLDAPURISeparator'),
             'StartTLS'      => authLdap_get_post('authLDAPStartTLS', false),
             'Filter'        => authLdap_get_post('authLDAPFilter'),
             'NameAttr'      => authLdap_get_post('authLDAPNameAttr'),
@@ -67,6 +68,7 @@ function authLdap_options_panel()
     $authLDAP              = authLdap_get_option('Enabled');
     $authLDAPCachePW       = authLdap_get_option('CachePW');
     $authLDAPURI           = authLdap_get_option('URI');
+    $authLDAPURISeparator  = authLdap_get_option('URISeparator');
     $authLDAPStartTLS      = authLdap_get_option('StartTLS');
     $authLDAPFilter        = authLdap_get_option('Filter');
     $authLDAPNameAttr      = authLdap_get_option('NameAttr');
@@ -117,7 +119,8 @@ function authLdap_get_server()
     static $_ldapserver = null;
     if (is_null($_ldapserver)) {
         $authLDAPDebug = authLdap_get_option('Debug');
-        $authLDAPURI   = explode(' ', authLdap_get_option('URI'));
+
+        $authLDAPURI   = explode(authLdap_get_option('URISeparaator'), authLdap_get_option('URI'));
         $authLDAPStartTLS = authLdap_get_option('StartTLS');
 
         //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
@@ -655,6 +658,7 @@ function authLdap_load_options($reload = false)
             'Enabled'       => false,
             'CachePW'       => false,
             'URI'           => '',
+            'URISeparator'  => ' ',
             'Filter'        => '', // '(uid=%s)'
             'NameAttr'      => '', // 'name'
             'SecName'       => '',
