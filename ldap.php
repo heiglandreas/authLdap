@@ -53,7 +53,11 @@ class LDAP
     public function __construct($URI, $debug = false, $starttls = false)
     {
         $this->_debug=$debug;
-        $url = parse_url($URI);
+        $array = parse_url($URI);
+        if (! is_array($array)) {
+            throw new Exception($URI . ' seems not to be a valid URI');
+        }
+        $url = array_map(function ($item) { return urldecode($item); }, $array);
         if (false === $url) {
             throw new Exception($URI . ' is an invalid URL');
         }
