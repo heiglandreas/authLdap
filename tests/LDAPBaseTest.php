@@ -62,8 +62,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
         // (&(objectCategory=group)(member=<USER_DN>))
         $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
         $ldap->bind();
-        var_dump($ldap->search(sprintf($filter, $user), ['cn']));
-        $this->assertArraySubset($groups, $ldap->search(sprintf($filter, $user), ['cn']));
+        $this->assertContains($groups, $ldap->search(sprintf($filter, $user), ['cn'])[0]);
 
     }
 
@@ -73,7 +72,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
             [
                 '(&(objectclass=groupOfUniqueNames)(uniqueMember=%s))',
                 'uid=user 4,dc=example,dc=com',
-                ['count' => 1, [], 'group4'],
+                ['count' => 1, 0 => 'group4'],
             ],
         ];
     }
