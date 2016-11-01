@@ -25,6 +25,11 @@
  * @since     07.06.2016
  * @link      http://github.com/heiglandreas/authLDAP
  */
+namespace Org_Heigl\AuthLdapTest;
+
+use Org_Heigl\AuthLdap\LDAP;
+use PHPUnit_Framework_TestCase;
+
 class LDAPListBaseTest extends PHPUnit_Framework_TestCase
 {
     /** @dataProvider bindingWithPasswordProvider */

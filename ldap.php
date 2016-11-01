@@ -26,6 +26,10 @@
  * @category authLdap
  * @since 2008
  */
+namespace Org_Heigl\AuthLdap;
+
+use Exception;
+
 class LDAP
 {
     private $_server = '';
@@ -103,12 +107,11 @@ class LDAP
     public function connect()
     {
         $this -> disconnect();
-        if ('ldaps' == $this->_scheme && 389 == $this->port) {
-            $this->port = 636;
+        if ('ldaps' == $this->_scheme && 389 == $this->_port) {
+            $this->_port = 636;
         }
 
         $this->_ch = @ldap_connect($this->_scheme . '://' . $this->_server . ':' . $this -> _port);
-
         if (! $this->_ch) {
             throw new AuthLDAP_Exception('Could not connect to the server');
         }

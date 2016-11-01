@@ -130,7 +130,7 @@ function authLdap_get_server()
         require_once dirname(__FILE__) . '/src/LdapList.php';
         $_ldapserver = new \Org_Heigl\AuthLdap\LdapList();
         foreach ($authLDAPURI as $uri) {
-            $_ldapserver->addLdap(new LDAP($uri, $authLDAPDebug, $authLDAPStartTLS));
+            $_ldapserver->addLdap(new \Org_Heigl\AuthLdap\LDAP($uri, $authLDAPDebug, $authLDAPStartTLS));
         }
     }
     return $_ldapserver;
@@ -730,7 +730,7 @@ function authLdap_load_options($reload = false)
 function authLdap_get_option($optionname, $default = null)
 {
     $options = authLdap_load_options();
-    if (isset($options[$optionname])) {
+    if (isset($options[$optionname]) && $options[$optionname]) {
         return $options[$optionname];
     }
 
@@ -738,7 +738,7 @@ function authLdap_get_option($optionname, $default = null)
         return $default;
     }
 
-    authLdap_debug('option name invalid: ' . $optionname);
+    //authLdap_debug('option name invalid: ' . $optionname);
     return null;
 }
 

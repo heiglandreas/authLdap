@@ -30,8 +30,10 @@
  * @since 21.09.2010
  */
 
-/** ldap */
-require_once 'ldap.php';
+namespace Org_Heigl\AuthLdapTest;
+
+use PHPUnit_Framework_TestCase;
+use Org_Heigl\AuthLdap\LDAP;
 
 class LdapTest extends PHPUnit_Framework_TestCase
 {

@@ -33,7 +33,7 @@ class LdapList
      */
     protected $items = [];
 
-    public function addLdap(\LDAP $ldap)
+    public function addLdap(LDAP $ldap)
     {
         $this->items[] = $ldap;
     }
@@ -65,7 +65,7 @@ class LdapList
         }
 
         if ($allFailed) {
-            throw new \AuthLDAP_Exception('No bind successfull');
+            throw new AuthLDAP_Exception('No bind successfull');
         }
     }
 
