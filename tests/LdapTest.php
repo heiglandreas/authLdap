@@ -128,4 +128,46 @@ class LdapTest extends PHPUnit_Framework_TestCase
                 array('()123üäö'),
                );
     }
+
+    public function testThatGroupMappingWorks()
+    {
+        $groups = [
+            'count' => 1,
+            0 => [
+                'dn' => 'dn-1',
+                'count' => 1,
+                0 => 'group',
+                'group' => [
+                    'count' => 2,
+                    0 => '7310T270:Překladatelství:čeština - angličtina@ff.cuni.cz',
+                    1 => '7310T033:Český jazyk a literatura@ff.cuni.cz',
+                ]
+            ]
+        ];
+
+        $grp = array();
+        for ($i = 0; $i < $groups ['count']; $i++) {
+            for ($k = 0; $k < $groups[$i][strtolower('group')]['count']; $k++) {
+                $grp[] = $groups[$i][strtolower('group')][$k];
+            }
+        }
+
+        $this->assertEquals([
+            '7310T270:Překladatelství:čeština - angličtina@ff.cuni.cz',
+            '7310T033:Český jazyk a literatura@ff.cuni.cz',
+        ], $grp);
+
+        $role = '';
+        foreach (['testrole' => '7310T031:Český jazyk a literatura@ff.cuni.cz,7310T033:Český jazyk a literatura@ff.cuni.cz'] as $key => $val) {
+            $currentGroup = explode(',', $val);
+            // Remove whitespaces around the group-ID
+            $currentGroup = array_map('trim', $currentGroup);
+            if (0 < count(array_intersect($currentGroup, $grp))) {
+                $role = $key;
+                break;
+            }
+        }
+
+        $this->assertEquals('testrole', $role);
+    }
 }
