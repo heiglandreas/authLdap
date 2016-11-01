@@ -25,12 +25,17 @@
  * @since     07.06.2016
  * @link      http://github.com/heiglandreas/authLDAP
  */
-class LDAPBaseTest extends PHPUnit_Framework_TestCase
+namespace Org_Heigl\Wp\AuthLdapTest;
+
+use phpmock\mockery\PHPMockery;
+
+class LDAPBaseTest extends \PHPUnit_Framework_TestCase
 {
+
     /** @dataProvider bindingWithPasswordProvider */
     public function testThatBindingWithPasswordWorks($user, $password, $filter)
     {
-        $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
+        $ldap = new \LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
         $this->assertTrue($ldap->authenticate($user, $password, $filter));
     }
 
@@ -48,7 +53,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
     public function testThatBindingWithAddedSlashesFailsWorks($user, $password, $filter)
     {
         $newpassword = addslashes($password);
-        $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
+        $ldap = new \LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
         if ($newpassword === $password) {
             $this->assertTrue($ldap->authenticate($user, $password, $filter));
         } else {
@@ -60,7 +65,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
     public function testThatSearchingForGoupsWorks($filter, $user, $groups)
     {
         // (&(objectCategory=group)(member=<USER_DN>))
-        $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
+        $ldap = new \LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
         $ldap->bind();
         $this->assertContains($groups, $ldap->search(sprintf($filter, $user), ['cn'])[0]);
 
@@ -75,5 +80,16 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
                 ['count' => 1, 0 => 'group4'],
             ],
         ];
+    }
+
+    public function testThatSettingLDAPSActuallyGivesTheCorrectPort()
+    {
+        $ldap = new \LDAP('ldaps://cn=Manager,dc=example,dc=com:insecure@127.0.0.1/dc=example,dc=com');
+        PHPMockery::mock(__NAMESPACE__, 'ldap_connect')->with('ldaps://127.0.0.1:639')->andReturn('x');
+        PHPMockery::mock(__NAMESPACE__, 'ldap_set_option')->times(2);
+
+        $ldap->connect();
+
+        \Mockery::close();
     }
 }
