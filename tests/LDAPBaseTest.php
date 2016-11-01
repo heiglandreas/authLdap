@@ -25,8 +25,24 @@
  * @since     07.06.2016
  * @link      http://github.com/heiglandreas/authLDAP
  */
+namespace Org_Heigl\AuthLdapTest;
+
+use Org_Heigl\AuthLdap\LDAP;
+use phpmock\spy\Spy;
+use PHPUnit_Framework_TestCase;
+
 class LDAPBaseTest extends PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        $this->ldap_connect_spy = new Spy('Org_Heigl\AuthLdap', 'ldap_connect');
+        $this->ldap_connect_spy->enable();
+    }
+
+    public function tearDown()
+    {
+        $this->ldap_connect_spy->disable();
+    }
     /** @dataProvider bindingWithPasswordProvider */
     public function testThatBindingWithPasswordWorks($user, $password, $filter)
     {
@@ -75,5 +91,14 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
                 ['count' => 1, 0 => 'group4'],
             ],
         ];
+    }
+
+    public function testThatSettingLDAPSActuallyGivesTheCorrectPort()
+    {
+
+        $ldap = new LDAP('ldaps://cn=Manager,dc=example,dc=com:insecure@127.0.0.1/dc=example,dc=com');
+        $ldap->connect();
+
+        $this->assertEquals('ldaps://127.0.0.1:636', $this->ldap_connect_spy->getInvocations()[0]->getArguments()[0]);
     }
 }

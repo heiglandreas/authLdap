@@ -36,14 +36,25 @@
             </fileset>
         </foreach>
         <echo message="${svnaccess.username}"/>
-        <svncommit
+        <exec outputProperty="committedrevision" executable="svn" dir="${project.basedir}/svn">
+            <arg value="commit"/>
+            <arg value="--username"/>
+            <arg value="${svnaccess.username}"/>
+            <arg value="--password"/>
+            <arg value="${svnaccess.password}"/>
+            <arg value="--message"/>
+            <arg value="Bumps version to ${version}"/>
+            <arg value="--no-auth-cache"/>
+            <arg value="--quiet"/>
+        </exec>
+        <!--svncommit
             username="${svnaccess.username}"
             password="${svnaccess.password}"
             workingcopy="${project.basedir}/svn"
             message="Bumps version to ${version}"
             nocache="true"
-            />
-        <echo message="Committed revision: ${svn.committedrevision}"/>
+            /-->
+        <echo message="Committed revision: ${committedrevision}"/>
     </target>
 
     <target name="svn.addFile">
@@ -62,8 +73,21 @@
         <echo>${svn.info}</echo>
     </target>
     <target name="deploy.git">
-        <gitcommit repository="." allFiles="true" message="Bumps version to ${version}"/>
-        <gittag name="${version}" repository="." sign="true" message="Version ${version}"/>
-        <gitpush repository="." tags="true" destination="origin"/>
+        <exec executable="git" dir=".">
+            <arg value="-m"/>
+            <arg value="Bumps version to ${version}"/>
+        </exec>
+        <exec executable="git" dir=".">
+            <arg value="tag"/>
+            <arg value="-s"/>
+            <arg value="-m"/>
+            <arg value="Version ${version}"/>
+            <arg value="${version}"/>
+        </exec>
+        <exec executable="git" dir=".">
+            <arg value="push"/>
+            <arg value="--tags"/>
+            <arg value="origin"/>
+        </exec>
     </target>
 </project>
