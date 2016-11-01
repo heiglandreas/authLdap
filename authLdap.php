@@ -40,6 +40,7 @@ function authLdap_options_panel()
             'Enabled'       => authLdap_get_post('authLDAPAuth', false),
             'CachePW'       => authLdap_get_post('authLDAPCachePW', false),
             'URI'           => authLdap_get_post('authLDAPURI'),
+            'URISeparator'  => authLdap_get_post('authLDAPURISeparator'),
             'StartTLS'      => authLdap_get_post('authLDAPStartTLS', false),
             'Filter'        => authLdap_get_post('authLDAPFilter'),
             'NameAttr'      => authLdap_get_post('authLDAPNameAttr'),
@@ -67,6 +68,7 @@ function authLdap_options_panel()
     $authLDAP              = authLdap_get_option('Enabled');
     $authLDAPCachePW       = authLdap_get_option('CachePW');
     $authLDAPURI           = authLdap_get_option('URI');
+    $authLDAPURISeparator  = authLdap_get_option('URISeparator');
     $authLDAPStartTLS      = authLdap_get_option('StartTLS');
     $authLDAPFilter        = authLdap_get_option('Filter');
     $authLDAPNameAttr      = authLdap_get_option('NameAttr');
@@ -107,23 +109,31 @@ function authLdap_options_panel()
  *
  * throws exception if there is a problem connecting
  *
- * @return object LDAP server object
  * @conf boolean authLDAPDebug true, if debugging should be turned on
- * @conf string authLDAPURI LDAP server URI
+ * @conf string  authLDAPURI LDAP server URI
+ *
+ * @return LDAP LDAP server object
  */
 function authLdap_get_server()
 {
-    static $_server = null;
-    if (is_null($_server)) {
+    static $_ldapserver = null;
+    if (is_null($_ldapserver)) {
         $authLDAPDebug = authLdap_get_option('Debug');
-        $authLDAPURI   = authLdap_get_option('URI');
+        $authLDAPURI   = explode(
+            authLdap_get_option('URISeparator', ' '),
+            authLdap_get_option('URI')
+        );
         $authLDAPStartTLS = authLdap_get_option('StartTLS');
 
         //$authLDAPURI = 'ldap:/foo:bar@server/trallala';
         authLdap_debug('connect to LDAP server');
-        $_server = new LDAP($authLDAPURI, $authLDAPDebug, $authLDAPStartTLS);
+        require_once dirname(__FILE__) . '/src/LdapList.php';
+        $_ldapserver = new \Org_Heigl\AuthLdap\LdapList();
+        foreach ($authLDAPURI as $uri) {
+            $_ldapserver->addLdap(new LDAP($uri, $authLDAPDebug, $authLDAPStartTLS));
+        }
     }
-    return $_server;
+    return $_ldapserver;
 }
 
 
@@ -650,6 +660,7 @@ function authLdap_load_options($reload = false)
             'Enabled'       => false,
             'CachePW'       => false,
             'URI'           => '',
+            'URISeparator'  => ' ',
             'Filter'        => '', // '(uid=%s)'
             'NameAttr'      => '', // 'name'
             'SecName'       => '',
@@ -716,15 +727,19 @@ function authLdap_load_options($reload = false)
 /**
  * Get an individual option
  */
-function authLdap_get_option($optionname)
+function authLdap_get_option($optionname, $default = null)
 {
     $options = authLdap_load_options();
     if (isset($options[$optionname])) {
         return $options[$optionname];
-    } else {
-        authLdap_debug('option name invalid: ' . $optionname);
-        return null;
     }
+
+    if (null !== $default) {
+        return $default;
+    }
+
+    authLdap_debug('option name invalid: ' . $optionname);
+    return null;
 }
 
 /**

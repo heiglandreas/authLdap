@@ -41,6 +41,12 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 1.4.20 =
+* Allows multiple LDAP-servers to be queried (given that they use the same attributes)
+
+= 1.4.19 =
+* Adds support for TLS
+
 = 1.4.14 =
 * Update to showing password-fields check (thanks to @chaplina)
 
