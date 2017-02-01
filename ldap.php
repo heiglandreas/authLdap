@@ -26,6 +26,10 @@
  * @category authLdap
  * @since 2008
  */
+namespace Org_Heigl\AuthLdap;
+
+use Exception;
+
 class LDAP
 {
     private $_server = '';
@@ -53,7 +57,11 @@ class LDAP
     public function __construct($URI, $debug = false, $starttls = false)
     {
         $this->_debug=$debug;
-        $url = parse_url($URI);
+        $array = parse_url($URI);
+        if (! is_array($array)) {
+            throw new Exception($URI . ' seems not to be a valid URI');
+        }
+        $url = array_map(function ($item) { return urldecode($item); }, $array);
         if (false === $url) {
             throw new Exception($URI . ' is an invalid URL');
         }
@@ -99,15 +107,11 @@ class LDAP
     public function connect()
     {
         $this -> disconnect();
-        if ('ldaps' != $this->_scheme) {
-            $this->_ch = @ldap_connect($this->_server, $this->_port);
-        } else {
-            if (389 == $this -> _port) {
-                $this -> _port = 636;
-            }
-            // when URL is used, port is ignored, see http://php.net/manual/en/function.ldap-connect.php
-            $this->_ch = @ldap_connect($this->_scheme . '://' . $this->_server . ':' . $this -> _port);
+        if ('ldaps' == $this->_scheme && 389 == $this->_port) {
+            $this->_port = 636;
         }
+
+        $this->_ch = @ldap_connect($this->_scheme . '://' . $this->_server . ':' . $this -> _port);
         if (! $this->_ch) {
             throw new AuthLDAP_Exception('Could not connect to the server');
         }
