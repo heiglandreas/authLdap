@@ -15,7 +15,7 @@
         "php": ">=5.4"
     },
     "require-dev": {
-        "php-mock/php-mock": "^1.0"
+        "php-mock/php-mock": "^1.0",
         "phpunit/phpunit": "~4.5",
         "mockery/mockery": "0.9.*",
         "codeclimate/php-test-reporter": "0.1.*",
