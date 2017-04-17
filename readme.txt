@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth
 Requires at least: 2.5.0
-Tested up to: 4.6.1
+Tested up to: 4.7.3
 Stable tag: trunk
 
 Use your existing LDAP flexible as authentication backend for WordPress
@@ -41,6 +41,10 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 1.5.0 =
+* Allows parts of the LDAP-URI to be URLEncoded
+* Drops support for PHP 5.4
+
 = 1.4.20 =
 * Allows multiple LDAP-servers to be queried (given that they use the same attributes)
 * Fixes issue with URL-Encoded informations (see https://github.com/heiglandreas/authLdap/issues/108)
