@@ -15,6 +15,7 @@ before_script:
  - phpenv config-add .ci/php.ini || return 0
  - .ci/OpenLDAP_run.sh
  - .ci/load_fixtures.sh
+ - composer dumpautoload
 
 
 script:

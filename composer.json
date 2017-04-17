@@ -25,9 +25,10 @@
         "pear/pear": "dev-master"
     },
     "autoload" : {
-        "psr-4" : {
-            "Org_Heigl\\AuthLdap\\" : "./"
-        }
+        "classmap" : [
+            "ldap.php",
+            "authLdap.php"
+        ]
     },
     "autoload-dev" : {
         "psr-4" : {
