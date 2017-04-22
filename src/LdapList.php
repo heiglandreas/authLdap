@@ -31,7 +31,7 @@ class LdapList
     /**
      * @var \LDAP[]
      */
-    protected $items = [];
+    protected $items = array();
 
     public function addLdap(LDAP $ldap)
     {
