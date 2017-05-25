@@ -1,9 +1,9 @@
 dn: cn=group5,dc=example,dc=com
 objectclass: groupOfUniqueNames
 cn: group5
-uniqueMember: uid=user 5,dc=example,dc=com
+uniqueMember: uid=user 5,dc=test space,dc=example,dc=com
 
-dn: uid=user 5,dc=example,dc=com
+dn: uid=user 5,dc=test space,dc=example,dc=com
 objectClass: account
 objectClass: simpleSecurityObject
 uid: user 5

@@ -45,19 +45,20 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
         $this->ldap_connect_spy->disable();
     }
     /** @dataProvider bindingWithPasswordProvider */
-    public function testThatBindingWithPasswordWorks($user, $password, $filter)
+    public function testThatBindingWithPasswordWorks($user, $password, $filter, $uri)
     {
-        $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
+        $ldap = new LDAP($uri);
         $this->assertTrue($ldap->authenticate($user, $password, $filter));
     }
 
     public function bindingWithPasswordProvider()
     {
         return [
-            ['user3', 'user!"', 'uid=%s'],
-            ['Manager', 'insecure', 'cn=%s'],
-            ['user1', 'user1', 'uid=%s'],
-            ['user 4', 'user!"', 'uid=%s'],
+            ['user3', 'user!"', 'uid=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'],
+            ['Manager', 'insecure', 'cn=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'],
+            ['user1', 'user1', 'uid=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'],
+            ['user 4', 'user!"', 'uid=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'],
+            ['user 5', 'user!"', 'uid=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=test%20space,dc=example,dc=com'],
         ];
     }
 
@@ -85,7 +86,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
     public function initialBindingToLdapServerWorksProvider()
     {
         return [
-            ['ldap://uid=user%205,dc=example,dc=com:user!"@localhost:3890/dc=test%20space,dc=example,dc=com'],
+            ['ldap://uid=user%205,dc=test%20space,dc=example,dc=com:user!"@localhost:3890/dc=test%20space,dc=example,dc=com'],
         ];
     }
 
