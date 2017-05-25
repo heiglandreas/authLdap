@@ -67,6 +67,8 @@ class LdapList
         if ($allFailed) {
             throw new AuthLDAP_Exception('No bind successfull');
         }
+
+        return true;
     }
 
     public function search($filter, $attributes = array('uid'))

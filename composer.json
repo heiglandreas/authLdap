@@ -28,7 +28,10 @@
         "classmap" : [
             "ldap.php",
             "authLdap.php"
-        ]
+        ],
+        "psr-4" : {
+            "Org_Heigl\\AuthLdap\\" : "src/"
+        }
     },
     "autoload-dev" : {
         "psr-4" : {

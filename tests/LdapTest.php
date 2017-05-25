@@ -114,6 +114,16 @@ class LdapTest extends PHPUnit_Framework_TestCase
               'debug'    => false
              )
             ),
+            array(
+                array ('ldap://ldap.example.org/cn=test%20example,c=org', false),
+                array (
+                    'username' => 'anonymous',
+                    'password' => '',
+                    'server'   => 'ldap.example.org',
+                    'baseDn'   => 'cn=test example,c=org',
+                    'debug'    => false
+                )
+            ),
         );
     }
 

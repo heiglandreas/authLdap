@@ -1,0 +1,6 @@
+dn: dc=test space,dc=example,dc=com
+dc: test space
+description: LDAP Example with space
+objectClass: dcObject
+objectClass: organization
+o: test space

@@ -28,6 +28,7 @@
 namespace Org_Heigl\AuthLdapTest;
 
 use Org_Heigl\AuthLdap\LDAP;
+use Org_Heigl\AuthLdap\LdapList;
 use phpmock\spy\Spy;
 use PHPUnit_Framework_TestCase;
 
@@ -57,6 +58,34 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
             ['Manager', 'insecure', 'cn=%s'],
             ['user1', 'user1', 'uid=%s'],
             ['user 4', 'user!"', 'uid=%s'],
+        ];
+    }
+
+    /**
+     * @param $uri
+     * @dataProvider initialBindingToLdapServerWorksProvider
+     */
+    public function testThatInitialBindingWorks($uri)
+    {
+        $ldap = new LDAP($uri);
+        $this->assertInstanceof(LDAP::class, $ldap->bind());
+    }
+
+    /**
+     * @param $uri
+     * @dataProvider initialBindingToLdapServerWorksProvider
+     */
+    public function testThatInitialBindingToMultipleLdapsWorks($uri)
+    {
+        $list = new LdapList();
+        $list->addLDAP(new LDAP($uri));
+        $this->assertTrue($list->bind());
+    }
+
+    public function initialBindingToLdapServerWorksProvider()
+    {
+        return [
+            ['ldap://uid=user%205,dc=example,dc=com:user!"@localhost:3890/dc=test%20space,dc=example,dc=com'],
         ];
     }
 
