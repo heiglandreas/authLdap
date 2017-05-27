@@ -29,6 +29,12 @@
  * @link      https://github.com/heiglandreas/authLdap
  */
 ?><div class="wrap">
+    <?php if (! extension_loaded('ldap')) : ?>
+    <div class="error"><strong>Caveat:</strong> The LDAP-extension is not loaded!
+        Without that extension it is not possible to query an LDAP-Server! Please have a look
+        at <a href="http://php.net/manual/install.php">the PHP-Installation page</a>
+    </div>
+    <?php endif ?>
     <h2>AuthLDAP Options</h2>
     <form method="post" id="authLDAP_options" action="<?php echo $action;?>">
         <h3 class="title">General Usage of authLDAP</h3>
