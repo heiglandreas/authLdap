@@ -799,7 +799,7 @@ function authLdap_send_change_email($result, $user, $newUserData)
 }
 
 $hook = is_multisite() ? 'network_' : '';
-add_action('admin_menu', $hook . 'authLdap_addmenu');
+add_action($hook . 'admin_menu', 'authLdap_addmenu');
 add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
 add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);
 add_filter('authenticate', 'authLdap_login', 10, 3);
