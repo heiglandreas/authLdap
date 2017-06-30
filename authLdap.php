@@ -355,7 +355,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         if (isset($attribs[0][strtolower($authLDAPWebAttr)][0])) {
             $user_info['user_url'] = $attribs[0][strtolower($authLDAPWebAttr)][0];
         }
-
+		$user_info['user_nicename‘] = substr($user_info['user_nicename‘], 0, 50);
         // display name, nickname, nicename
         if (array_key_exists('first_name', $user_info)) {
             $user_info['display_name'] = $user_info['first_name'];
