@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth
 Requires at least: 2.5.0
-Tested up to: 4.7.4
+Tested up to: 4.9.0
 Stable tag: trunk
 
 Use your existing LDAP flexible as authentication backend for WordPress
@@ -41,6 +41,11 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 2.0.0 =
+* This new release adds Multi-Site support. It will no longer be possible to use this plugin just in one subsite of a multisite installation!
+* Adds a warning screen to the config-section when no LDAPextension could be found
+* Fixes an issue with the max-length of the username
+
 = 1.5.1 =
 * Fixes an issue with escaped backslashes and quotes
 
