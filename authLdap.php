@@ -20,8 +20,10 @@ function authLdap_debug($message)
 
 function authLdap_addmenu()
 {
-    if (function_exists('add_options_page')) {
+    if (! is_multisite()) {
         add_options_page('AuthLDAP', 'AuthLDAP', 'manage_options', basename(__FILE__), 'authLdap_options_panel');
+    } else {
+        add_submenu_page('settings.php', 'AuthLDAP', 'AuthLDAP', 'manage_options', 'authldap', 'authLdap_options_panel');
     }
 }
 
@@ -652,8 +654,12 @@ function authLdap_load_options($reload = false)
     // the current version for options
     $option_version_plugin = 1;
 
+    $optionFunction = 'get_option';
+    if (is_multisite()) {
+        $optionFunction = 'get_site_option';
+    }
     if (is_null($options) || $reload) {
-        $options = get_option('authLDAPOptions', array());
+        $options = $optionFunction('authLDAPOptions', array());
     }
 
     // check if option version has changed (or if it's there at all)
@@ -759,15 +765,19 @@ function authLdap_set_options($new_options = array())
     }
 
     // store options
-    if (update_option('authLDAPOptions', $options)) {
+    $optionFunction = 'update_option';
+    if (is_multisite()) {
+        $optionFunction = 'update_site_option';
+    }
+    if ($optionFunction('authLDAPOptions', $options)) {
         // reload the option cache
         authLdap_load_options(true);
 
         return true;
-    } else {
-        // could not set options
-        return false;
     }
+
+    // could not set options
+    return false;
 }
 
 /**
@@ -788,7 +798,8 @@ function authLdap_send_change_email($result, $user, $newUserData)
     return $result;
 }
 
-add_action('admin_menu', 'authLdap_addmenu');
+$hook = is_multisite() ? 'network_' : '';
+add_action($hook . 'admin_menu', 'authLdap_addmenu');
 add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
 add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);
 add_filter('authenticate', 'authLdap_login', 10, 3);
