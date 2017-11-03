@@ -44,10 +44,22 @@ class LDAPListBaseTest extends PHPUnit_Framework_TestCase
     public function bindingWithPasswordProvider()
     {
         return [
-            ['user3', 'user!"', 'uid=%s'],
-            ['Manager', 'insecure', 'cn=%s'],
-            ['user1', 'user1', 'uid=%s'],
-        ];
+                [
+                 'user3',
+                 'user!"',
+                 'uid=%s',
+                ],
+                [
+                 'Manager',
+                 'insecure',
+                 'cn=%s',
+                ],
+                [
+                 'user1',
+                 'user1',
+                 'uid=%s',
+                ],
+               ];
     }
 
     /** @dataProvider bindingWithPasswordProvider */
