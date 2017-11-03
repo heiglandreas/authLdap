@@ -642,6 +642,19 @@ function authLdap_sortByCapabilitycount($a, $b)
     return 0;
 }
 
+function authLdap_is_multisite()
+{
+    if (! is_multisite()) {
+        return false;
+    }
+
+    if (get_option('authLDAPOptions')) {
+        return false;
+    }
+
+    return true;
+}
+
 /**
  * Load AuthLDAP Options
  *
@@ -655,7 +668,7 @@ function authLdap_load_options($reload = false)
     $option_version_plugin = 1;
 
     $optionFunction = 'get_option';
-    if (is_multisite()) {
+    if (authLdap_is_multisite()) {
         $optionFunction = 'get_site_option';
     }
     if (is_null($options) || $reload) {
@@ -766,7 +779,7 @@ function authLdap_set_options($new_options = array())
 
     // store options
     $optionFunction = 'update_option';
-    if (is_multisite()) {
+    if (authLdap_is_multisite()) {
         $optionFunction = 'update_site_option';
     }
     if ($optionFunction('authLDAPOptions', $options)) {
@@ -798,7 +811,7 @@ function authLdap_send_change_email($result, $user, $newUserData)
     return $result;
 }
 
-$hook = is_multisite() ? 'network_' : '';
+$hook = authLdap_is_multisite() ? 'network_' : '';
 add_action($hook . 'admin_menu', 'authLdap_addmenu');
 add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
 add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);
