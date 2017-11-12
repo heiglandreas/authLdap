@@ -36,7 +36,7 @@
     </div>
     <?php endif ?>
     <h2>AuthLDAP Options</h2>
-    <form method="post" id="authLDAP_options" action="<?php echo $action;?>">
+    <form method="post" id="authLDAP_options" action="<?php echo $action;?>">               
         <h3 class="title">General Usage of authLDAP</h3>
         <fieldset class="options">
             <table class="form-table">
@@ -145,6 +145,19 @@
                         </p>
                         <p class="description">
                             If you leave this field empty it defaults to <strong>(uid=%s)</strong>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="authLDAPFilter" class="description">Base DN for LDAP bulk import</label>
+                    </th>
+                    <td>
+                        <input type="text" name="basednbulk" id="basednbulk" placeholder=""
+                          class="regular-text" value="<?php echo $basednbulk; ?>"/>
+                        
+                        <p class="description">
+                            Provide different base dn for user bulk import.
                         </p>
                     </td>
                 </tr>
@@ -370,7 +383,7 @@
             <p class="submit">
                 <input type="submit" name="ldapOptionsSave" class="button button-primary" value="Save Changes" />
             </p>
-        </fieldset>
+        </fieldset>        
     </form>
 </div>
 

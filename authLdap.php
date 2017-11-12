@@ -45,6 +45,7 @@ function authLdap_options_panel()
             'URISeparator'  => authLdap_get_post('authLDAPURISeparator'),
             'StartTLS'      => authLdap_get_post('authLDAPStartTLS', false),
             'Filter'        => authLdap_get_post('authLDAPFilter'),
+            'basednbulk'    => authLdap_get_post('basednbulk'),
             'NameAttr'      => authLdap_get_post('authLDAPNameAttr'),
             'SecName'       => authLdap_get_post('authLDAPSecName'),
             'UidAttr'       => authLdap_get_post('authLDAPUidAttr'),
@@ -63,9 +64,9 @@ function authLdap_options_panel()
             echo "<div class='updated'><p>Saved Options!</p></div>";
         } else {
             echo "<div class='error'><p>Could not save Options!</p></div>";
-        }
+        }       
     }
-
+    
     // Do some initialization for the admin-view
     $authLDAP              = authLdap_get_option('Enabled');
     $authLDAPCachePW       = authLdap_get_option('CachePW');
@@ -73,6 +74,7 @@ function authLdap_options_panel()
     $authLDAPURISeparator  = authLdap_get_option('URISeparator');
     $authLDAPStartTLS      = authLdap_get_option('StartTLS');
     $authLDAPFilter        = authLdap_get_option('Filter');
+    $basednbulk            = authLdap_get_option('basednbulk');
     $authLDAPNameAttr      = authLdap_get_option('NameAttr');
     $authLDAPSecName       = authLdap_get_option('SecName');
     $authLDAPMailAttr      = authLdap_get_option('MailAttr');
@@ -806,3 +808,45 @@ add_filter('authenticate', 'authLdap_login', 10, 3);
 /** This only works from WP 4.3.0 on */
 add_filter('send_password_change_email', 'authLdap_send_change_email', 10, 3);
 add_filter('send_email_change_email', 'authLdap_send_change_email', 10, 3);
+
+//Add user menu button
+add_action('admin_menu', 'my_users_menu');
+
+function my_users_menu() {
+	add_users_page('LDAP Bulk Import', 'LDAP Bulk Import', 'edit_pages', 'bulk_identifier', 'show_bulk_import');
+}
+
+function show_bulk_import() {    
+    //get list of all uid from ldap server
+        try {
+            //talk to the server
+            authLdap_get_server()->bind();
+            $server = authLdap_get_server();
+            
+            //ask the server for all uid
+            $attribs = $server->search(
+                    '(objectClass=organizationalPerson)',                    
+                    array('uid', 'mail', 'sn', 'givenName'),
+                    authLdap_get_option('basednbulk')
+                    );
+            
+            //throw new exception, if no uid is returned
+            if (! isset($attribs[0][strtolower('uid')])) {
+                authLdap_debug('could not get user attributes from LDAP');
+                throw new UnexpectedValueException('The user-ID attribute has not been returned');
+            }            
+            
+            foreach ($attribs as $user) {                
+
+                if(! username_exists($user['uid'][0])){
+                    wp_create_user($user['uid'][0], '', $user['mail'][0]);
+                    echo "<div class='updated'><p>user inserted: ". $user['uid'][0] ."</p></div>";
+                }
+            }
+            
+        } catch (Exception $e) {
+            echo "<div class='updated'><p>sync problems: ". $e->getMessage() ."</p></div>";
+            authLdap_debug('Exception getting LDAP user: ' . $e->getMessage());
+            return false;
+        }
+}

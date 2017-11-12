@@ -71,11 +71,11 @@ class LdapList
         return true;
     }
 
-    public function search($filter, $attributes = array('uid'))
-    {
+    public function search($filter, $attributes = array('uid'), $baseDN = null)
+    {        
         foreach ($this->items as $item) {
             try {
-                $result = $item->search($filter, $attributes);
+                $result = $item->search($filter, $attributes, $baseDN);
                 return $result;
             } catch (Exception $e) {
                 throw $e;
