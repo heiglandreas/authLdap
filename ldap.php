@@ -197,7 +197,7 @@ class LDAP
             throw new AuthLDAP_Exception('No resource handle avbailable');
         }    
                 
-        if($baseDN === null){
+        if($baseDN === null || $baseDN == ''){
             $baseDN = $this->_baseDn;
         }        
         

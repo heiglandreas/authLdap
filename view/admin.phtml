@@ -77,6 +77,12 @@
                 </tr>
             </table>
         </fieldset>
+        
+        
+        
+        
+        
+        
         <h3 class="title">General Server Settings</h3>
         <fieldset class="options">
             <table class="form-table">
@@ -147,22 +153,79 @@
                             If you leave this field empty it defaults to <strong>(uid=%s)</strong>
                         </p>
                     </td>
-                </tr>
+                </tr>                
+            </table>
+        </fieldset>
+        
+        <!-- Bulk import section -->
+        
+        <h3 class="title">User Bulk Import Settings</h3>
+        <fieldset class="options">
+            <table class="form-table">                
                 <tr>
                     <th scope="row">
                         <label for="authLDAPFilter" class="description">Base DN for LDAP bulk import</label>
                     </th>
                     <td>
-                        <input type="text" name="basednbulk" id="basednbulk" placeholder=""
-                          class="regular-text" value="<?php echo $basednbulk; ?>"/>
+                        <input type="text" name="bulk_basedn" id="bulk_basedn" placeholder=""
+                          class="regular-text" value="<?php echo $bulk_basedn; ?>"/>
                         
                         <p class="description">
                             Provide different base dn for user bulk import.
                         </p>
                     </td>
                 </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="bulk_filter" class="description">Base DN for LDAP bulk import</label>
+                    </th>
+                    <td>
+                        <input type="text" name="bulk_filter" id="bulk_filter" placeholder="eg.(objectClass=organizationalPerson)"
+                          class="regular-text" value="<?php echo $bulk_filter; ?>"/>                        
+                        <p class="description">
+                            Provide a specific filter for user bulk import.
+                        </p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th scope="row">
+                        <label for="bulk_user_filter">Capability to access the user bulk import</label>
+                    </th>
+                    <td>
+                        <?php
+                        
+                        //retriev all wordpress roles
+                        $all_roles = get_editable_roles();
+                                                
+                        $all_capabilites = array();
+                        
+                        //get array with all capabilities which are available on wordpress
+                        foreach(get_editable_roles() as $role_name => $role_info) {
+                            foreach($role_info['capabilities'] as $capability => $_) {
+                                $all_capabilites[] = $capability;
+                            }                            
+                        }                        
+                        $all_capabilites = array_unique($all_capabilites);                      
+                        ?>
+
+                        <select name="bulk_cap" id="bulk_cap">
+                                <?php foreach ($all_capabilites as $cap) : ?>
+                            <option value="<?php echo $cap; ?>" <?php echo ( $cap == $bulk_cap ? 'selected="selected"' : '' ); ?>>
+                                <?php echo $cap; ?>
+                            </option>
+                                <?php endforeach; ?>
+                        </select>
+                        <p class="description">
+                            Here you can select what capability is needed to run user bulk import.
+                        </p>
+                    </td>
+                </tr>
             </table>
         </fieldset>
+        
+        <!-- End Bulk import section -->
 
         <h3 class="title">Settings for creating new Users</h3>
         <fieldset class="options">
@@ -364,15 +427,15 @@
                 <tr>
                     <th scope="row">
                         <label for="authLDAPGroups[<?php echo $group; ?>]">
-                            <?php echo $vals; ?>
+                            <?php echo $vals; ?>                            
                         </label>
                     </th>
                     <td>
                         <input type="text" name="authLDAPGroups[<?php echo $group; ?>]" id="authLDAPGroups[<?php echo $group; ?>]"
-                          value="<?php echo $aGroup; ?>" />
+                          value="<?php echo $aGroup; ?>" />                        
                         <p class="description">What LDAP-Groups shall be matched to the <?php echo $vals; ?>-Role?</p>
                         <p class="description">Please provide a coma-separated list of values</p>
-                        <p class="description">This field is empty by default</p>
+                        <p class="description">This field is empty by default</p>                        
                     </td>
                 </tr>
 <?php endforeach; ?>

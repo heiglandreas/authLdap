@@ -44,8 +44,7 @@ function authLdap_options_panel()
             'URI'           => authLdap_get_post('authLDAPURI'),
             'URISeparator'  => authLdap_get_post('authLDAPURISeparator'),
             'StartTLS'      => authLdap_get_post('authLDAPStartTLS', false),
-            'Filter'        => authLdap_get_post('authLDAPFilter'),
-            'basednbulk'    => authLdap_get_post('basednbulk'),
+            'Filter'        => authLdap_get_post('authLDAPFilter'),            
             'NameAttr'      => authLdap_get_post('authLDAPNameAttr'),
             'SecName'       => authLdap_get_post('authLDAPSecName'),
             'UidAttr'       => authLdap_get_post('authLDAPUidAttr'),
@@ -59,13 +58,19 @@ function authLdap_options_panel()
             'DefaultRole'   => authLdap_get_post('authLDAPDefaultRole'),
             'GroupEnable'   => authLdap_get_post('authLDAPGroupEnable', false),
             'GroupOverUser' => authLdap_get_post('authLDAPGroupOverUser', false),
+            'bulk_cap'      => authLdap_get_post('bulk_cap'),
+            'bulk_filter'   => authLdap_get_post('bulk_filter'),
+            'bulk_basedn'   => authLdap_get_post('bulk_basedn'),
         );
+                        
         if (authLdap_set_options($new_options)) {
             echo "<div class='updated'><p>Saved Options!</p></div>";
         } else {
             echo "<div class='error'><p>Could not save Options!</p></div>";
         }       
     }
+    
+
     
     // Do some initialization for the admin-view
     $authLDAP              = authLdap_get_option('Enabled');
@@ -74,7 +79,6 @@ function authLdap_options_panel()
     $authLDAPURISeparator  = authLdap_get_option('URISeparator');
     $authLDAPStartTLS      = authLdap_get_option('StartTLS');
     $authLDAPFilter        = authLdap_get_option('Filter');
-    $basednbulk            = authLdap_get_option('basednbulk');
     $authLDAPNameAttr      = authLdap_get_option('NameAttr');
     $authLDAPSecName       = authLdap_get_option('SecName');
     $authLDAPMailAttr      = authLdap_get_option('MailAttr');
@@ -88,6 +92,9 @@ function authLdap_options_panel()
     $authLDAPDefaultRole   = authLdap_get_option('DefaultRole');
     $authLDAPGroupEnable   = authLdap_get_option('GroupEnable');
     $authLDAPGroupOverUser = authLdap_get_option('GroupOverUser');
+    $bulk_cap              = authLdap_get_option('bulk_cap');
+    $bulk_filter           = authLdap_get_option('bulk_filter');
+    $bulk_basedn           = authLdap_get_option('bulk_basedn');
 
     $tChecked              = ($authLDAP)               ? ' checked="checked"' : '';
     $tDebugChecked         = ($authLDAPDebug)          ? ' checked="checked"' : '';
@@ -810,42 +817,47 @@ add_filter('send_password_change_email', 'authLdap_send_change_email', 10, 3);
 add_filter('send_email_change_email', 'authLdap_send_change_email', 10, 3);
 
 //Add user menu button
-add_action('admin_menu', 'my_users_menu');
+add_action('admin_menu', 'user_admin_menu_entry');
 
-function my_users_menu() {
-	add_users_page('LDAP Bulk Import', 'LDAP Bulk Import', 'edit_pages', 'bulk_identifier', 'show_bulk_import');
+function user_admin_menu_entry() {
+	add_users_page('LDAP Bulk Import', 'LDAP Bulk Import', authLdap_get_option('bulk_cap'), 'do_user_bulk_import', 'show_bulk_import');
 }
 
+//Does the bulk import of all ldap users, when clicking on the user admin menu entry
 function show_bulk_import() {    
     //get list of all uid from ldap server
         try {
             //talk to the server
             authLdap_get_server()->bind();
-            $server = authLdap_get_server();
+            $server = authLdap_get_server();            
             
-            //ask the server for all uid
+            //ask the server for some user attributes of all users
             $attribs = $server->search(
-                    '(objectClass=organizationalPerson)',                    
-                    array('uid', 'mail', 'sn', 'givenName'),
-                    authLdap_get_option('basednbulk')
-                    );
+                authLdap_get_option('bulk_filter'),                    
+                array(authLdap_get_option('UidAttr', 'uid'),
+                    authLdap_get_option('MailAttr', 'mail')
+                ),
+                authLdap_get_option('bulk_basedn')
+            );
             
             //throw new exception, if no uid is returned
-            if (! isset($attribs[0][strtolower('uid')])) {
+            if (! isset($attribs[0][strtolower(authLdap_get_option('UidAttr', 'uid'))])) {
                 authLdap_debug('could not get user attributes from LDAP');
                 throw new UnexpectedValueException('The user-ID attribute has not been returned');
             }            
             
+            //create all users in wordpress, which are not yet locally stored
             foreach ($attribs as $user) {                
+                $uidAttr = authLdap_get_option('UidAttr', 'uid'); // returns uid or custom uid attribute string
+                $mailAttr = authLdap_get_option('MailAttr', 'mail'); //returns mail or custom mail attribute string
 
-                if(! username_exists($user['uid'][0])){
-                    wp_create_user($user['uid'][0], '', $user['mail'][0]);
-                    echo "<div class='updated'><p>user inserted: ". $user['uid'][0] ."</p></div>";
+                if(! username_exists($user[$uidAttr][0])){
+                    wp_create_user($user[$uidAttr][0], '', $user[$mailAttr][0]);
+                    echo "<div class='updated'><p>user inserted: ". $user[$uidAttr][0] ."</p></div>";
                 }
-            }
-            
+            }            
         } catch (Exception $e) {
-            echo "<div class='updated'><p>sync problems: ". $e->getMessage() ."</p></div>";
+            echo "<div class='warning'>sync problems: ". $e->getMessage() ."</div>";
             authLdap_debug('Exception getting LDAP user: ' . $e->getMessage());
             return false;
         }
