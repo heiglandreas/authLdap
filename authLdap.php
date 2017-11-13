@@ -852,8 +852,19 @@ function show_bulk_import() {
                 $mailAttr = authLdap_get_option('MailAttr', 'mail'); //returns mail or custom mail attribute string
 
                 if(! username_exists($user[$uidAttr][0])){
-                    wp_create_user($user[$uidAttr][0], '', $user[$mailAttr][0]);
-                    echo "<div class='updated'><p>user inserted: ". $user[$uidAttr][0] ."</p></div>";
+                    $user_id = wp_insert_user( array(
+                        'user_login'    =>  $user[$uidAttr][0],
+                        'user_email'    =>  $user[$mailAttr][0],
+                        'user_pass'     =>  NULL
+                    ) );
+                    
+                    //check if user has been created
+                    if( ! is_wp_error( $user_id ) ) {
+                        echo "<div class='updated'><p>user inserted: ". $user[$uidAttr][0] ."</p></div>";
+                    }
+                    else {
+                        echo "<div class='waruning'><p>A problem occoured, while creating user: ". $user[$uidAttr][0] ." in wordpress. </p></div>";
+                    }
                 }
             }            
         } catch (Exception $e) {
