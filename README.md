@@ -48,8 +48,8 @@ wonderfull plugin of Alistair Young from http://www.weblogs.uhi.ac.uk/sm00ay/?p=
 * **LDAP Uri** This is the URI where your ldap-backend can be reached. More information are actually on the Configuration page
 * **Filter** This is the real McCoy! The filter you define here specifies how a user will be found. Before applying the filter a %s will be replaced with the given username. This means, when a user logs in using ‘foobar’ as username the following happens:
 
-    * **uid=%s** check for any LDAP-Entry that has an attribute ‘uid’ with value ‘foobar’
-    * **(&(objectclass=posixAccount)((!(uid=%s)(mail=%s)))** check for any LDAP-Entry that has an attribute ‘objectclass’ with value ‘posixAccout’ and either a UID- or a mail-attribute with value ‘foobar’
+    * **uid=%1$s** check for any LDAP-Entry that has an attribute ‘uid’ with value ‘foobar’
+    * **(&(objectclass=posixAccount)((|(uid=%1$s)(mail=%1$s)))** check for any LDAP-Entry that has an attribute ‘objectclass’ with value ‘posixAccout’ and either a UID- or a mail-attribute with value ‘foobar’
 
     This filter is rather powerfull if used wisely.
 
