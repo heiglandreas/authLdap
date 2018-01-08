@@ -32,6 +32,10 @@ For more Information on the configuration have a look at https://github.com/heig
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Configure the Plugin via the 'authLdap'-Configuration-Page.
 
+== License ==
+
+This package is released under the MIT-License.
+
 == Frequently Asked Questions ==
 
 = Where can I find more Informations about the plugin? =
