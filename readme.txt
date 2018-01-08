@@ -4,6 +4,8 @@ Tags: ldap, auth
 Requires at least: 2.5.0
 Tested up to: 4.9.0
 Stable tag: trunk
+License: MIT
+License URI: https://opensource.org/licenses/MIT
 
 Use your existing LDAP flexible as authentication backend for WordPress
 
