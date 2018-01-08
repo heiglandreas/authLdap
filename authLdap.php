@@ -6,6 +6,7 @@ Description: This plugin allows you to use your existing LDAP as authentication 
 Version: 1.5.1
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
+License: MIT
 */
 
 require_once dirname(__FILE__) . '/ldap.php';
