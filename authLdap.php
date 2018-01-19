@@ -21,7 +21,7 @@ function authLdap_debug($message)
 
 function authLdap_addmenu()
 {
-    if (! is_multisite()) {
+    if (! authLdap_is_multisite()) {
         add_options_page('AuthLDAP', 'AuthLDAP', 'manage_options', basename(__FILE__), 'authLdap_options_panel');
     } else {
         add_submenu_page('settings.php', 'AuthLDAP', 'AuthLDAP', 'manage_options', 'authldap', 'authLdap_options_panel');
@@ -656,8 +656,12 @@ function authLdap_load_options($reload = false)
     $option_version_plugin = 1;
 
     $optionFunction = 'get_option';
-    if (is_multisite()) {
+    $delOptFunction = 'delete_option';
+    $updOptFunction = 'update_option';
+    if (authLdap_is_multisite()) {
         $optionFunction = 'get_site_option';
+        $optDelFunction = 'delete_site_option';
+        $updOptFunction = 'update_site_option';
     }
     if (is_null($options) || $reload) {
         $options = $optionFunction('authLDAPOptions', array());
@@ -710,14 +714,14 @@ function authLdap_load_options($reload = false)
                 'authLDAPGroupOverUser' => 'GroupOverUser',
             );
             foreach ($old_option_new_option as $old_option => $new_option) {
-                $value = get_option($old_option, null);
+                $value = $optionFunction($old_option, null);
                 if (!is_null($value)) {
                     $options[$new_option] = $value;
                 }
-                delete_option($old_option);
+                $delOptFunction($old_option);
             }
-            delete_option('authLDAPCookieMarker');
-            delete_option('authLDAPCookierMarker');
+            $delOptFunction('authLDAPCookieMarker');
+            $delOptFunction('authLDAPCookierMarker');
         }
 
         // set default for all options that are missing
@@ -729,7 +733,7 @@ function authLdap_load_options($reload = false)
 
         // set new version and save
         $options['Version'] = $option_version_plugin;
-        update_option('authLDAPOptions', $options);
+        $updOptFunction('authLDAPOptions', $options);
     }
     return $options;
 }
@@ -767,7 +771,7 @@ function authLdap_set_options($new_options = array())
 
     // store options
     $optionFunction = 'update_option';
-    if (is_multisite()) {
+    if (authLdap_is_multisite()) {
         $optionFunction = 'update_site_option';
     }
     if ($optionFunction('authLDAPOptions', $options)) {
@@ -799,7 +803,29 @@ function authLdap_send_change_email($result, $user, $newUserData)
     return $result;
 }
 
-$hook = is_multisite() ? 'network_' : '';
+/**
+ * Check whether we should use the multisite-installation or not.
+ *
+ * @return boolean
+ */
+function authLdap_is_multisite()
+{
+    static $multisite = null;
+
+    if ($multisite !== null) {
+        return $multisite;
+    }
+
+    if (get_option('authLDAPOptions')) {
+        $multisite = false;
+        return $multisite;
+    }
+
+    $multisite = is_multisite();
+    return $multisite;
+}
+
+$hook = authLdap_is_multisite() ? 'network_' : '';
 add_action($hook . 'admin_menu', 'authLdap_addmenu');
 add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
 add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);

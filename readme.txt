@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth
 Requires at least: 2.5.0
-Tested up to: 4.9.0
+Tested up to: 4.9.1
 Stable tag: trunk
 License: MIT
 License URI: https://opensource.org/licenses/MIT
@@ -32,10 +32,6 @@ For more Information on the configuration have a look at https://github.com/heig
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Configure the Plugin via the 'authLdap'-Configuration-Page.
 
-== License ==
-
-This package is released under the MIT-License.
-
 == Frequently Asked Questions ==
 
 = Where can I find more Informations about the plugin? =
@@ -47,6 +43,9 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 2.0.3 =
+* Fixes an issue where MultiSites could not configure the plugin on individual sites.
+
 = 2.0.0 =
 * This new release adds Multi-Site support. It will no longer be possible to use this plugin just in one subsite of a multisite installation!
 * Adds a warning screen to the config-section when no LDAPextension could be found
@@ -110,3 +109,7 @@ blog - Also thanks to alex@tayts.com
 * Added support for WordPress-Table-prefixes as the capabilities of a user
 are interlany stored in a field that is named "$tablePrefix_capabilities" -
 again thanks to alex@tayts.com and also to sim0n of silicium.mine.nu
+
+== License ==
+
+This package is released under the MIT-License.
