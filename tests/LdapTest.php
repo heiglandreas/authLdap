@@ -47,7 +47,7 @@ class LdapTest extends PHPUnit_Framework_TestCase
     {
         $ldap = new LDAP($expected[0], $expected[1]);
         foreach ($given as $key => $value) {
-            $this -> assertAttributeEquals($value, '_' . $key, $ldap);
+            $this -> assertAttributeEquals($value, $key, $ldap);
         }
     }
 
@@ -63,73 +63,78 @@ class LdapTest extends PHPUnit_Framework_TestCase
 
     public function dpInstantiateLdapClass()
     {
-        return array (
-            array (
-             array ('ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org', true),
-             array (
-              'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-              'password' => 'secret',
-              'server'   => 'ldap.example.org',
-              'baseDn'   => 'cn=example,c=org',
-              'debug'    => true
-             )
-            ),
-            array (
-             array ('ldap://uid=jondoe,cn=users,cn=example,c=org@ldap.example.org/cn=example,c=org', true),
-             array (
-              'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-              'password' => '',
-              'server'   => 'ldap.example.org',
-              'baseDn'   => 'cn=example,c=org',
-              'debug'    => true
-             )
-            ),
-            array(
-             array ('ldap://ldap.example.org/cn=example,c=org', true),
-             array (
-              'username' => 'anonymous',
-              'password' => '',
-              'server'   => 'ldap.example.org',
-              'baseDn'   => 'cn=example,c=org',
-              'debug'    => true
-             )
-            ),
-//            array(
-//             array ('ldap://ldap.example.org', true),
-//             array (
-//              'username' => 'anonymous',
-//              'password' => '',
-//              'server'   => 'ldap.example.org',
-//              'baseDn'   => '',
-//              'debug'    => true
-//             )
-//            ),
-            array(
-             array ('ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org', false),
-             array (
-              'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-              'password' => 'secret',
-              'server'   => 'ldap.example.org',
-              'baseDn'   => 'cn=example,c=org',
-              'debug'    => false
-             )
-            ),
-            array(
-                array ('ldap://ldap.example.org/cn=test%20example,c=org', false),
-                array (
-                    'username' => 'anonymous',
-                    'password' => '',
-                    'server'   => 'ldap.example.org',
-                    'baseDn'   => 'cn=test example,c=org',
-                    'debug'    => false
-                )
-            ),
-        );
+        return array(
+                array(
+                 array(
+                  'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
+                  true,
+                 ),
+                 array(
+                  'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+                  'password' => 'secret',
+                  'server'   => 'ldap.example.org',
+                  'baseDn'   => 'cn=example,c=org',
+                  'debug'    => true,
+                 ),
+                ),
+                array(
+                 array(
+                  'ldap://uid=jondoe,cn=users,cn=example,c=org@ldap.example.org/cn=example,c=org',
+                  true,
+                 ),
+                 array(
+                  'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+                  'password' => '',
+                  'server'   => 'ldap.example.org',
+                  'baseDn'   => 'cn=example,c=org',
+                  'debug'    => true,
+                 ),
+                ),
+                array(
+                 array(
+                  'ldap://ldap.example.org/cn=example,c=org',
+                  true,
+                 ),
+                 array(
+                  'username' => 'anonymous',
+                  'password' => '',
+                  'server'   => 'ldap.example.org',
+                  'baseDn'   => 'cn=example,c=org',
+                  'debug'    => true,
+                 ),
+                ),
+                array(
+                 array(
+                  'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
+                  false,
+                 ),
+                 array(
+                  'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+                  'password' => 'secret',
+                  'server'   => 'ldap.example.org',
+                  'baseDn'   => 'cn=example,c=org',
+                  'debug'    => false,
+                 ),
+                ),
+                array(
+                 array(
+                  'ldap://ldap.example.org/cn=test%20example,c=org',
+                  false,
+                 ),
+                 array(
+                  'username' => 'anonymous',
+                  'password' => '',
+                  'server'   => 'ldap.example.org',
+                  'baseDn'   => 'cn=test example,c=org',
+                  'debug'    => false,
+                 ),
+                ),
+               );
     }
 
     public function dpExceptionsWhenInstantiatingLdapClass()
     {
-        return array (
+        return array(
                 array('ldap://ldap.example.org'),
                 array('ldap://foo:bar@/cn=example,c=org'),
                 array('http://ldap.example.org'),
@@ -142,35 +147,38 @@ class LdapTest extends PHPUnit_Framework_TestCase
     public function testThatGroupMappingWorks()
     {
         $groups = [
-            'count' => 1,
-            0 => [
-                'dn' => 'dn-1',
-                'count' => 1,
-                0 => 'group',
-                'group' => [
-                    'count' => 2,
-                    0 => '7310T270:Překladatelství:čeština - angličtina@ff.cuni.cz',
-                    1 => '7310T033:Český jazyk a literatura@ff.cuni.cz',
-                ]
-            ]
-        ];
+                   'count' => 1,
+                   0       => [
+                               'dn'    => 'dn-1',
+                               'count' => 1,
+                               0       => 'group',
+                               'group' => [
+                                           'count' => 2,
+                                           0       => '7310T270:Překladatelství:čeština - angličtina@ff.cuni.cz',
+                                           1       => '7310T033:Český jazyk a literatura@ff.cuni.cz',
+                                          ],
+                              ],
+                  ];
 
         $grp = array();
-        for ($i = 0; $i < $groups ['count']; $i++) {
+        for ($i = 0; $i < $groups['count']; $i++) {
             for ($k = 0; $k < $groups[$i][strtolower('group')]['count']; $k++) {
                 $grp[] = $groups[$i][strtolower('group')][$k];
             }
         }
 
-        $this->assertEquals([
-            '7310T270:Překladatelství:čeština - angličtina@ff.cuni.cz',
-            '7310T033:Český jazyk a literatura@ff.cuni.cz',
-        ], $grp);
+        $this->assertEquals(
+            [
+             '7310T270:Překladatelství:čeština - angličtina@ff.cuni.cz',
+             '7310T033:Český jazyk a literatura@ff.cuni.cz',
+            ],
+            $grp
+        );
 
         $role = '';
         foreach (['testrole' => '7310T031:Český jazyk a literatura@ff.cuni.cz,7310T033:Český jazyk a literatura@ff.cuni.cz'] as $key => $val) {
             $currentGroup = explode(',', $val);
-            // Remove whitespaces around the group-ID
+            // Remove whitespaces around the group-ID.
             $currentGroup = array_map('trim', $currentGroup);
             if (0 < count(array_intersect($currentGroup, $grp))) {
                 $role = $key;

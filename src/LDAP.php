@@ -28,77 +28,95 @@
  */
 namespace Org_Heigl\AuthLdap;
 
+use Org_Heigl\AuthLdap\Exception as LdapException;
 use Exception;
 
 class LDAP
 {
-    private $_server = '';
+    /** @var string */
+    private $server = '';
 
-    private $_scheme = 'ldap';
+    /** @var string ldap|ldaps */
+    private $scheme = 'ldap';
 
-    private $_port = 389;
+    /** @var int */
+    private $port = 389;
 
-    private $_baseDn = '';
+    /** @var string */
+    private $baseDn = '';
 
-    private $_debug = false;
+    /** @var bool */
+    private $debug = false;
+
     /**
      * This property contains the connection handle to the ldap-server
      *
      * @var Ressource
      */
-    private $_ch = null;
+    private $ch = null;
 
-    private $_username = '';
+    /** @var string */
+    private $username = '';
 
-    private $_password = '';
+    /** @var string */
+    private $password = '';
 
-    private $_starttls = false;
+    /** @var bool */
+    private $starttls = false;
 
+    /**
+     * @param string $URI
+     * @param bool   $debug
+     * @param bool   $starttls
+     */
     public function __construct($URI, $debug = false, $starttls = false)
     {
-        $this->_debug=$debug;
-        $array = parse_url($URI);
+        $this->debug =$debug;
+        $array       = parse_url($URI);
         if (! is_array($array)) {
             throw new Exception($URI . ' seems not to be a valid URI');
         }
-        $url = array_map(function ($item) {
-            return urldecode($item);
-        }, $array);
+        $url = array_map(
+            function ($item) {
+                return urldecode($item);
+            },
+            $array
+        );
 
         if (false === $url) {
             throw new Exception($URI . ' is an invalid URL');
         }
-        if (! isset ( $url['scheme'] )) {
+        if (! isset($url['scheme'])) {
             throw new Exception($URI . ' does not provide a scheme');
         }
         if (0 !== strpos($url['scheme'], 'ldap')) {
             throw new Exception($URI . ' is an invalid LDAP-URI');
         }
-        if (! isset ( $url['host'] )) {
+        if (! isset($url['host'])) {
             throw new Exception($URI . ' does not provide a server');
         }
-        if (! isset ( $url['path'] )) {
+        if (! isset($url['path'])) {
             throw new Exception($URI . ' does not provide a search-base');
         }
         if (1 == strlen($url['path'])) {
             throw new Exception($URI . ' does not provide a valid search-base');
         }
-        $this -> _server = $url['host'];
-        $this -> _scheme = $url['scheme'];
-        $this -> _baseDn = substr($url['path'], 1);
-        if (isset ( $url['user'] )) {
-            $this -> _username = $url['user'];
+        $this -> server = $url['host'];
+        $this -> scheme = $url['scheme'];
+        $this -> baseDn = substr($url['path'], 1);
+        if (isset($url['user'])) {
+            $this -> username = $url['user'];
         }
-        if ('' == trim($this -> _username)) {
-            $this -> _username = 'anonymous';
+        if ('' == trim($this -> username)) {
+            $this -> username = 'anonymous';
         }
-        if (isset ( $url['pass'] )) {
-            $this -> _password = $url['pass'];
+        if (isset($url['pass'])) {
+            $this -> password = $url['pass'];
         }
-        if (isset ( $url['port'] )) {
-            $this -> _port = $url['port'];
+        if (isset($url['port'])) {
+            $this -> port = $url['port'];
         }
-        $this->_starttls = $starttls;
+        $this->starttls = $starttls;
     }
 
     /**
@@ -110,19 +128,19 @@ class LDAP
     public function connect()
     {
         $this -> disconnect();
-        if ('ldaps' == $this->_scheme && 389 == $this->_port) {
-            $this->_port = 636;
+        if ('ldaps' == $this->scheme && 389 == $this->port) {
+            $this->port = 636;
         }
 
-        $this->_ch = @ldap_connect($this->_scheme . '://' . $this->_server . ':' . $this -> _port);
-        if (! $this->_ch) {
+        $this->ch = @ldap_connect($this->scheme . '://' . $this->server . ':' . $this -> port);
+        if (! $this->ch) {
             throw new AuthLDAP_Exception('Could not connect to the server');
         }
-        ldap_set_option($this->_ch, LDAP_OPT_PROTOCOL_VERSION, 3);
-        ldap_set_option($this->_ch, LDAP_OPT_REFERRALS, 0);
-        //if configured try to upgrade encryption to tls for ldap connections
-        if ($this->_starttls) {
-          ldap_start_tls($this->_ch);
+        ldap_set_option($this->ch, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($this->ch, LDAP_OPT_REFERRALS, 0);
+        // If configured try to upgrade encryption to tls for ldap connections.
+        if ($this->starttls) {
+            ldap_start_tls($this->ch);
         }
         return $this;
     }
@@ -134,10 +152,10 @@ class LDAP
      */
     public function disconnect()
     {
-        if (is_resource($this->_ch)) {
-            @ldap_unbind($this->_ch);
+        if (is_resource($this->ch)) {
+            @ldap_unbind($this->ch);
         }
-        $this->_ch = null;
+        $this->ch = null;
         return $this;
     }
 
@@ -149,34 +167,34 @@ class LDAP
      */
     public function bind()
     {
-        if (! $this->_ch) {
+        if (! $this->ch) {
             $this->connect();
         }
-        if (! is_resource($this->_ch)) {
-            throw new AuthLDAP_Exception('No Resource-handle given');
+        if (! is_resource($this->ch)) {
+            throw new LdapException('No Resource-handle given');
         }
         $bind = false;
-        if (( ( $this->_username )
-            && ( $this->_username != 'anonymous') )
-            && ( $this->_password != '' ) ) {
-            $bind = @ldap_bind($this->_ch, $this->_username, $this->_password);
+        if (( ( $this->username )
+            && ($this->username != 'anonymous') )
+            && ($this->password != '' ) ) {
+            $bind = @ldap_bind($this->ch, $this->username, $this->password);
         } else {
-            $bind = @ldap_bind($this->_ch);
+            $bind = @ldap_bind($this->ch);
         }
         if (! $bind) {
-            throw new AuthLDAP_Exception('bind was not successfull: ' . ldap_error($this->_ch));
+            throw new LdapException('bind was not successfull: ' . ldap_error($this->ch));
         }
         return $this;
     }
 
     public function getErrorNumber()
     {
-        return @ldap_errno($this->_ch);
+        return @ldap_errno($this->ch);
     }
 
     public function getErrorText()
     {
-        return @ldap_error($this->_ch);
+        return @ldap_error($this->ch);
     }
 
     /**
@@ -192,16 +210,16 @@ class LDAP
      */
     public function search($filter, $attributes = array('uid'))
     {
-        if (! is_Resource($this->_ch)) {
-            throw new AuthLDAP_Exception('No resource handle avbailable');
+        if (! is_Resource($this->ch)) {
+            throw new LdapException('No resource handle avbailable');
         }
-        $result = @ldap_search($this->_ch, $this->_baseDn, $filter, $attributes);
+        $result = @ldap_search($this->ch, $this->baseDn, $filter, $attributes);
         if ($result === false) {
-            throw new AuthLDAP_Exception('no result found');
+            throw new LdapException('no result found');
         }
-        $this->_info = @ldap_get_entries($this->_ch, $result);
+        $this->_info = @ldap_get_entries($this->ch, $result);
         if ($this->_info === false) {
-            throw new AuthLDAP_Exception('invalid results found');
+            throw new LdapException('invalid results found');
         }
         return $this -> _info;
     }
@@ -211,7 +229,7 @@ class LDAP
      */
     public function debugOn()
     {
-        $this->_debug = true;
+        $this->debug = true;
         return $this;
     }
 
@@ -220,7 +238,7 @@ class LDAP
      */
     public function debugOff()
     {
-        $this->_debug = false;
+        $this->debug = false;
         return $this;
     }
 
@@ -237,16 +255,15 @@ class LDAP
      */
     public function authenticate($username, $password, $filter = '(uid=%s)')
     {
-        //return true;
         $this->connect();
         $this->bind();
         $res = $this->search(sprintf($filter, $username));
-        if (! $res || ! is_array($res) || ( $res ['count'] != 1 )) {
+        if (! $res || ! is_array($res) || ( $res['count'] != 1 )) {
             return false;
         }
         $dn = $res[0]['dn'];
         if ($username && $password) {
-            if (@ldap_bind($this->_ch, $dn, $password)) {
+            if (@ldap_bind($this->ch, $dn, $password)) {
                 return true;
             }
         }
@@ -257,20 +274,9 @@ class LDAP
      */
     public function logError()
     {
-        if ($this->_debug) {
+        if ($this->debug) {
             $_v = debug_backtrace();
-            throw new AuthLDAP_Exception('[LDAP_ERROR]' . ldap_errno($this->_ch) . ':' . ldap_error($this->_ch), $_v[0]['line']);
-        }
-    }
-}
-
-class AuthLDAP_Exception extends Exception
-{
-    public function __construct($message, $line = null)
-    {
-        parent :: __construct($message);
-        if ($line) {
-            $this -> line = $line;
+            throw new LdapException('[LDAP_ERROR]' . ldap_errno($this->ch) . ':' . ldap_error($this->ch), $_v[0]['line']);
         }
     }
 }
