@@ -240,7 +240,7 @@ class LDAP
         //return true;
         $this->connect();
         $this->bind();
-        $res = $this->search(sprintf($filter, $username));
+        $res = $this->search(str_replace('%s', $username, $filter));
         if (! $res || ! is_array($res) || ( $res ['count'] != 1 )) {
             return false;
         }
