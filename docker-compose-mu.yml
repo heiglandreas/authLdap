@@ -1,0 +1,12 @@
+wordpress:
+  image: dylanrhysscott/wordpress-multisite-docker
+  ports: ["80:80"]
+  links: ["mysql:mysql"]
+  volumes:
+    - ./:/var/www/html/wp-content/plugins/authldap
+mysql:
+  image: mysql
+  ports:
+    - 33060:3306
+  environment:
+    MYSQL_ROOT_PASSWORD: root

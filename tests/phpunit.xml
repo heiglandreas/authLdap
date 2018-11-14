@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : phpunit.xml
+    Created on : 21.09.2010
+    Author     : heiglandreas
+ -->
+
+<phpunit>
+  <logging>
+    <log type="coverage-html" target="../report/coverage" charset="UTF-8"
+         yui="true" highlight="false"
+         lowUpperBound="35" highLowerBound="70" />
+    <log type="coverage-xml" target="../report/coverage.xml"/>
+    <log type="graphviz" target="../report/logfile.dot"/>
+    <log type="json" target="../report/logfile.json"/>
+    <log type="metrics-xml" target="../report/metrics.xml"/>
+    <log type="plain" target="../report/logfile.txt"/>
+    <log type="pmd-xml" target="../report/pmd.xml" cpdMinLines="5" cpdMinMatches="70"/>
+    <log type="tap" target="../report/logfile.tap"/>
+    <log type="test-xml" target="../report/logfile.xml" logIncompleteSkipped="false"/>
+    <log type="testdox-html" target="../report/testdox.html"/>
+    <log type="testdox-text" target="../report/testdox.txt"/>
+  </logging>
+</phpunit>

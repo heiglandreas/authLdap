@@ -1,0 +1,9 @@
+.row {
+	overflow: hidden; 
+	padding-top: 10px; 
+}
+
+.element {
+	float: right; 
+	text-align: left; 
+}
