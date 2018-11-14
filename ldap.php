@@ -188,14 +188,18 @@ class LDAP
      *
      * @param string $filter
      * @param array $attributes
+     * @param string $base
      * @return array
      */
-    public function search($filter, $attributes = array('uid'))
+    public function search($filter, $attributes = array('uid'), $base = '' )
     {
         if (! is_Resource($this->_ch)) {
             throw new AuthLDAP_Exception('No resource handle avbailable');
         }
-        $result = @ldap_search($this->_ch, $this->_baseDn, $filter, $attributes);
+        if (! $base) {
+          $base = $this->_baseDn;
+        }
+        $result = ldap_search($this->_ch, $base, $filter, $attributes);
         if ($result === false) {
             throw new AuthLDAP_Exception('no result found');
         }
