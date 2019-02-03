@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: AuthLDAP
-Plugin URI: https://github.com/heiglandreas/authLdap
+Plugin URI: https://github.com/spahan/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 2.0.3
-Author: Andreas Heigl <a.heigl@wdv.de>
-Author URI: http://andreas.heigl.org
+Version: 2.0.4
+Author: hanfi@spahan.ch
+Author URI: https://spahan.ch
 License: MIT
 */
 
@@ -808,6 +808,7 @@ function authLdap_send_change_email($result, $user, $newUserData)
     return $result;
 }
 
+<<<<<<< HEAD
 /**
  * Check whether we should use the multisite-installation or not.
  *
