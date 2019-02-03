@@ -1,15 +1,8 @@
 # authLDAP
 
-[![Join the chat at https://gitter.im/heiglandreas/authLdap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/heiglandreas/authLdap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+This is a fork of [https://github.com/heiglandreas/authLdap]
 
 Use your existing LDAP as authentication-backend for your wordpress!
-
-[![Build Status](https://travis-ci.org/heiglandreas/authLdap.svg?branch=master)](https://travis-ci.org/heiglandreas/authLdap)
-[![WordPress Stats](https://img.shields.io/wordpress/plugin/dt/authldap.svg)](https://wordpress.org/plugins/authldap/stats/)
-[![WordPress Version](https://img.shields.io/wordpress/plugin/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
-[![WordPress testet](https://img.shields.io/wordpress/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
-[![Code Climate](https://codeclimate.com/github/heiglandreas/authLdap/badges/gpa.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
-[![Test Coverage](https://codeclimate.com/github/heiglandreas/authLdap/badges/coverage.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
 
 So what are the differences to other Wordpress-LDAP-Authentication-Plugins?
 
@@ -63,6 +56,7 @@ wonderfull plugin of Alistair Young from http://www.weblogs.uhi.ac.uk/sm00ay/?p=
 
 ### User-Groups for Roles
 
+* **Groub-Base** This is the base dn to lookup groups. If empty the base dn of the LDAP URI will be used
 * **Group-Attribute** This is the attribute that defines the Group-ID that can be matched against the Groups defined further down This field defaults to gidNumber.
 * **Group-Filter** Here you can add the filter for selecting groups for the currentlly logged in user The Filter should contain the string %s which will be replaced by the login-name of the currently logged in
 
