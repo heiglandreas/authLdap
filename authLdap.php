@@ -808,7 +808,6 @@ function authLdap_send_change_email($result, $user, $newUserData)
     return $result;
 }
 
-<<<<<<< HEAD
 /**
  * Check whether we should use the multisite-installation or not.
  *
