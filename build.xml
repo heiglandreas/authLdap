@@ -23,6 +23,7 @@
     <target name="build" depends="bumpversion,deploy.git,deploy.svn"/>
     <target name="deploy.svn">
         <property file=".svnAccess" prefix="svnaccess" logoutput="true"/>
+        <echo message="${svnaccess.username}"/>
         <filesync
                 rsyncPath="rsync"
                 destinationDir="${project.basedir}/svn/trunk"
