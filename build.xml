@@ -36,7 +36,7 @@
             </fileset>
         </foreach>
         <echo message="${svnaccess.username}"/>
-        <exec outputProperty="committedrevision" executable="svn" dir="${project.basedir}/svn">
+        <exec outputProperty="committedrevision" executable="svn" dir="${project.basedir}/svn/trunk">
             <arg value="commit"/>
             <arg value="--username"/>
             <arg value="${svnaccess.username}"/>

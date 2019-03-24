@@ -12,3 +12,10 @@ build
 bin
 *~
 .*
+.gitignore
+.travis*
+composer.json
+docker-compose-mu.yml
+patchcoverage
+phpunit*
+tests
