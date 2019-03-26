@@ -6,8 +6,6 @@ Description: This plugin allows you to use your existing LDAP as authentication 
 Version: 2.1.0
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
-License: MIT
-License URI: https://opensource.org/licenses/MIT
 */
 
 require_once dirname(__FILE__) . '/ldap.php';
@@ -276,7 +274,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         try {
             $attribs = authLdap_get_server()->search(
-                sprintf($authLDAPFilter, $username),
+                join($username, explode("%s",$authLDAPFilter)),
                 $attributes
             );
             // First get all the relevant group informations so we can see if

@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id: ldap.php 381646 2011-05-06 09:37:31Z heiglandreas $
+ * $Id: ldap.php 2045782 2019-03-07 08:30:08Z heiglandreas $
  *
  * authLdap - Authenticate Wordpress against an LDAP-Backend.
  * Copyright (c) 2008 Andreas Heigl<andreas@heigl.org>
@@ -244,7 +244,7 @@ class LDAP
         //return true;
         $this->connect();
         $this->bind();
-        $res = $this->search(sprintf($filter, $username));
+        $res = $this->search(join($username, explode("%s",$filter)));
         if (! $res || ! is_array($res) || ( $res ['count'] != 1 )) {
             return false;
         }
