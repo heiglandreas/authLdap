@@ -512,10 +512,18 @@ function authLdap_groupmap($username, $dn)
     try {
         // To allow searches based on the DN instead of the uid, we replace the
         // string %dn% with the users DN.
-        $authLDAPGroupFilter = str_replace('%dn%', $dn, $authLDAPGroupFilter);
+        $authLDAPGroupFilter = str_replace(
+            '%dn%',
+            ldap_escape($dn, '', LDAP_ESCAPE_FILTER),
+            $authLDAPGroupFilter
+        );
         authLdap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
         authLdap_debug('Group Base: ' . $authLDAPGroupBase);
-        $groups = authLdap_get_server()->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr), $authLDAPGroupBase);
+        $groups = authLdap_get_server()->search(
+            sprintf($authLDAPGroupFilter, ldap_escape($username, '', LDAP_ESCAPE_FILTER)),
+            array($authLDAPGroupAttr),
+            $authLDAPGroupBase
+        );
     } catch (Exception $e) {
         authLdap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
         return '';
