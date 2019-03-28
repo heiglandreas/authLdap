@@ -40,6 +40,9 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 2.1.1 =
+* Add escaping filter-values. That should help filtering for groups where the DN might contain braces or spaces
+
 = 2.1.0 =
 * Add search-base for groups. This might come in handy for multisite-instances
 
