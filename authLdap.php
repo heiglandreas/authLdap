@@ -288,7 +288,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             if (! isset($attribs[0][strtolower($authLDAPUidAttr)][0])) {
                 authLdap_debug('could not get user attributes from LDAP');
                 throw new UnexpectedValueException('The user-ID attribute has not been returned');
-
             }
 
             $dn = $attribs[0]['dn'];
@@ -299,39 +298,40 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         $uid = authLdap_get_uid($realuid);
-        $role = '';
-
-        // we only need this if either LDAP groups are disabled or
-        // if the WordPress role of the user overrides LDAP groups
-        if (!$authLDAPGroupEnable || !$authLDAPGroupOverUser) {
-            $role = authLdap_user_role($uid);
-        }
+        $roles = $roles_wp = authLdap_user_roles($uid);
 
         // do LDAP group mapping if needed
-        // (if LDAP groups override worpress user role, $role is still empty)
-        if (empty($role) && $authLDAPGroupEnable) {
-            $role = authLdap_groupmap($realuid, $dn);
-            authLdap_debug('role from group mapping: ' . $role);
+        if ($authLDAPGroupEnable) {
+            $roles_ldap = authLdap_groupmap($realuid, $dn);
+            authLdap_debug('Roles from group mapping: ' . implode(', ', $roles_ldap));
+
+            if ($authLDAPGroupOverUser) {
+                $roles = $roles_ldap;
+            } else {
+                $roles = array_unique(array_merge($roles, $roles_ldap));
+            }
         }
 
         // if we don't have a role yet, use default role
-        if (empty($role) && !empty($authLDAPDefaultRole)) {
+        if (empty($roles) && !empty($authLDAPDefaultRole)) {
             authLdap_debug('no role yet, set default role');
-            $role = $authLDAPDefaultRole;
+            $roles[] = $authLDAPDefaultRole;
         }
 
-        if (empty($role)) {
+        if (empty($roles)) {
             // Sorry, but you are not in any group that is allowed access
             trigger_error('no group found');
             authLdap_debug('user is not in any group that is allowed access');
             return false;
         } else {
-            $roles = new WP_Roles();
+            $wp_roles = new WP_Roles();
             // not sure if this is needed, but it can't hurt
-            if (!$roles->is_role($role)) {
-                trigger_error('no group found');
-                authLdap_debug('role is invalid');
-                return false;
+            foreach ($roles as $role) {
+                if (!$wp_roles->is_role($role)) {
+                    trigger_error('no group found');
+                    authLdap_debug('role is invalid');
+                    return false;
+                }
             }
         }
 
@@ -339,7 +339,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         // now, lets update some user details
         $user_info = array();
         $user_info['user_login'] = $realuid;
-        $user_info['role'] = $role;
         $user_info['user_email'] = '';
 
         // first name
@@ -390,6 +389,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             $user_info['ID'] = $uid;
             unset ($user_info['display_name'], $user_info['nickname']);
             $userid = wp_update_user($user_info);
+
         } else {
             // new wordpress account will be created
             authLdap_debug('The LDAP user does not have an entry in the WP-Database, a new WP account will be created');
@@ -397,11 +397,27 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             $userid = wp_insert_user($user_info);
         }
 
-        // if the user exists, wp_insert_user will update the existing user record
         if (is_wp_error($userid)) {
-            authLdap_debug('Error creating user : ' . $userid->get_error_message());
-            trigger_error('Error creating user: ' . $userid->get_error_message());
+            authLdap_debug('Error creating/updating user: ' . $userid->get_error_message());
+            trigger_error('Error creating/updating user: '  . $userid->get_error_message());
             return $userid;
+        }
+
+        $user = new WP_User($userid);
+
+        // Remove any roles deemed no longer applicable.
+        foreach ($roles_wp as $r) {
+            if (!in_array($r, $roles)) {
+                authLdap_debug("Removing role: $r ...");
+                $user->remove_role($r);
+            }
+        }
+        // Add any new roles.
+        foreach ($roles as $r) {
+            if (!in_array($r, $roles_wp)) {
+                authLdap_debug("Adding role: $r ...");
+                $user->add_role($r);
+            }
         }
 
         authLdap_debug('user id = ' . $userid);
@@ -410,7 +426,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         update_user_meta($userid, 'authLDAP', true);
 
         // return a user object upon positive authorization
-        return new WP_User($userid);
+        return $user;
     } catch (Exception $e) {
         authLdap_debug($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
         trigger_error($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
@@ -445,33 +461,32 @@ function authLdap_get_uid($username)
 }
 
 /**
- * Get the user's current role
+ * Get the user's current roles
  *
  * Returns empty string if not found.
  *
  * @param int $uid wordpress user id
- * @return string role, empty if none found
+ * @return array roles, empty if none found
  */
-function authLdap_user_role($uid)
+function authLdap_user_roles($uid)
 {
     global $wpdb;
 
     if (!$uid) {
-        return '';
+        return array( );
     }
 
     $meta_value = $wpdb->get_var("SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = '{$wpdb->prefix}capabilities' AND user_id = {$uid}");
 
     if (!$meta_value) {
-        return '';
+        return array( );
     }
 
     $capabilities = unserialize($meta_value);
-    $roles = is_array($capabilities) ? array_keys($capabilities) : array('');
-    $role = $roles[0];
+    $roles = is_array($capabilities) ? array_keys($capabilities) : array( );
 
-    authLdap_debug("Existing user's role: {$role}");
-    return $role;
+    authLdap_debug("Existing user's roles: ".implode(', ', $roles));
+    return $roles;
 }
 
 /**
@@ -479,7 +494,7 @@ function authLdap_user_role($uid)
  *
  * @param string $username
  * @param string $dn
- * @return string role, empty string if no mapping found, first found role otherwise
+ * @return array roles, empty if no mapping found
  * @conf array authLDAPGroups, associative array, role => ldap_group
  * @conf string authLDAPGroupBase, base dn to look up groups
  * @conf string authLDAPGroupAttr, ldap attribute that holds name of group
@@ -506,7 +521,7 @@ function authLdap_groupmap($username, $dn)
 
     if (!is_array($authLDAPGroups) || count(array_filter(array_values($authLDAPGroups))) == 0) {
         authLdap_debug('No group names defined');
-        return '';
+        return array( );
     }
 
     try {
@@ -526,7 +541,7 @@ function authLdap_groupmap($username, $dn)
         );
     } catch (Exception $e) {
         authLdap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
-        return '';
+        return array( );
     }
 
     $grp = array();
@@ -541,22 +556,19 @@ function authLdap_groupmap($username, $dn)
     // Check whether the user is member of one of the groups that are
     // allowed acces to the blog. If the user is not member of one of
     // The groups throw her out! ;-)
-    // If the user is member of more than one group only the first one
-    // will be taken into account!
 
-    $role = '';
+    $roles = array( );
     foreach ($authLDAPGroups as $key => $val) {
         $currentGroup = explode($authLDAPGroupSeparator, $val);
         // Remove whitespaces around the group-ID
         $currentGroup = array_map('trim', $currentGroup);
         if (0 < count(array_intersect($currentGroup, $grp))) {
-            $role = $key;
-            break;
+            $roles[] = $key;
         }
     }
 
-    authLdap_debug("Role from LDAP group: {$role}");
-    return $role;
+    authLdap_debug("Roles from LDAP group: ".implode(', ', $roles));
+    return $roles;
 }
 
 /**
@@ -573,9 +585,9 @@ function authLdap_groupmap($username, $dn)
  * he isn't
  * @conf boolean authLDAP
  */
-function authLdap_show_password_fields($return, $user)
+function authLdap_show_password_fields($show, $user=null)
 {
-    if (! $user) {
+    if (is_null($user)) {
         return true;
     }
 
