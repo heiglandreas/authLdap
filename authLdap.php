@@ -3,9 +3,11 @@
 Plugin Name: AuthLDAP
 Plugin URI: https://github.com/heiglandreas/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 1.5.1
+Version: 2.1.0
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
+License: MIT
+License URI: https://opensource.org/licenses/MIT
 */
 
 require_once dirname(__FILE__) . '/ldap.php';
@@ -53,6 +55,7 @@ function authLdap_options_panel()
             'Groups'        => authLdap_get_post('authLDAPGroups', array()),
             'GroupSeparator'=> authLdap_get_post('authLDAPGroupSeparator', ','),
             'Debug'         => authLdap_get_post('authLDAPDebug', false),
+            'GroupBase'     => authLdap_get_post('authLDAPGroupBase'),
             'GroupAttr'     => authLdap_get_post('authLDAPGroupAttr'),
             'GroupFilter'   => authLdap_get_post('authLDAPGroupFilter'),
             'DefaultRole'   => authLdap_get_post('authLDAPDefaultRole'),
@@ -87,6 +90,7 @@ function authLdap_options_panel()
     $authLDAPGroups        = authLdap_get_option('Groups');
     $authLDAPGroupSeparator= authLdap_get_option('GroupSeparator');
     $authLDAPDebug         = authLdap_get_option('Debug');
+    $authLDAPGroupBase     = authLdap_get_option('GroupBase');
     $authLDAPGroupAttr     = authLdap_get_option('GroupAttr');
     $authLDAPGroupFilter   = authLdap_get_option('GroupFilter');
     $authLDAPDefaultRole   = authLdap_get_option('DefaultRole');
@@ -486,6 +490,7 @@ function authLdap_user_role($uid)
  * @param string $dn
  * @return string role, empty string if no mapping found, first found role otherwise
  * @conf array authLDAPGroups, associative array, role => ldap_group
+ * @conf string authLDAPGroupBase, base dn to look up groups
  * @conf string authLDAPGroupAttr, ldap attribute that holds name of group
  * @conf string authLDAPGroupFilter, LDAP filter to find groups. can contain %s and %dn% placeholders
  */
@@ -494,6 +499,7 @@ function authLdap_groupmap($username, $dn)
     $authLDAPGroups         = authLdap_sort_roles_by_capabilities(
         authLdap_get_option('Groups')
     );
+    $authLDAPGroupBase      = authLdap_get_option('GroupBase');
     $authLDAPGroupAttr      = authLdap_get_option('GroupAttr');
     $authLDAPGroupFilter    = authLdap_get_option('GroupFilter');
     $authLDAPGroupSeparator = authLdap_get_option('GroupSeparator');
@@ -515,9 +521,18 @@ function authLdap_groupmap($username, $dn)
     try {
         // To allow searches based on the DN instead of the uid, we replace the
         // string %dn% with the users DN.
-        $authLDAPGroupFilter = str_replace('%dn%', $dn, $authLDAPGroupFilter);
+        $authLDAPGroupFilter = str_replace(
+            '%dn%',
+            ldap_escape($dn, '', LDAP_ESCAPE_FILTER),
+            $authLDAPGroupFilter
+        );
         authLdap_debug('Group Filter: ' . json_encode($authLDAPGroupFilter));
-        $groups = authLdap_get_server()->search(sprintf($authLDAPGroupFilter, $username), array($authLDAPGroupAttr));
+        authLdap_debug('Group Base: ' . $authLDAPGroupBase);
+        $groups = authLdap_get_server()->search(
+            sprintf($authLDAPGroupFilter, ldap_escape($username, '', LDAP_ESCAPE_FILTER)),
+            array($authLDAPGroupAttr),
+            $authLDAPGroupBase
+        );
     } catch (Exception $e) {
         authLdap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
         return '';

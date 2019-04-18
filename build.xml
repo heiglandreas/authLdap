@@ -21,22 +21,24 @@
         </reflexive>
     </target>
     <target name="build" depends="bumpversion,deploy.git,deploy.svn"/>
-    <target name="deploy.svn">
-        <property file=".svnAccess" prefix="svnaccess" logoutput="true"/>
+    <target name="sync.svn">
         <filesync
                 rsyncPath="rsync"
                 destinationDir="${project.basedir}/svn/trunk"
                 sourceDir="${project.basedir}/"
                 verbose="true"
                 excludeFile="${project.basedir}/.rsyncIgnore"
-                />
+        />
+    </target>
+    <target name="deploy.svn" depends="sync.svn">
+        <property override="true" file="${project.basedir}/.svnAccess" prefix="svnaccess" />
         <foreach param="dirname" target="svn.addFile">
             <fileset dir="${project.basedir}/svn/trunk">
                 <include name="**/*"/>
             </fileset>
         </foreach>
         <echo message="${svnaccess.username}"/>
-        <exec outputProperty="committedrevision" executable="svn" dir="${project.basedir}/svn">
+        <exec outputProperty="committedrevision" executable="svn" dir="${project.basedir}/svn/trunk">
             <arg value="commit"/>
             <arg value="--username"/>
             <arg value="${svnaccess.username}"/>

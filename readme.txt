@@ -1,9 +1,12 @@
 === authLdap ===
 Contributors: heiglandreas
-Tags: ldap, auth
+Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 4.9.0
+Tested up to: 5.1.0
+Requires PHP: 5.4
 Stable tag: trunk
+License: MIT
+License URI: https://opensource.org/licenses/MIT
 
 Use your existing LDAP flexible as authentication backend for WordPress
 
@@ -13,13 +16,9 @@ Use your existing LDAP as authentication-backend for your wordpress!
 
 So what are the differences to other Wordpress-LDAP-Authentication-Plugins?
 
-* Flexible: You are totaly free in which LDAP-backend to use. Due to the extensive configuration you can
-freely decide how to do the authentication of your users. It simply depends on your
-filters
-* Independent: As soon as a user logs in, it is added/updated to the Wordpress' user-database
-to allow wordpress to always use the correct data. You only have to administer your users once.
-* Failsafe: Due to the users being created in Wordpress' User-database they can
-also log in when the LDAP-backend currently is gone.
+* Flexible: You are totaly free in which LDAP-backend to use. Due to the extensive configuration you can freely decide how to do the authentication of your users. It simply depends on your filters
+* Independent: As soon as a user logs in, it is added/updated to the Wordpress' user-database to allow wordpress to always use the correct data. You only have to administer your users once.
+* Failsafe: Due to the users being created in Wordpress' User-database they can also log in when the LDAP-backend currently is gone.
 * Role-Aware: You can map Wordpress' roles to values of an existing LDAP-attribute.
 
 For more Information on the configuration have a look at https://github.com/heiglandreas/authLdap
@@ -41,6 +40,9 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 2.1.0 =
+* Add search-base for groups. This might come in handy for multisite-instances
+
 = 2.0.0 =
 * This new release adds Multi-Site support. It will no longer be possible to use this plugin just in one subsite of a multisite installation!
 * Adds a warning screen to the config-section when no LDAPextension could be found
