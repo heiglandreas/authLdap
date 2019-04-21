@@ -1,0 +1,83 @@
+dn: dc=test space,{{ LDAP_BASE_DN }}
+changetype: add
+dc: test space
+description: LDAP Example with space
+objectClass: dcObject
+objectClass: organization
+o: test space
+
+dn: cn=Manager,{{ LDAP_BASE_DN }}
+changetype: add
+cn: Manager
+objectClass: organizationalRole
+
+dn: ou=test,{{ LDAP_BASE_DN }}
+changetype: add
+objectClass: organizationalUnit
+ou: test
+
+dn: uid=user1,{{ LDAP_BASE_DN }}
+changetype: add
+objectClass: account
+objectClass: simpleSecurityObject
+uid: user1
+userPassword: user1
+
+dn: cn=group1,{{ LDAP_BASE_DN }}
+changetype: add
+objectclass: groupOfUniqueNames
+cn: group1
+uniqueMember: uid=user1,{{ LDAP_BASE_DN }}
+
+dn: uid=user2,{{ LDAP_BASE_DN }}
+changetype: add
+objectClass: account
+objectClass: simpleSecurityObject
+uid: user2
+userPassword: user2
+
+dn: cn=group2,{{ LDAP_BASE_DN }}
+changetype: add
+objectclass: groupOfUniqueNames
+cn: group2
+uniqueMember: uid=user2,{{ LDAP_BASE_DN }}
+
+dn: uid=user3,{{ LDAP_BASE_DN }}
+changetype: add
+objectClass: account
+objectClass: simpleSecurityObject
+uid: user3
+userPassword: user!"
+
+dn: cn=group3,{{ LDAP_BASE_DN }}
+changetype: add
+objectclass: groupOfUniqueNames
+cn: group3
+uniqueMember: uid=user2,{{ LDAP_BASE_DN }}
+uniqueMember: uid=user3,{{ LDAP_BASE_DN }}
+
+dn: uid=user 4,{{ LDAP_BASE_DN }}
+changetype: add
+objectClass: account
+objectClass: simpleSecurityObject
+uid: user 4
+userPassword: user!"
+
+dn: cn=group4,{{ LDAP_BASE_DN }}
+changetype: add
+objectclass: groupOfUniqueNames
+cn: group4
+uniqueMember: uid=user 4,{{ LDAP_BASE_DN }}
+
+dn: uid=user 5,dc=test space,{{ LDAP_BASE_DN }}
+changetype: add
+objectClass: account
+objectClass: simpleSecurityObject
+uid: user 5
+userPassword: user!"
+
+dn: cn=group5,{{ LDAP_BASE_DN }}
+changetype: add
+objectclass: groupOfUniqueNames
+cn: group5
+uniqueMember: uid=user 5,dc=test space,{{ LDAP_BASE_DN }}
