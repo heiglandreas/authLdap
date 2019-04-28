@@ -1,3 +1,5 @@
 vendor
 composer.lock
 .svnAccess
+svn
+wp-app

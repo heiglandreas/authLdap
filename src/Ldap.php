@@ -30,7 +30,7 @@ namespace Org_Heigl\AuthLdap;
 
 use Exception;
 
-class LDAP
+class Ldap
 {
     private $_server = '';
 
@@ -68,16 +68,16 @@ class LDAP
         if (false === $url) {
             throw new Exception($URI . ' is an invalid URL');
         }
-        if (! isset ( $url['scheme'] )) {
+        if (! isset($url['scheme'])) {
             throw new Exception($URI . ' does not provide a scheme');
         }
         if (0 !== strpos($url['scheme'], 'ldap')) {
             throw new Exception($URI . ' is an invalid LDAP-URI');
         }
-        if (! isset ( $url['host'] )) {
+        if (! isset($url['host'])) {
             throw new Exception($URI . ' does not provide a server');
         }
-        if (! isset ( $url['path'] )) {
+        if (! isset($url['path'])) {
             throw new Exception($URI . ' does not provide a search-base');
         }
         if (1 == strlen($url['path'])) {
@@ -86,16 +86,16 @@ class LDAP
         $this -> _server = $url['host'];
         $this -> _scheme = $url['scheme'];
         $this -> _baseDn = substr($url['path'], 1);
-        if (isset ( $url['user'] )) {
+        if (isset($url['user'])) {
             $this -> _username = $url['user'];
         }
         if ('' == trim($this -> _username)) {
             $this -> _username = 'anonymous';
         }
-        if (isset ( $url['pass'] )) {
+        if (isset($url['pass'])) {
             $this -> _password = $url['pass'];
         }
-        if (isset ( $url['port'] )) {
+        if (isset($url['port'])) {
             $this -> _port = $url['port'];
         }
         $this->_starttls = $starttls;
@@ -116,13 +116,13 @@ class LDAP
 
         $this->_ch = @ldap_connect($this->_scheme . '://' . $this->_server . ':' . $this -> _port);
         if (! $this->_ch) {
-            throw new AuthLDAP_Exception('Could not connect to the server');
+            throw new LdapException('Could not connect to the server');
         }
         ldap_set_option($this->_ch, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($this->_ch, LDAP_OPT_REFERRALS, 0);
         //if configured try to upgrade encryption to tls for ldap connections
         if ($this->_starttls) {
-          ldap_start_tls($this->_ch);
+            ldap_start_tls($this->_ch);
         }
         return $this;
     }
@@ -153,7 +153,7 @@ class LDAP
             $this->connect();
         }
         if (! is_resource($this->_ch)) {
-            throw new AuthLDAP_Exception('No Resource-handle given');
+            throw new LdapException('No Resource-handle given');
         }
         $bind = false;
         if (( ( $this->_username )
@@ -164,7 +164,7 @@ class LDAP
             $bind = @ldap_bind($this->_ch);
         }
         if (! $bind) {
-            throw new AuthLDAP_Exception('bind was not successfull: ' . ldap_error($this->_ch));
+            throw new LdapException('bind was not successfull: ' . ldap_error($this->_ch));
         }
         return $this;
     }
@@ -191,21 +191,21 @@ class LDAP
      * @param string $base
      * @return array
      */
-    public function search($filter, $attributes = array('uid'), $base = '' )
+    public function search($filter, $attributes = array('uid'), $base = '')
     {
         if (! is_Resource($this->_ch)) {
-            throw new AuthLDAP_Exception('No resource handle avbailable');
+            throw new LdapException('No resource handle avbailable');
         }
         if (! $base) {
-          $base = $this->_baseDn;
+            $base = $this->_baseDn;
         }
         $result = ldap_search($this->_ch, $base, $filter, $attributes);
         if ($result === false) {
-            throw new AuthLDAP_Exception('no result found');
+            throw new LdapException('no result found');
         }
         $this->_info = @ldap_get_entries($this->_ch, $result);
         if ($this->_info === false) {
-            throw new AuthLDAP_Exception('invalid results found');
+            throw new LdapException('invalid results found');
         }
         return $this -> _info;
     }
@@ -263,18 +263,7 @@ class LDAP
     {
         if ($this->_debug) {
             $_v = debug_backtrace();
-            throw new AuthLDAP_Exception('[LDAP_ERROR]' . ldap_errno($this->_ch) . ':' . ldap_error($this->_ch), $_v[0]['line']);
-        }
-    }
-}
-
-class AuthLDAP_Exception extends Exception
-{
-    public function __construct($message, $line = null)
-    {
-        parent :: __construct($message);
-        if ($line) {
-            $this -> line = $line;
+            throw new LdapException('[LDAP_ERROR]' . ldap_errno($this->_ch) . ':' . ldap_error($this->_ch), $_v[0]['line']);
         }
     }
 }

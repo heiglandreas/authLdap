@@ -3,32 +3,30 @@
     "type" : "library",
     "description": "Enables wordpress-authentication via LDAP",
     "keywords": ["ldap","authenticate", "auth", "wordpress"],
-    "homepage": "http://github.com/heiglandreas/authLdap",
+    "homepage": "https://github.com/heiglandreas/authLdap",
     "license": "MIT",
     "authors": [{
         "name": "Andreas Heigl",
         "email": "andreas@heigl.org",
-        "homepage": "http://andreas.heigl.org",
+        "homepage": "https://andreas.heigl.org",
         "role": "Developer"
     }],
     "require" : {
-        "php": ">=5.4",
-        "phing/phing": "^2.16"
+        "php": ">=5.6"
     },
     "require-dev": {
         "php-mock/php-mock": "^1.0",
         "phpunit/phpunit": "~4.5",
         "mockery/mockery": "0.9.*",
         "codeclimate/php-test-reporter": "0.1.*",
-        "squizlabs/php_codesniffer": "~2.3",
         "pear/versioncontrol_svn": "^0.5.2",
-        "pear/pear": "dev-master"
+        "pear/pear": "dev-master",
+        "phing/phing": "^2.16",
+        "squizlabs/php_codesniffer": "^3.4",
+        "phpcompatibility/php-compatibility": "^9.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0"
     },
     "autoload" : {
-        "classmap" : [
-            "ldap.php",
-            "authLdap.php"
-        ],
         "psr-4" : {
             "Org_Heigl\\AuthLdap\\" : "src/"
         }
