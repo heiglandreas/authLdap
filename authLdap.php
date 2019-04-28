@@ -304,8 +304,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $uid = authLdap_get_uid($realuid);
 
         // This fixes #172
-        if (true === authLdap_get_option('DoNotOverwriteNonLdapUsers', false)) {
-            if (! get_usermeta($uid, 'authLDAP')) {
+        if (true == authLdap_get_option('DoNotOverwriteNonLdapUsers', false)) {
+            if (! get_user_meta($uid, 'authLDAP')) {
                 return null;
             }
         }
