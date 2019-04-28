@@ -3,7 +3,7 @@
 Plugin Name: AuthLDAP
 Plugin URI: https://github.com/heiglandreas/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 2.1.0
+Version: 2.2.0
 Author: Andreas Heigl <a.heigl@wdv.de>
 Author URI: http://andreas.heigl.org
 License: MIT
@@ -61,6 +61,7 @@ function authLdap_options_panel()
             'DefaultRole'   => authLdap_get_post('authLDAPDefaultRole'),
             'GroupEnable'   => authLdap_get_post('authLDAPGroupEnable', false),
             'GroupOverUser' => authLdap_get_post('authLDAPGroupOverUser', false),
+            'DoNotOverwriteNonLdapUsers' => authLdap_get_post('authLDAPDoNotOverwriteNonLdapUsers', false),
         );
         if (authLdap_set_options($new_options)) {
             echo "<div class='updated'><p>Saved Options!</p></div>";
@@ -90,6 +91,7 @@ function authLdap_options_panel()
     $authLDAPDefaultRole   = authLdap_get_option('DefaultRole');
     $authLDAPGroupEnable   = authLdap_get_option('GroupEnable');
     $authLDAPGroupOverUser = authLdap_get_option('GroupOverUser');
+    $authLDAPDoNotOverwriteNonLdapUsers = authLdap_get_option('DoNotOverwriteNonLdapUsers');
 
     $tChecked              = ($authLDAP)               ? ' checked="checked"' : '';
     $tDebugChecked         = ($authLDAPDebug)          ? ' checked="checked"' : '';
@@ -97,6 +99,7 @@ function authLdap_options_panel()
     $tGroupChecked         = ($authLDAPGroupEnable)    ? ' checked="checked"' : '';
     $tGroupOverUserChecked = ($authLDAPGroupOverUser)  ? ' checked="checked"' : '';
     $tStartTLSChecked      = ($authLDAPStartTLS)       ? ' checked="checked"' : '';
+    $tDoNotOverwriteNonLdapUsers = ($authLDAPDoNotOverwriteNonLdapUsers)       ? ' checked="checked"' : '';
 
     $roles = new WP_Roles();
 
@@ -299,6 +302,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 
         $uid = authLdap_get_uid($realuid);
+
+        // This fixes #172
+        if (true === authLdap_get_option('DoNotOverwriteNonLdapUsers', false)) {
+            if (! get_usermeta($uid, 'authLDAP')) {
+                return null;
+            }
+        }
+
         $role = '';
 
         // we only need this if either LDAP groups are disabled or
@@ -699,6 +710,7 @@ function authLdap_load_options($reload = false)
             'GroupEnable'   => true,
             'GroupOverUser' => true,
             'Version'       => $option_version_plugin,
+            'DoNotOverwriteNonLdapUsers' => false,
         );
 
         // check if we got a version

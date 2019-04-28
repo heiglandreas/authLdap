@@ -58,6 +58,20 @@
                 </tr>
                 <tr>
                     <th>
+                        <label for="authLDAPDoNotOverwriteNonLdapUsers">Do not authenticate existing WordPress-Users</label>
+                    </th>
+                    <td>
+                        <input type="checkbox" name="authLDAPDoNotOverwriteNonLdapUsers" id="authLDAPDoNotOverwriteNonLdapUsers" value="1"<?php echo $tDoNotOverwriteNonLdapUsers; ?>/>
+                        <p class="description">
+                            Shall we prohibit authenticating already in WordPress created users using LDAP? If you enable this, LDAP-Users with the same user-ID
+                        as existing WordPress-Users can no longer take over the WordPress-Users account. This also means that LDAP-Users with the same User-ID as existing
+                        WordPress-Users will <strong>not</strong> be able to authenticate anymore! Accounts that have been taken over already will not be affected by this setting.
+                        </p>
+                        <p class="description">This should only be checked if you know what you are doing!</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
                         <label for="authLDAPCachePW">Save entered passwords in the wordpress user table?</label>
                     </th>
                     <td>
