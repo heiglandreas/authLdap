@@ -19,3 +19,8 @@ docker-compose-mu.yml
 patchcoverage
 phpunit*
 tests
+wp-app
+wp-data
+dockersetup
+config
+docker-compose.yml

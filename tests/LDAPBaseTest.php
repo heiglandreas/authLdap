@@ -109,7 +109,6 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
         $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
         $ldap->bind();
         $this->assertContains($groups, $ldap->search(sprintf($filter, $user), ['cn'])[0]);
-
     }
 
     public function serchingForGroupsProvider()
