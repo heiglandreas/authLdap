@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 5.1.1
+Tested up to: 5.2.0
 Requires PHP: 5.6
 Stable tag: trunk
 License: MIT
@@ -40,7 +40,7 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
-= 2.2.0 =
+= 2.3.0 =
 * Allow to not overwrite existing WordPress-Users with LDAP-Users as that can be a security issue.
 
 = 2.1.0 =
