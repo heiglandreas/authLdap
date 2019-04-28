@@ -19,15 +19,18 @@ function authLdap_debug($message)
     }
 }
 
-
 function authLdap_addmenu()
 {
-    if (! is_multisite()) {
-        add_options_page('AuthLDAP', 'AuthLDAP', 'manage_options', basename(__FILE__), 'authLdap_options_panel');
-    } else {
-        add_submenu_page('settings.php', 'AuthLDAP', 'AuthLDAP', 'manage_options', 'authldap', 'authLdap_options_panel');
+    $user = wp_get_current_user();
+    if (in_array( 'administrator', $user->roles ) ) {
+        if (! authLdap_is_multisite()) {
+            add_options_page('AuthLDAP', 'AuthLDAP', 'manage_options', basename(__FILE__), 'authLdap_options_panel');
+        } else {
+            add_submenu_page('settings.php', 'AuthLDAP', 'AuthLDAP', 'manage_options', 'authldap', 'authLdap_options_panel');
+        }
     }
 }
+
 
 function authLdap_get_post($name, $default = '')
 {
