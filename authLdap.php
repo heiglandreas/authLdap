@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: AuthLDAP
+Plugin Name: AuthLDAP Bulk Import
 Plugin URI: https://github.com/heiglandreas/authLdap
 Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
 Version: 2.1.0
@@ -878,7 +878,7 @@ function show_bulk_import() {
                         echo "<div class='updated'><p>user inserted: ". $user[$uidAttr][0] ."</p></div>";
                     }
                     else {
-                        echo "<div class='waruning'><p>A problem occoured, while creating user: ". $user[$uidAttr][0] ." in wordpress. </p></div>";
+                        echo "<div class='warning'><p>A problem occoured, while creating user: ". $user[$uidAttr][0] ." in wordpress. </p></div>";
                     }
                 }
             }            
