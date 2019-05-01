@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: AuthLDAP Bulk Import
-Plugin URI: https://github.com/heiglandreas/authLdap
-Description: This plugin allows you to use your existing LDAP as authentication base for WordPress
-Version: 2.1.0
-Author: Andreas Heigl <a.heigl@wdv.de>
+Plugin URI: https://github.com/michaelscheurer/authLdap
+Description: This plugin allows you to use your existing LDAP as authentication base for WordPress. And you can make use of the user bulk import.
+Version: 3.0
+Author: Andreas Heigl <a.heigl@wdv.de>, added bulk import feature by seccom.ch
 Author URI: http://andreas.heigl.org
 License: MIT
 License URI: https://opensource.org/licenses/MIT
