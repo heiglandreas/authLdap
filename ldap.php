@@ -191,7 +191,7 @@ class LDAP
      * @param string $base
      * @return array
      */
-    public function search($filter, $attributes = array('uid'), $baseDN)
+    public function search($filter, $attributes = array('uid'), $baseDN = null)
     {
         
         if (! is_Resource($this->_ch)) {
@@ -248,6 +248,7 @@ class LDAP
         //return true;
         $this->connect();
         $this->bind();
+        echo sprintf($filter, $username);
         $res = $this->search(sprintf($filter, $username));
         if (! $res || ! is_array($res) || ( $res ['count'] != 1 )) {
             return false;
