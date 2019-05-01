@@ -850,7 +850,9 @@ function show_bulk_import() {
             $attribs = $server->search(
                 authLdap_get_option('bulk_filter'),                    
                 array(authLdap_get_option('UidAttr', 'uid'),
-                    authLdap_get_option('MailAttr', 'mail')
+                    authLdap_get_option('MailAttr', 'mail'),
+                    authLdap_get_option('NameAttr'),
+                    authLdap_get_option('SecName')
                 ),
                 authLdap_get_option('bulk_basedn')
             );
@@ -863,13 +865,19 @@ function show_bulk_import() {
             
             //create all users in wordpress, which are not yet locally stored
             foreach ($attribs as $user) {                
-                $uidAttr = authLdap_get_option('UidAttr', 'uid'); // returns uid or custom uid attribute string
-                $mailAttr = authLdap_get_option('MailAttr', 'mail'); //returns mail or custom mail attribute string
+                $uidAttr = strtolower(authLdap_get_option('UidAttr', 'uid')); // returns uid or custom uid attribute string
+                $mailAttr = strtolower(authLdap_get_option('MailAttr', 'mail')); //returns mail or custom mail attribute string
+                $firstNameAttr = strtolower(authLdap_get_option('NameAttr')); // returns the first name attribute
+                $lastNameAttr = strtolower(authLdap_get_option('SecName')); // returns the last name attribute
 
-                if(! username_exists($user[$uidAttr][0])){
+                $userExist = username_exists($user[$uidAttr][0]);
+                
+                if(! $userExist){
                     $user_id = wp_insert_user( array(
                         'user_login'    =>  $user[$uidAttr][0],
                         'user_email'    =>  $user[$mailAttr][0],
+                        'first_name'    =>  $user[$firstNameAttr][0],
+                        'last_name'     =>  $user[$lastNameAttr][0],
                         'user_pass'     =>  NULL
                     ) );
                     
@@ -879,6 +887,20 @@ function show_bulk_import() {
                     }
                     else {
                         echo "<div class='warning'><p>A problem occoured, while creating user: ". $user[$uidAttr][0] ." in wordpress. </p></div>";
+                    }
+                } else {
+                    $user_id = wp_update_user( array(
+                        'ID' => $userExist,
+                        'user_email'    =>  $user[$mailAttr][0],
+                        'first_name'    =>  $user[$firstNameAttr][0],
+                        'last_name'     =>  $user[$lastNameAttr][0],
+                    ) );
+                    
+                    // check if user has been updated
+                    if ( ! is_wp_error( $user_id ) ) {
+                        echo "<div class='updated'><p>user updated: ". $user[$uidAttr][0] ."</p></div>";
+                    } else {
+                        echo "<div class='warning'><p>A problem occoured, while updating user: ". $user[$uidAttr][0] ." in wordpress. </p></div>";
                     }
                 }
             }            
