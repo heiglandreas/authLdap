@@ -104,11 +104,6 @@ function authLdap_options_panel()
     $roles = new WP_Roles();
 
     $action = $_SERVER['REQUEST_URI'];
-    if (! extension_loaded('ldap')) {
-        echo '<div class="warning">The LDAP-Extension is not available on your '
-            . 'WebServer. Therefore Everything you can alter here does not '
-            . 'make any sense!</div>';
-    }
 
     include dirname(__FILE__) . '/view/admin.phtml';
 }
@@ -183,7 +178,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
     if ($user instanceof WP_User) {
         authLdap_debug(sprintf(
             'User %s has already been authenticated - skipping LDAP-Authentication',
-            $user->get('nickname')));
+            $user->get('nickname')
+        ));
         return $user;
     }
 
@@ -291,7 +287,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             if (! isset($attribs[0][strtolower($authLDAPUidAttr)][0])) {
                 authLdap_debug('could not get user attributes from LDAP');
                 throw new UnexpectedValueException('The user-ID attribute has not been returned');
-
             }
 
             $dn = $attribs[0]['dn'];
@@ -384,7 +379,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             }
         }
         $user_info['user_nicename'] = substr($user_info['user_nicename'], 0, 50);
-  
+
         // optionally store the password into the wordpress database
         if (authLdap_get_option('CachePW')) {
             // Password will be hashed inside wp_update_user or wp_insert_user
@@ -399,7 +394,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             // found user in the database
             authLdap_debug('The LDAP user has an entry in the WP-Database');
             $user_info['ID'] = $uid;
-            unset ($user_info['display_name'], $user_info['nickname']);
+            unset($user_info['display_name'], $user_info['nickname']);
             $userid = wp_update_user($user_info);
         } else {
             // new wordpress account will be created
