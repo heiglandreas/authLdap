@@ -42,7 +42,7 @@ class LdapList
     {
         foreach ($this->items as $key => $item) {
             if (! $item->authenticate($username, $password, $filter)) {
-                unset ($this->items[$key]);
+                unset($this->items[$key]);
                 continue;
             }
             return true;
@@ -65,7 +65,7 @@ class LdapList
         }
 
         if ($allFailed) {
-            throw new AuthLDAP_Exception('No bind successfull');
+            throw new AuthLDAP_Exception('Bind unsuccessful');
         }
 
         return true;
