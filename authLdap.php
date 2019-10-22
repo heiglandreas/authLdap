@@ -260,7 +260,10 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         if (true !== $result) {
             authLdap_debug('LDAP authentication failed');
-            // TODO what to return? WP_User object, true, false, even an WP_Error object... all seem to fall back to normal wp user authentication
+            if (true == authLdap_get_option('DoNotOverwriteNonLdapUsers', false)) {
+                remove_filter( 'authenticate', 'wp_authenticate_username_password', 20, 3 );
+                remove_filter( 'authenticate', 'wp_authenticate_email_password', 20 ,3 );
+            }
             return;
         }
 
