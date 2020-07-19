@@ -1,5 +1,5 @@
 {
-    "name" : "org_heigl/authLdap",
+    "name" : "org_heigl/authldap",
     "type" : "library",
     "description": "Enables wordpress-authentication via LDAP",
     "keywords": ["ldap","authenticate", "auth", "wordpress"],
