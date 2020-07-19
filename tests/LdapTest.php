@@ -32,10 +32,12 @@
 
 namespace Org_Heigl\AuthLdapTest;
 
-use PHPUnit_Framework_TestCase;
+use Exception;
+use Generator;
+use PHPUnit\Framework\TestCase;
 use Org_Heigl\AuthLdap\LDAP;
 
-class LdapTest extends PHPUnit_Framework_TestCase
+class LdapTest extends TestCase
 {
     /**
      *
@@ -43,100 +45,106 @@ class LdapTest extends PHPUnit_Framework_TestCase
      * @param array $expected
      * @param array $given
      */
-    public function testInstantiateLdapClass($expected, $given)
+    public function testInstantiateLdapClass($ldapUri, $debug, $startTls)
     {
-        $ldap = new LDAP($expected[0], $expected[1]);
-        foreach ($given as $key => $value) {
-            $this -> assertAttributeEquals($value, '_' . $key, $ldap);
-        }
+        $ldap = new LDAP($ldapUri, $debug, $startTls);
+        self::assertInstanceOf(LDAP::class, $ldap);
     }
 
     /**
      * @dataProvider dpExceptionsWhenInstantiatingLdapClass
-     * @expectedException Exception
      * @param array $expected
      */
     public function testExceptionsWhenInstantiatingLdapClass($expected)
     {
+        self::expectException(Exception::class);
         new LDAP($expected);
     }
 
-    public function dpInstantiateLdapClass()
+    public function dpInstantiateLdapClass(): Generator
     {
-        return array (
-            array (
-             array ('ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org', true),
-             array (
-              'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-              'password' => 'secret',
-              'server'   => 'ldap.example.org',
-              'baseDn'   => 'cn=example,c=org',
-              'debug'    => true
-             )
-            ),
-            array (
-             array ('ldap://uid=jondoe,cn=users,cn=example,c=org@ldap.example.org/cn=example,c=org', true),
-             array (
-              'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-              'password' => '',
-              'server'   => 'ldap.example.org',
-              'baseDn'   => 'cn=example,c=org',
-              'debug'    => true
-             )
-            ),
-            array(
-             array ('ldap://ldap.example.org/cn=example,c=org', true),
-             array (
-              'username' => 'anonymous',
-              'password' => '',
-              'server'   => 'ldap.example.org',
-              'baseDn'   => 'cn=example,c=org',
-              'debug'    => true
-             )
-            ),
-//            array(
-//             array ('ldap://ldap.example.org', true),
-//             array (
-//              'username' => 'anonymous',
-//              'password' => '',
-//              'server'   => 'ldap.example.org',
-//              'baseDn'   => '',
-//              'debug'    => true
-//             )
-//            ),
-            array(
-             array ('ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org', false),
-             array (
-              'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-              'password' => 'secret',
-              'server'   => 'ldap.example.org',
-              'baseDn'   => 'cn=example,c=org',
-              'debug'    => false
-             )
-            ),
-            array(
-                array ('ldap://ldap.example.org/cn=test%20example,c=org', false),
-                array (
-                    'username' => 'anonymous',
-                    'password' => '',
-                    'server'   => 'ldap.example.org',
-                    'baseDn'   => 'cn=test example,c=org',
-                    'debug'    => false
-                )
-            ),
-        );
+        yield [
+            'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
+            true,
+            false,
+            [
+                'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+                'password' => 'secret',
+                'server'   => 'ldap.example.org',
+                'baseDn'   => 'cn=example,c=org',
+                'debug'    => true
+            ]
+        ];
+        yield [
+            'ldap://uid=jondoe,cn=users,cn=example,c=org@ldap.example.org/cn=example,c=org',
+            true,
+            false,
+            [
+                'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+                'password' => '',
+                'server'   => 'ldap.example.org',
+                'baseDn'   => 'cn=example,c=org',
+                'debug'    => true
+            ]
+        ];
+        yield [
+            'ldap://ldap.example.org/cn=example,c=org',
+            true,
+            false,
+            [
+                'username' => 'anonymous',
+                'password' => '',
+                'server'   => 'ldap.example.org',
+                'baseDn'   => 'cn=example,c=org',
+                'debug'    => true
+            ]
+        ];
+//      yield [
+//           'ldap://ldap.example.org',
+//              true,
+//              false,
+//              [
+//                  'username' => 'anonymous',
+//                  'password' => '',
+//                  'server'   => 'ldap.example.org',
+//                  'baseDn'   => '',
+//                  'debug'    => true
+//             ]
+//          ];
+        yield [
+            'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
+            false,
+            false,
+            [
+                'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+                'password' => 'secret',
+                'server'   => 'ldap.example.org',
+                'baseDn'   => 'cn=example,c=org',
+                'debug'    => false
+            ],
+        ];
+        yield [
+            'ldap://ldap.example.org/cn=test%20example,c=org',
+            false,
+            false,
+            [
+                'username' => 'anonymous',
+                'password' => '',
+                'server'   => 'ldap.example.org',
+                'baseDn'   => 'cn=test example,c=org',
+                'debug'    => false
+             ]
+        ];
     }
 
-    public function dpExceptionsWhenInstantiatingLdapClass()
+    public function dpExceptionsWhenInstantiatingLdapClass(): Generator
     {
-        return array (
-                array('ldap://ldap.example.org'),
-                array('ldap://foo:bar@/cn=example,c=org'),
-                array('http://ldap.example.org'),
-                array('fooBar'),
-                array('ldap://ldap.example.org/'),
-                array('()123üäö'),
-               );
+        yield ['ldap://ldap.example.org'];
+        yield ['ldap://foo:bar@/cn=example,c=org'];
+        yield ['http://ldap.example.org'];
+        yield ['fooBar'];
+        yield ['ldap://ldap.example.org/'];
+        yield ['()123üäö'];
     }
 
     public function testThatGroupMappingWorks()

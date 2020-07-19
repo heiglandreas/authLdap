@@ -30,17 +30,20 @@ namespace Org_Heigl\AuthLdapTest;
 use Org_Heigl\AuthLdap\LDAP;
 use Org_Heigl\AuthLdap\LdapList;
 use phpmock\spy\Spy;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class LDAPBaseTest extends PHPUnit_Framework_TestCase
+class LDAPBaseTest extends TestCase
 {
-    public function setUp()
+    /** @var Spy */
+    private $ldap_connect_spy;
+
+    public function setUp(): void
     {
         $this->ldap_connect_spy = new Spy('Org_Heigl\AuthLdap', 'ldap_connect');
         $this->ldap_connect_spy->enable();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->ldap_connect_spy->disable();
     }
@@ -54,11 +57,11 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
     public function bindingWithPasswordProvider()
     {
         return [
-            ['user3', 'user!"', 'uid=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'],
-            ['Manager', 'insecure', 'cn=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'],
-            ['user1', 'user1', 'uid=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'],
-            ['user 4', 'user!"', 'uid=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'],
-            ['user 5', 'user!"', 'uid=%s', 'ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=test%20space,dc=example,dc=com'],
+            ['user3', 'user!"', 'uid=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'],
+            ['admin', 'insecure', 'cn=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'],
+            ['user1', 'user1', 'uid=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'],
+            ['user 4', 'user!"', 'uid=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'],
+            ['user 5', 'user!"', 'uid=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=test%20space,dc=example,dc=org'],
         ];
     }
 
@@ -86,7 +89,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
     public function initialBindingToLdapServerWorksProvider()
     {
         return [
-            ['ldap://uid=user%205,dc=test%20space,dc=example,dc=com:user!"@localhost:3890/dc=test%20space,dc=example,dc=com'],
+            ['ldap://uid=user%205,dc=test%20space,dc=example,dc=org:user!"@localhost:389/dc=test%20space,dc=example,dc=org'],
         ];
     }
 
@@ -94,7 +97,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
     public function testThatBindingWithAddedSlashesFailsWorks($user, $password, $filter)
     {
         $newpassword = addslashes($password);
-        $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
+        $ldap = new LDAP('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org');
         if ($newpassword === $password) {
             $this->assertTrue($ldap->authenticate($user, $password, $filter));
         } else {
@@ -106,7 +109,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
     public function testThatSearchingForGoupsWorks($filter, $user, $groups)
     {
         // (&(objectCategory=group)(member=<USER_DN>))
-        $ldap = new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com');
+        $ldap = new LDAP('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org');
         $ldap->bind();
         $this->assertContains($groups, $ldap->search(sprintf($filter, $user), ['cn'])[0]);
 
@@ -117,7 +120,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
         return [
             [
                 '(&(objectclass=groupOfUniqueNames)(uniqueMember=%s))',
-                'uid=user 4,dc=example,dc=com',
+                'uid=user 4,dc=example,dc=org',
                 ['count' => 1, 0 => 'group4'],
             ],
         ];
@@ -126,7 +129,7 @@ class LDAPBaseTest extends PHPUnit_Framework_TestCase
     public function testThatSettingLDAPSActuallyGivesTheCorrectPort()
     {
 
-        $ldap = new LDAP('ldaps://cn=Manager,dc=example,dc=com:insecure@127.0.0.1/dc=example,dc=com');
+        $ldap = new LDAP('ldaps://cn=admin,dc=example,dc=org:insecure@127.0.0.1/dc=example,dc=org');
         $ldap->connect();
 
         $this->assertEquals('ldaps://127.0.0.1:636', $this->ldap_connect_spy->getInvocations()[0]->getArguments()[0]);

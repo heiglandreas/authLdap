@@ -28,16 +28,16 @@
 namespace Org_Heigl\AuthLdapTest;
 
 use Org_Heigl\AuthLdap\LDAP;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class LDAPListBaseTest extends PHPUnit_Framework_TestCase
+class LDAPListBaseTest extends TestCase
 {
     /** @dataProvider bindingWithPasswordProvider */
     public function testThatBindingWithPasswordWorks($user, $password, $filter)
     {
         require_once __DIR__ . '/../src/LdapList.php';
         $ldaplist = new \Org_Heigl\AuthLdap\LdapList();
-        $ldaplist->addLdap(new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'));
+        $ldaplist->addLdap(new LDAP('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'));
         $this->assertTrue($ldaplist->authenticate($user, $password, $filter));
     }
 
@@ -45,7 +45,7 @@ class LDAPListBaseTest extends PHPUnit_Framework_TestCase
     {
         return [
             ['user3', 'user!"', 'uid=%s'],
-            ['Manager', 'insecure', 'cn=%s'],
+            ['admin', 'insecure', 'cn=%s'],
             ['user1', 'user1', 'uid=%s'],
         ];
     }
@@ -56,7 +56,7 @@ class LDAPListBaseTest extends PHPUnit_Framework_TestCase
         $newpassword = addslashes($password);
         require_once __DIR__ . '/../src/LdapList.php';
         $ldaplist = new \Org_Heigl\AuthLdap\LdapList();
-        $ldaplist->addLdap(new LDAP('ldap://cn=Manager,dc=example,dc=com:insecure@127.0.0.1:3890/dc=example,dc=com'));
+        $ldaplist->addLdap(new LDAP('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'));
         if ($newpassword === $password) {
             $this->assertTrue($ldaplist->authenticate($user, $password, $filter));
         } else {

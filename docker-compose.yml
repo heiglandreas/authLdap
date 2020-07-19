@@ -62,6 +62,7 @@ services:
     environment:
       LDAP_LOG_LEVEL: "0"
       LDAP_TLS: "false"
+      LDAP_ADMIN_PASSWORD: "insecure"
 
 volumes:
   db_data:

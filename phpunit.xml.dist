@@ -16,17 +16,16 @@
             <group>disable</group>
         </exclude>
     </groups>
-    <listeners>
-        <!--listener class="\Mockery\Adapter\Phpunit\TestListener"></listener-->
-    </listeners>
+    <!--listeners>
+        <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
+    </listeners-->
     <filter>
         <whitelist>
             <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
   <logging>
-    <log type="coverage-html" target="build/coverage" charset="UTF-8"
-         yui="true" highlight="false"
+    <log type="coverage-html" target="build/coverage"
          lowUpperBound="35" highLowerBound="70" />
     <!--log type="coverage-xml" target="../report/coverage.xml"/-->
     <!--log type="graphviz" target="../report/logfile.dot"/-->
