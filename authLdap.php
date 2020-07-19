@@ -10,6 +10,8 @@ License: MIT
 License URI: https://opensource.org/licenses/MIT
 */
 
+// phpcs:disable PSR1.Files.SideEffects
+
 use Org_Heigl\AuthLdap\LdapUri;
 
 require_once dirname(__FILE__) . '/ldap.php';
@@ -25,9 +27,22 @@ function authLdap_debug($message)
 function authLdap_addmenu()
 {
     if (! is_multisite()) {
-        add_options_page('AuthLDAP', 'AuthLDAP', 'manage_options', basename(__FILE__), 'authLdap_options_panel');
+        add_options_page(
+            'AuthLDAP',
+            'AuthLDAP',
+            'manage_options',
+            basename(__FILE__),
+            'authLdap_options_panel'
+        );
     } else {
-        add_submenu_page('settings.php', 'AuthLDAP', 'AuthLDAP', 'manage_options', 'authldap', 'authLdap_options_panel');
+        add_submenu_page(
+            'settings.php',
+            'AuthLDAP',
+            'AuthLDAP',
+            'manage_options',
+            'authldap',
+            'authLdap_options_panel'
+        );
     }
 }
 
@@ -141,7 +156,11 @@ function authLdap_get_server()
         require_once dirname(__FILE__) . '/src/LdapList.php';
         $_ldapserver = new \Org_Heigl\AuthLdap\LdapList();
         foreach ($authLDAPURI as $uri) {
-            $_ldapserver->addLdap(new \Org_Heigl\AuthLdap\LDAP(LdapUri::fromString($uri), $authLDAPDebug, $authLDAPStartTLS));
+            $_ldapserver->addLdap(new \Org_Heigl\AuthLdap\LDAP(
+                LdapUri::fromString($uri),
+                $authLDAPDebug,
+                $authLDAPStartTLS
+            ));
         }
     }
     return $_ldapserver;
@@ -175,7 +194,9 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 {
     // don't do anything when authLDAP is disabled
     if (! authLdap_get_option('Enabled')) {
-        authLdap_debug('LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)');
+        authLdap_debug(
+            'LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)'
+        );
         return $user;
     }
 
@@ -185,7 +206,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
     if ($user instanceof WP_User) {
         authLdap_debug(sprintf(
             'User %s has already been authenticated - skipping LDAP-Authentication',
-            $user->get('nickname')));
+            $user->get('nickname')
+        ));
         return $user;
     }
 
@@ -233,7 +255,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             $authLDAPUidAttr = 'uid';
         }
 
-        // If already_md5 is TRUE, then we're getting the user/password from the cookie. As we don't want to store LDAP passwords in any
+        // If already_md5 is TRUE, then we're getting the user/password from the cookie. As we don't want
+        // to store LDAP passwords in any
         // form, we've already replaced the password with the hashed username and LDAP_COOKIE_MARKER
         if ($already_md5) {
             if ($password == md5($username).md5($ldapCookieMarker)) {
@@ -262,7 +285,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         if (true !== $result) {
             authLdap_debug('LDAP authentication failed');
-            // TODO what to return? WP_User object, true, false, even an WP_Error object... all seem to fall back to normal wp user authentication
+            // TODO what to return? WP_User object, true, false, even an WP_Error object...
+            // all seem to fall back to normal wp user authentication
             return;
         }
 
@@ -293,7 +317,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             if (! isset($attribs[0][strtolower($authLDAPUidAttr)][0])) {
                 authLdap_debug('could not get user attributes from LDAP');
                 throw new UnexpectedValueException('The user-ID attribute has not been returned');
-
             }
 
             $dn = $attribs[0]['dn'];
@@ -401,7 +424,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             // found user in the database
             authLdap_debug('The LDAP user has an entry in the WP-Database');
             $user_info['ID'] = $uid;
-            unset ($user_info['display_name'], $user_info['nickname']);
+            unset($user_info['display_name'], $user_info['nickname']);
             $userid = wp_update_user($user_info);
         } else {
             // new wordpress account will be created
@@ -473,7 +496,9 @@ function authLdap_user_role($uid)
         return '';
     }
 
-    $meta_value = $wpdb->get_var("SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = '{$wpdb->prefix}capabilities' AND user_id = {$uid}");
+    $meta_value = $wpdb->get_var(
+        "SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = '{$wpdb->prefix}capabilities' AND user_id = {$uid}"
+    );
 
     if (!$meta_value) {
         return '';

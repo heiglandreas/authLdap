@@ -58,11 +58,32 @@ class LDAPBaseTest extends TestCase
     public function bindingWithPasswordProvider()
     {
         return [
-            ['user3', 'user!"', 'uid=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'],
-            ['admin', 'insecure', 'cn=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'],
-            ['user1', 'user1', 'uid=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'],
-            ['user 4', 'user!"', 'uid=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'],
-            ['user 5', 'user!"', 'uid=%s', 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=test%20space,dc=example,dc=org'],
+            [
+                'user3',
+                'user!"',
+                'uid=%s',
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+            ], [
+                'admin',
+                'insecure',
+                'cn=%s',
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+            ], [
+                'user1',
+                'user1',
+                'uid=%s',
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+            ], [
+                'user 4',
+                'user!"',
+                'uid=%s',
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+            ], [
+                'user 5',
+                'user!"',
+                'uid=%s',
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=test%20space,dc=example,dc=org'
+            ],
         ];
     }
 
@@ -90,7 +111,8 @@ class LDAPBaseTest extends TestCase
     public function initialBindingToLdapServerWorksProvider()
     {
         return [
-            ['ldap://uid=user%205,dc=test%20space,dc=example,dc=org:user!"@localhost:389/dc=test%20space,dc=example,dc=org'],
+            ['ldap://uid=user%205,dc=test%20space,dc=example,dc=org:user!"' .
+                '@localhost:389/dc=test%20space,dc=example,dc=org'],
         ];
     }
 
@@ -98,7 +120,9 @@ class LDAPBaseTest extends TestCase
     public function testThatBindingWithAddedSlashesFailsWorks($user, $password, $filter)
     {
         $newpassword = addslashes($password);
-        $ldap = new LDAP(LdapUri::fromString('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'));
+        $ldap = new LDAP(LdapUri::fromString(
+            'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+        ));
         if ($newpassword === $password) {
             $this->assertTrue($ldap->authenticate($user, $password, $filter));
         } else {
@@ -110,10 +134,11 @@ class LDAPBaseTest extends TestCase
     public function testThatSearchingForGoupsWorks($filter, $user, $groups)
     {
         // (&(objectCategory=group)(member=<USER_DN>))
-        $ldap = new LDAP(LdapUri::fromString('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'));
+        $ldap = new LDAP(LdapUri::fromString(
+            'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+        ));
         $ldap->bind();
         $this->assertContains($groups, $ldap->search(sprintf($filter, $user), ['cn'])[0]);
-
     }
 
     public function serchingForGroupsProvider()
@@ -130,9 +155,14 @@ class LDAPBaseTest extends TestCase
     public function testThatSettingLDAPSActuallyGivesTheCorrectPort()
     {
 
-        $ldap = new LDAP(LdapUri::fromString('ldaps://cn=admin,dc=example,dc=org:insecure@127.0.0.1/dc=example,dc=org'));
+        $ldap = new LDAP(LdapUri::fromString(
+            'ldaps://cn=admin,dc=example,dc=org:insecure@127.0.0.1/dc=example,dc=org'
+        ));
         $ldap->connect();
 
-        $this->assertEquals('ldaps://127.0.0.1:636', $this->ldap_connect_spy->getInvocations()[0]->getArguments()[0]);
+        $this->assertEquals(
+            'ldaps://127.0.0.1:636',
+            $this->ldap_connect_spy->getInvocations()[0]->getArguments()[0]
+        );
     }
 }

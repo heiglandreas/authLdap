@@ -58,7 +58,7 @@ final class LdapUri
             $uri = getenv(substr($this->uri, 4));
         }
 
-        $uri = preg_replace_callback('/%env:([^%]+)%/', function(array $matches){
+        $uri = preg_replace_callback('/%env:([^%]+)%/', function (array $matches) {
             return rawurlencode(getenv($matches[1]));
         }, $uri);
 

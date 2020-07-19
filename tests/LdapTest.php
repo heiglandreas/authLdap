@@ -177,7 +177,9 @@ class LdapTest extends TestCase
         ], $grp);
 
         $role = '';
-        foreach (['testrole' => '7310T031:Český jazyk a literatura@ff.cuni.cz,7310T033:Český jazyk a literatura@ff.cuni.cz'] as $key => $val) {
+        foreach ([
+            'testrole' => '7310T031:Český jazyk a literatura@ff.cuni.cz,7310T033:Český jazyk a literatura@ff.cuni.cz'
+                 ] as $key => $val) {
             $currentGroup = explode(',', $val);
             // Remove whitespaces around the group-ID
             $currentGroup = array_map('trim', $currentGroup);

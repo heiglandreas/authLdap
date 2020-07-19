@@ -13,9 +13,15 @@ class LdapUriTest extends TestCase
     public function toStringProvider(): Generator
     {
         yield ['ldaps://foo:bar@foo.bar/baz', 'ldaps://foo:bar@foo.bar/baz'];
-        yield ['env:LDAP_URI', 'ldaps://foo:bar@foo.bar/baz', ['LDAP_URI' => 'ldaps://foo:bar@foo.bar/baz']];
-        yield ['ldaps://foo:%env:LDAP_PASSWORD%@foo.bar/baz', 'ldaps://foo:bar@foo.bar/baz', ['LDAP_PASSWORD' => 'bar']];
-        yield ['ldaps://foo:%env:LDAP_PASSWORD%@foo.bar/baz', 'ldaps://foo:ba%20r@foo.bar/baz', ['LDAP_PASSWORD' => 'ba r']];
+        yield ['env:LDAP_URI', 'ldaps://foo:bar@foo.bar/baz', [
+            'LDAP_URI' => 'ldaps://foo:bar@foo.bar/baz'
+        ]];
+        yield ['ldaps://foo:%env:LDAP_PASSWORD%@foo.bar/baz', 'ldaps://foo:bar@foo.bar/baz', [
+            'LDAP_PASSWORD' => 'bar'
+        ]];
+        yield ['ldaps://foo:%env:LDAP_PASSWORD%@foo.bar/baz', 'ldaps://foo:ba%20r@foo.bar/baz', [
+            'LDAP_PASSWORD' => 'ba r'
+        ]];
     }
 
     public function fromStringProvider(): Generator
@@ -23,7 +29,6 @@ class LdapUriTest extends TestCase
         yield ['ldaps://foo:bar@foo.bar/baz', false];
         yield ['env:LDAP_URI', false];
         yield ['foo:MyLdapUri', true];
-
     }
 
     /** @dataProvider toStringProvider */
@@ -44,6 +49,5 @@ class LdapUriTest extends TestCase
         }
         $ldapUri = LdapUri::fromString($uri);
         self::assertInstanceOf(LdapUri::class, $ldapUri);
-
     }
 }

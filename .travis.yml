@@ -25,7 +25,9 @@ jobs:
   - stage: check
     php:  7.4
     script: ./vendor/bin/phpcs --standard=PSR2 ldap.php authLdap.php src7 tests/
-    before_script: skip
+    before_script:
+    - composer self-update
+    - composer update --prefer-source
     after_script: skip
   - stage: test
   allow_failures:
