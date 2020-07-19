@@ -112,7 +112,7 @@ class LDAPBaseTest extends TestCase
     {
         return [
             ['ldap://uid=user%205,dc=test%20space,dc=example,dc=org:user!"' .
-                '@localhost:3389/dc=test%20space,dc=example,dc=org'],
+                '@127.0.0.1:3389/dc=test%20space,dc=example,dc=org'],
         ];
     }
 

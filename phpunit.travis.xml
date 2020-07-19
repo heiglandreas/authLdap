@@ -9,9 +9,6 @@
             <group>disable</group>
         </exclude>
     </groups>
-    <listeners>
-        <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
-    </listeners>
     <filter>
         <whitelist>
             <directory suffix=".php">src</directory>

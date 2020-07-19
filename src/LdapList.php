@@ -26,6 +26,8 @@
 
 namespace Org_Heigl\AuthLdap;
 
+use Org_Heigl\AuthLdap\Exception\Error;
+
 class LdapList
 {
     /**
