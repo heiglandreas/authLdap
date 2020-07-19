@@ -24,7 +24,7 @@ jobs:
   include:
   - stage: check
     php:  7.4
-    script: ./vendor/bin/phpcs --standard=PSR2 ldap.php authLdap.php src7 tests/
+    script: ./vendor/bin/phpcs --standard=PSR2 ldap.php authLdap.php src/ tests/
     before_script:
     - composer self-update
     - composer update --prefer-source
