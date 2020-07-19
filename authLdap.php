@@ -15,6 +15,9 @@ License URI: https://opensource.org/licenses/MIT
 use Org_Heigl\AuthLdap\LdapUri;
 
 require_once dirname(__FILE__) . '/ldap.php';
+require_once __DIR__ . '/src/LdapUri.php';
+require_once __DIR__ . '/src/Exception/Error.php';
+require_once __DIR__ . '/src/Exception/InvalidLdapUri.php';
 
 function authLdap_debug($message)
 {
