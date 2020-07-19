@@ -8,13 +8,26 @@ addons:
     - slapd
     - ldap-utils
 
-matrix:
+php:
+  - 7.2
+  - 7.3
+  - 7.4
+  - 8.0
+  - nightly
+
+stages:
+  - check
+  - test
+
+jobs:
   fast_finish: true
   include:
-  - php: 7.2
-  - php: 7.3
-  - php: 7.4
-  - php: nightly
+  - stage: check
+    php:  7.4
+    script: ./vendor/bin/phpcs --standard=PSR2 ldap.php authLdap.php src7 tests/
+    before_script: skip
+    after_script: skip
+  - stage: test
   allow_failures:
   - php: nightly
 
@@ -26,7 +39,6 @@ before_script:
  - composer dumpautoload
 
 script:
-# - ./vendor/bin/phpcs --standard=PSR2 ldap.php authLdap.php tests/
 - ./vendor/bin/phpunit --configuration=phpunit.travis.xml
 
 after_script:
