@@ -29,7 +29,10 @@ declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap;
 
+use Org_Heigl\AuthLdap\Exception\InvalidLdapUri;
+use function getenv;
 use function preg_replace;
+use function urlencode;
 
 final class LdapUri
 {
@@ -37,6 +40,9 @@ final class LdapUri
 
     private function __construct(string $uri)
     {
+        if (! preg_match('/^(ldap|ldaps|env)/', $uri)) {
+            throw InvalidLdapUri::fromLdapUriString($uri);
+        }
         $this->uri = $uri;
     }
 
@@ -47,7 +53,16 @@ final class LdapUri
 
     public function toString(): string
     {
-        return $this->uri;
+        $uri = $this->uri;
+        if (0 === strpos($uri, 'env:')) {
+            $uri = getenv(substr($this->uri, 4));
+        }
+
+        $uri = preg_replace_callback('/%env:([^%]+)%/', function(array $matches){
+            return rawurlencode(getenv($matches[1]));
+        }, $uri);
+
+        return $uri;
     }
 
     public function __toString()
