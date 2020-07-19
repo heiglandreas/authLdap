@@ -29,6 +29,7 @@ namespace Org_Heigl\AuthLdapTest;
 
 use Org_Heigl\AuthLdap\LDAP;
 use Org_Heigl\AuthLdap\LdapList;
+use Org_Heigl\AuthLdap\LdapUri;
 use phpmock\spy\Spy;
 use PHPUnit\Framework\TestCase;
 
@@ -50,7 +51,7 @@ class LDAPBaseTest extends TestCase
     /** @dataProvider bindingWithPasswordProvider */
     public function testThatBindingWithPasswordWorks($user, $password, $filter, $uri)
     {
-        $ldap = new LDAP($uri);
+        $ldap = new LDAP(LdapUri::fromString($uri));
         $this->assertTrue($ldap->authenticate($user, $password, $filter));
     }
 
@@ -71,7 +72,7 @@ class LDAPBaseTest extends TestCase
      */
     public function testThatInitialBindingWorks($uri)
     {
-        $ldap = new LDAP($uri);
+        $ldap = new LDAP(LdapUri::fromString($uri));
         $this->assertInstanceof(LDAP::class, $ldap->bind());
     }
 
@@ -82,7 +83,7 @@ class LDAPBaseTest extends TestCase
     public function testThatInitialBindingToMultipleLdapsWorks($uri)
     {
         $list = new LdapList();
-        $list->addLDAP(new LDAP($uri));
+        $list->addLDAP(new LDAP(LdapUri::fromString($uri)));
         $this->assertTrue($list->bind());
     }
 
@@ -97,7 +98,7 @@ class LDAPBaseTest extends TestCase
     public function testThatBindingWithAddedSlashesFailsWorks($user, $password, $filter)
     {
         $newpassword = addslashes($password);
-        $ldap = new LDAP('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org');
+        $ldap = new LDAP(LdapUri::fromString('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'));
         if ($newpassword === $password) {
             $this->assertTrue($ldap->authenticate($user, $password, $filter));
         } else {
@@ -109,7 +110,7 @@ class LDAPBaseTest extends TestCase
     public function testThatSearchingForGoupsWorks($filter, $user, $groups)
     {
         // (&(objectCategory=group)(member=<USER_DN>))
-        $ldap = new LDAP('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org');
+        $ldap = new LDAP(LdapUri::fromString('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'));
         $ldap->bind();
         $this->assertContains($groups, $ldap->search(sprintf($filter, $user), ['cn'])[0]);
 
@@ -129,7 +130,7 @@ class LDAPBaseTest extends TestCase
     public function testThatSettingLDAPSActuallyGivesTheCorrectPort()
     {
 
-        $ldap = new LDAP('ldaps://cn=admin,dc=example,dc=org:insecure@127.0.0.1/dc=example,dc=org');
+        $ldap = new LDAP(LdapUri::fromString('ldaps://cn=admin,dc=example,dc=org:insecure@127.0.0.1/dc=example,dc=org'));
         $ldap->connect();
 
         $this->assertEquals('ldaps://127.0.0.1:636', $this->ldap_connect_spy->getInvocations()[0]->getArguments()[0]);

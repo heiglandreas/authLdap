@@ -54,10 +54,10 @@ class LDAP
 
     private $_starttls = false;
 
-    public function __construct($URI, $debug = false, $starttls = false)
+    public function __construct(LdapUri $URI, bool $debug = false, bool $starttls = false)
     {
         $this->_debug=$debug;
-        $array = parse_url($URI);
+        $array = parse_url($URI->toString());
         if (! is_array($array)) {
             throw new Exception($URI . ' seems not to be a valid URI');
         }

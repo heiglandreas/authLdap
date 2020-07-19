@@ -34,6 +34,7 @@ namespace Org_Heigl\AuthLdapTest;
 
 use Exception;
 use Generator;
+use Org_Heigl\AuthLdap\LdapUri;
 use PHPUnit\Framework\TestCase;
 use Org_Heigl\AuthLdap\LDAP;
 
@@ -47,18 +48,18 @@ class LdapTest extends TestCase
      */
     public function testInstantiateLdapClass($ldapUri, $debug, $startTls)
     {
-        $ldap = new LDAP($ldapUri, $debug, $startTls);
+        $ldap = new LDAP(LdapUri::fromString($ldapUri), $debug, $startTls);
         self::assertInstanceOf(LDAP::class, $ldap);
     }
 
     /**
      * @dataProvider dpExceptionsWhenInstantiatingLdapClass
-     * @param array $expected
+     * @param string $expected
      */
-    public function testExceptionsWhenInstantiatingLdapClass($expected)
+    public function testExceptionsWhenInstantiatingLdapClass(string $expected)
     {
         self::expectException(Exception::class);
-        new LDAP($expected);
+        new LDAP(LdapUri::fromString($expected));
     }
 
     public function dpInstantiateLdapClass(): Generator

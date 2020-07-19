@@ -28,6 +28,7 @@
 namespace Org_Heigl\AuthLdapTest;
 
 use Org_Heigl\AuthLdap\LDAP;
+use Org_Heigl\AuthLdap\LdapUri;
 use PHPUnit\Framework\TestCase;
 
 class LDAPListBaseTest extends TestCase
@@ -37,7 +38,7 @@ class LDAPListBaseTest extends TestCase
     {
         require_once __DIR__ . '/../src/LdapList.php';
         $ldaplist = new \Org_Heigl\AuthLdap\LdapList();
-        $ldaplist->addLdap(new LDAP('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'));
+        $ldaplist->addLdap(new LDAP(LdapUri::fromString('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org')));
         $this->assertTrue($ldaplist->authenticate($user, $password, $filter));
     }
 
@@ -56,7 +57,7 @@ class LDAPListBaseTest extends TestCase
         $newpassword = addslashes($password);
         require_once __DIR__ . '/../src/LdapList.php';
         $ldaplist = new \Org_Heigl\AuthLdap\LdapList();
-        $ldaplist->addLdap(new LDAP('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'));
+        $ldaplist->addLdap(new LDAP(LdapUri::fromString('ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org')));
         if ($newpassword === $password) {
             $this->assertTrue($ldaplist->authenticate($user, $password, $filter));
         } else {

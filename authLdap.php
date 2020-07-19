@@ -10,6 +10,8 @@ License: MIT
 License URI: https://opensource.org/licenses/MIT
 */
 
+use Org_Heigl\AuthLdap\LdapUri;
+
 require_once dirname(__FILE__) . '/ldap.php';
 
 function authLdap_debug($message)
@@ -121,7 +123,7 @@ function authLdap_options_panel()
  * @conf boolean authLDAPDebug true, if debugging should be turned on
  * @conf string  authLDAPURI LDAP server URI
  *
- * @return Org_Heigl\AuthLdap\LDAP LDAP server object
+ * @return Org_Heigl\AuthLdap\LdapList LDAP server object
  */
 function authLdap_get_server()
 {
@@ -139,7 +141,7 @@ function authLdap_get_server()
         require_once dirname(__FILE__) . '/src/LdapList.php';
         $_ldapserver = new \Org_Heigl\AuthLdap\LdapList();
         foreach ($authLDAPURI as $uri) {
-            $_ldapserver->addLdap(new \Org_Heigl\AuthLdap\LDAP($uri, $authLDAPDebug, $authLDAPStartTLS));
+            $_ldapserver->addLdap(new \Org_Heigl\AuthLdap\LDAP(LdapUri::fromString($uri), $authLDAPDebug, $authLDAPStartTLS));
         }
     }
     return $_ldapserver;
