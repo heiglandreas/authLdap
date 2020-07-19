@@ -38,7 +38,7 @@ before_script:
  - .ci/OpenLDAP_run.sh
  - .ci/load_fixtures.sh
  - ./.travis.install.sh
- - phpenv config-add .ci/php.ini || return 0
+# - phpenv config-add .ci/php.ini || return 0
  - composer dumpautoload
 
 script:
