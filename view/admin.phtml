@@ -114,6 +114,22 @@
                             If your LDAP accepts anonymous login, you can ommit the user and
                             password-Part of the URI
                         </p>
+                        <p class="description">
+                            You can use the pseudo-schema <em>env</em> to provide your LDAP-URI from an environment-variable. So if you have your
+                            LDAP-URI in a variable called <code>LDAP_URI</code> you can enter <code>env:LDAP_URI</code> in this field and at runtime the
+                            appropriate value will be taken from the Environment-variable <code>LDAP_URI</code>. If the varialbe is not set, then the value will be empty.
+                        </p>
+                        <p class="description">
+                            You can also provide different parts of the LDP-URI from environment variables by providing
+                            <code>%env:[VARIABLENAME]%</code> within your LDAP-URI. So if you want to provide the
+                            password from an Environment-variable <code>LDAP_PASSWORD</code> your LDAP-URI looks like
+                            <code>ldap://uid=adminuser,dc=example,c=com:%env:LDAP_PASSWORD%@ldap.example.com/dc=basePath,dc=example,c=com</code>
+                        </p>
+                        <p class="description">
+                            <strong>Caveat!</strong><br/>
+                            If you are using Environment-variables for parts of the LDAP-URL then those <strong>must not</strong> be URL-Encoded!<br/>
+                            Otherwise the different parts <strong>must</strong> be URL-Encoded!
+                        </p>
                     </td>
                 </tr>
                 <tr>

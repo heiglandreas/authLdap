@@ -2,8 +2,8 @@
 Contributors: heiglandreas
 Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 5.2.0
-Requires PHP: 5.6
+Tested up to: 5.4.2
+Requires PHP: 7.2
 Stable tag: trunk
 License: MIT
 License URI: https://opensource.org/licenses/MIT
@@ -40,6 +40,9 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 2.4.0 =
+* Allow to use environment variables for LDAP-URI configuration
+
 = 2.3.0 =
 * Allow to not overwrite existing WordPress-Users with LDAP-Users as that can be a security issue.
 
