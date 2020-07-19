@@ -62,27 +62,27 @@ class LDAPBaseTest extends TestCase
                 'user3',
                 'user!"',
                 'uid=%s',
-                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
             ], [
                 'admin',
                 'insecure',
                 'cn=%s',
-                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
             ], [
                 'user1',
                 'user1',
                 'uid=%s',
-                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
             ], [
                 'user 4',
                 'user!"',
                 'uid=%s',
-                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
             ], [
                 'user 5',
                 'user!"',
                 'uid=%s',
-                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=test%20space,dc=example,dc=org'
+                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=test%20space,dc=example,dc=org'
             ],
         ];
     }
@@ -112,7 +112,7 @@ class LDAPBaseTest extends TestCase
     {
         return [
             ['ldap://uid=user%205,dc=test%20space,dc=example,dc=org:user!"' .
-                '@localhost:389/dc=test%20space,dc=example,dc=org'],
+                '@localhost:3389/dc=test%20space,dc=example,dc=org'],
         ];
     }
 
@@ -121,7 +121,7 @@ class LDAPBaseTest extends TestCase
     {
         $newpassword = addslashes($password);
         $ldap = new LDAP(LdapUri::fromString(
-            'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+            'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
         ));
         if ($newpassword === $password) {
             $this->assertTrue($ldap->authenticate($user, $password, $filter));
@@ -135,7 +135,7 @@ class LDAPBaseTest extends TestCase
     {
         // (&(objectCategory=group)(member=<USER_DN>))
         $ldap = new LDAP(LdapUri::fromString(
-            'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:389/dc=example,dc=org'
+            'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
         ));
         $ldap->bind();
         $this->assertContains($groups, $ldap->search(sprintf($filter, $user), ['cn'])[0]);

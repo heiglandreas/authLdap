@@ -54,7 +54,7 @@ services:
 #      context: dockersetup
 #      dockerfile: Dockerfile_ldap
     ports:
-      - 389:389
+      - 3389:389
     volumes:
       - ./.ci/50-init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
     command: "--copy-service --loglevel debug"
