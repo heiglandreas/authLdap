@@ -1,4 +1,4 @@
-dn: uid=user1,dc=example,dc=com
+dn: uid=user1,dc=example,dc=org
 objectClass: account
 objectClass: simpleSecurityObject
 uid: user1

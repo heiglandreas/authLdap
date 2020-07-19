@@ -1,10 +1,10 @@
-dn: cn=group3,dc=example,dc=com
+dn: cn=group3,dc=example,dc=org
 objectclass: groupOfUniqueNames
 cn: group3
-uniqueMember: uid=user2,dc=example,dc=com
-uniqueMember: uid=user3,dc=example,dc=com
+uniqueMember: uid=user2,dc=example,dc=org
+uniqueMember: uid=user3,dc=example,dc=org
 
-dn: uid=user3,dc=example,dc=com
+dn: uid=user3,dc=example,dc=org
 objectClass: account
 objectClass: simpleSecurityObject
 uid: user3

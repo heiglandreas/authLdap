@@ -1,4 +1,4 @@
-dn: dc=example,dc=com
+dn: dc=example,dc=org
 dc: example
 description: LDAP Example
 objectClass: dcObject

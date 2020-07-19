@@ -6,9 +6,9 @@ objectClass: dcObject
 objectClass: organization
 o: test space
 
-dn: cn=Manager,{{ LDAP_BASE_DN }}
+dn: cn=admin,{{ LDAP_BASE_DN }}
 changetype: add
-cn: Manager
+cn: admin
 objectClass: organizationalRole
 
 dn: ou=test,{{ LDAP_BASE_DN }}

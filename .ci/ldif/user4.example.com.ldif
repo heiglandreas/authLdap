@@ -1,9 +1,9 @@
-dn: cn=group4,dc=example,dc=com
+dn: cn=group4,dc=example,dc=org
 objectclass: groupOfUniqueNames
 cn: group4
-uniqueMember: uid=user 4,dc=example,dc=com
+uniqueMember: uid=user 4,dc=example,dc=org
 
-dn: uid=user 4,dc=example,dc=com
+dn: uid=user 4,dc=example,dc=org
 objectClass: account
 objectClass: simpleSecurityObject
 uid: user 4
