@@ -55,7 +55,7 @@ class LDAP
 
     private $starttls = false;
 
-    public function __construct(LdapUri $URI, bool $debug = false, bool $starttls = false)
+    public function __construct(LdapUri $URI, $debug = false, $starttls = false)
     {
         $this->debug=$debug;
         $array = parse_url($URI->toString());
