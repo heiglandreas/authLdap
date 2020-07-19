@@ -38,6 +38,7 @@ before_script:
  - ./.travis.install.sh
  - phpenv config-add .ci/php.ini || return 0
  - .ci/OpenLDAP_run.sh
+ - ldapsearch -H ldap://127.0.0.1 -b "dc=example,dc=org" -w insecure -D "cn=admin,dc=example,dc=org" "(cd=admin)" uid
  - .ci/load_fixtures.sh
  - composer dumpautoload
 
