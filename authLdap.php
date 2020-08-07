@@ -380,6 +380,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $user_info['user_login'] = $realuid;
         $user_info['role'] = $role;
         $user_info['user_email'] = '';
+        $user_info['user_nicename'] = '';
 
         // first name
         if (isset($attribs[0][strtolower($authLDAPNameAttr)][0])) {
