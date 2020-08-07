@@ -380,6 +380,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $user_info['user_login'] = $realuid;
         $user_info['role'] = $role;
         $user_info['user_email'] = '';
+        $user_info['user_nicename'] = '';
 
         // first name
         if (isset($attribs[0][strtolower($authLDAPNameAttr)][0])) {
@@ -412,7 +413,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             }
         }
         $user_info['user_nicename'] = substr($user_info['user_nicename'], 0, 50);
-  
+
         // optionally store the password into the wordpress database
         if (authLdap_get_option('CachePW')) {
             // Password will be hashed inside wp_update_user or wp_insert_user
