@@ -115,7 +115,15 @@ class LDAP
             $this->port = 636;
         }
 
-        $this->ch = @ldap_connect($this->scheme . '://' . $this->server . ':' . $this -> port);
+        // Allow to pass port in server URL.
+        if (strpos($this->server, ':') !== false) {
+            $server = $this->server;
+        } else {
+            $server = $this->server . ':' . $this->port;
+        }
+
+        $this->ch = @ldap_connect($this->scheme . '://' . $server);
+
         if (! $this->ch) {
             throw new Error('Could not connect to the server');
         }
