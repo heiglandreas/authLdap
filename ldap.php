@@ -270,4 +270,14 @@ class LDAP
             );
         }
     }
+
+    /**
+     * Return Connection handler for custom LDAP implementations.
+     * @return Org_Heigl\AuthLdap\Ressource
+     */
+    public function getConnectionHandler()
+    {
+        return $this->ch;
+    }
+
 }
