@@ -221,10 +221,23 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         return $user;
     }
 
+    // Try to get email address if email not provided and authentificated via email.
+    $authLDAPFilter = authLdap_get_option('Filter');
+    $check_user_email = false;
+    if ('(mail=%s)' === $authLDAPFilter || 'mail=%s' === $authLDAPFilter
+    ) {
+        if (!is_email($username)) {
+            $user = get_user_by('login', $username);
+            if ($user) {
+                $username = $user->user_email;
+            }
+        }
+        $check_user_email = true;
+    }
+
     global $wpdb, $error;
     try {
         $authLDAP               = authLdap_get_option('Enabled');
-        $authLDAPFilter         = authLdap_get_option('Filter');
         $authLDAPNameAttr       = authLdap_get_option('NameAttr');
         $authLDAPSecName        = authLdap_get_option('SecName');
         $authLDAPMailAttr       = authLdap_get_option('MailAttr');
@@ -329,7 +342,12 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             return false;
         }
 
-        $uid = authLdap_get_uid($realuid);
+        // Retrieve UID based o email or login.
+        if ($check_user_email) {
+            $uid = authLdap_get_uid($username, 'user_email');
+        } else {
+            $uid = authLdap_get_uid($realuid, 'user_login');
+        }
 
         // This fixes #172
         if (true == authLdap_get_option('DoNotOverwriteNonLdapUsers', false)) {
@@ -412,7 +430,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             }
         }
         $user_info['user_nicename'] = substr($user_info['user_nicename'], 0, 50);
-  
+
         // optionally store the password into the wordpress database
         if (authLdap_get_option('CachePW')) {
             // Password will be hashed inside wp_update_user or wp_insert_user
@@ -462,16 +480,17 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
  * Returns null if username not found
  *
  * @param string $username username
+ * @param string $where column to match the value against
  * @param string user id, null if not found
  */
-function authLdap_get_uid($username)
+function authLdap_get_uid($username, $where = 'user_login')
 {
     global $wpdb;
 
     // find out whether the user is already present in the database
     $uid = $wpdb->get_var(
         $wpdb->prepare(
-            "SELECT ID FROM {$wpdb->users} WHERE user_login = %s",
+            "SELECT ID FROM {$wpdb->users} WHERE $where = %s",
             $username
         )
     );
