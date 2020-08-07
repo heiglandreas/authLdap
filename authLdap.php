@@ -412,7 +412,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             }
         }
         $user_info['user_nicename'] = substr($user_info['user_nicename'], 0, 50);
-  
+
         // optionally store the password into the wordpress database
         if (authLdap_get_option('CachePW')) {
             // Password will be hashed inside wp_update_user or wp_insert_user
@@ -848,7 +848,7 @@ function authLdap_set_options($new_options = array())
  */
 function authLdap_send_change_email($result, $user, $newUserData)
 {
-    if (get_usermeta($user['ID'], 'authLDAP')) {
+    if (get_user_meta($user['ID'], 'authLDAP')) {
         return false;
     }
 
