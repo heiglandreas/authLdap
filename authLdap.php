@@ -412,7 +412,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             }
         }
         $user_info['user_nicename'] = substr($user_info['user_nicename'], 0, 50);
-  
+
         // optionally store the password into the wordpress database
         if (authLdap_get_option('CachePW')) {
             // Password will be hashed inside wp_update_user or wp_insert_user
@@ -435,6 +435,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
             $userid = wp_insert_user($user_info);
         }
+
+        /**
+         * Add hook for custom updates
+         *
+         * @param int $userid User ID.
+         * @param array $attribs[0] Attributes retrieved from LDAP for the user.
+         */
+        do_action('authLdap_login_successful', $userid, $attribs[0]);
 
         // if the user exists, wp_insert_user will update the existing user record
         if (is_wp_error($userid)) {
