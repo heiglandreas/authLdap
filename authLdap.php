@@ -296,12 +296,15 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         authLdap_debug('LDAP authentication successfull');
         $attributes = array_values(
             array_filter(
-                array(
-                    $authLDAPNameAttr,
-                    $authLDAPSecName,
-                    $authLDAPMailAttr,
-                    $authLDAPWebAttr,
-                    $authLDAPUidAttr
+                apply_filters(
+                    'authLdap_filter_attributes',
+                    array(
+                        $authLDAPNameAttr,
+                        $authLDAPSecName,
+                        $authLDAPMailAttr,
+                        $authLDAPWebAttr,
+                        $authLDAPUidAttr
+                    )
                 )
             )
         );
