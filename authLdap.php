@@ -214,6 +214,13 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         return $user;
     }
 
+    # Sanitize the input appropriately based on whether it is an email or username
+    if (strpos($username, '@')) {
+        $username = sanitize_email($username);
+    } else {
+        $username = sanitize_user($username,true);
+    }
+
     authLdap_debug("User '$username' logging in");
 
     if ($username == 'admin') {
