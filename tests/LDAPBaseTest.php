@@ -165,4 +165,35 @@ class LDAPBaseTest extends TestCase
             $this->ldap_connect_spy->getInvocations()[0]->getArguments()[0]
         );
     }
+
+    /**
+     * @runInSeparateProcess
+     * @dataProvider provideUnescapedData
+     */
+    public function testThatPassedDataIsEscaped($unescaped, $escaped): void
+    {
+        $search_spy = new Spy('Org_Heigl\AuthLdap', 'ldap_search');
+        $search_spy->enable();
+
+        $ldap = new LDAP(LdapUri::fromString(
+            'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
+        ));
+
+        $ldap->authenticate($unescaped, 'password');
+
+        self::assertEquals(
+            $escaped,
+            $search_spy->getInvocations()[0]->getArguments()[2]
+        );
+
+        $search_spy->disable();
+    }
+
+    public function provideUnescapedData(): array
+    {
+        return [
+            ['\’foobar', '(uid=\5c’foobar)'],
+            ['XXX;(&(uid=Admin)(userPassword=A*))', '(uid=XXX;\28&\28uid=Admin\29\28userPassword=A\2a\29\29)'],
+        ];
+    }
 }

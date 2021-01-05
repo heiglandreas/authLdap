@@ -30,6 +30,7 @@ namespace Org_Heigl\AuthLdap;
 
 use Exception;
 use Org_Heigl\AuthLdap\Exception\Error;
+use function ldap_escape;
 
 class LDAP
 {
@@ -245,7 +246,7 @@ class LDAP
         //return true;
         $this->connect();
         $this->bind();
-        $res = $this->search(sprintf($filter, $username));
+        $res = $this->search(sprintf($filter, ldap_escape($username, '', LDAP_ESCAPE_FILTER)));
         if (! $res || ! is_array($res) || ( $res ['count'] != 1 )) {
             return false;
         }
