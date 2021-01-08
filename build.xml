@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="ajaxComments" default="build" basedir=".">
     <php expression="include('vendor/autoload.php')"/>
-    <loadfile property = "version" file = "VERSION">
+    <input propertyName="version">Which version shall be tagged?</input>
+    <!--loadfile property = "version" file = "VERSION">
         <filterchain>
             <striplinebreaks/>
         </filterchain>
-    </loadfile>
+    </loadfile-->
     <target name="bumpversion">
         <echo>Bumping version to ${version}</echo>
         <reflexive>
@@ -77,7 +78,6 @@
     <target name="deploy.git">
         <exec executable="git" dir=".">
             <arg value="add" />
-            <arg value="index.php" />
             <arg value="authLdap.php" />
         </exec>
         <exec executable="git" dir=".">
