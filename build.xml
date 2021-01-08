@@ -76,6 +76,12 @@
     </target>
     <target name="deploy.git">
         <exec executable="git" dir=".">
+            <arg value="add" />
+            <arg value="index.php" />
+            <arg value="authLdap.php" />
+        </exec>
+        <exec executable="git" dir=".">
+            <arg value="commit" />
             <arg value="-m"/>
             <arg value="Bumps version to ${version}"/>
         </exec>
@@ -90,6 +96,7 @@
             <arg value="push"/>
             <arg value="--tags"/>
             <arg value="origin"/>
+            <arg value="master" />
         </exec>
     </target>
 </project>
