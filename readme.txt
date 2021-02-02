@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 5.4.2
+Tested up to: 5.6.0
 Requires PHP: 7.2
 Stable tag: trunk
 License: MIT
@@ -40,6 +40,12 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 2.4.7 =
+* Replace deprecated function
+* Fix undefined index
+* Add filter for retrieving other params at login (authLdap_filter_attributes)
+* Add do_action after successfull login (authLdap_login_successful)
+
 = 2.4.0 =
 * Allow to use environment variables for LDAP-URI configuration
 
