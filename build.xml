@@ -23,13 +23,18 @@
     </target>
     <target name="build" depends="bumpversion,deploy.git,deploy.svn"/>
     <target name="sync.svn">
-        <filesync
-                rsyncPath="rsync"
-                destinationDir="${project.basedir}/svn/trunk"
-                sourceDir="${project.basedir}/"
-                verbose="true"
-                excludeFile="${project.basedir}/.rsyncIgnore"
-        />
+        <copy todir="${project.basedir}/svn/trunk">
+            <fileset dir="${project.basedir}">
+                <include name="src/**"/>
+                <include name="view/**"/>
+                <include name="authLdap.css"/>
+                <include name="authLdap.php"/>
+                <include name="ldap.php"/>
+                <include name="LICENSE.md"/>
+                <include name="README.md"/>
+                <include name="readme.txt"/>
+            </fileset>
+        </copy>
     </target>
     <target name="deploy.svn" depends="sync.svn">
         <property override="true" file="${project.basedir}/.svnAccess" prefix="svnaccess" />

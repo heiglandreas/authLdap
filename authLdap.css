@@ -1,9 +1,13 @@
 .row {
-	overflow: hidden; 
-	padding-top: 10px; 
+	overflow: hidden;
+	padding-top: 10px;
 }
 
 .element {
-	float: right; 
-	text-align: left; 
+	float: right;
+	text-align: left;
+}
+
+.authldap-options input[type=text] {
+	width: 100%;
 }

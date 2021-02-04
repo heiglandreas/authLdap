@@ -103,7 +103,7 @@ Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 * Fixes PSR2 violations
 
 […]
-    
+
 = 1.2.1 =
 * Fixed an issue with group-ids
 * Moved the code to GitHub (https://github.com/heiglandreas/authLdap)
