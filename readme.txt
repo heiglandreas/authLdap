@@ -40,6 +40,9 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+= 2.4.8 =
+* Make textfields in settings-page wider
+
 = 2.4.7 =
 * Replace deprecated function
 * Fix undefined index
