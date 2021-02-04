@@ -389,22 +389,21 @@
 
         <h3 class="title">Role - group mapping</h3>
         <fieldset class="options">
+            <p class="description">You can set multiple values per role by separating them with a coma</p>
+            <p class="description">The values are empty by default</p>
             <table class="form-table">
 <?php
     foreach ($roles->get_names() as $group => $vals) :
         $aGroup=$authLDAPGroups[$group]; ?>
                 <tr>
-                    <th scope="row">
+                    <th scope="row" style="text-align: right">
                         <label for="authLDAPGroups[<?php echo $group; ?>]">
                             <?php echo $vals; ?>
-                        </label>
+                        </label> <span style="font-weight: normal">shall match to</span>
                     </th>
                     <td>
                         <input type="text" name="authLDAPGroups[<?php echo $group; ?>]" id="authLDAPGroups[<?php echo $group; ?>]"
                           value="<?php echo $aGroup; ?>" />
-                        <p class="description">What LDAP-Groups shall be matched to the <?php echo $vals; ?>-Role?</p>
-                        <p class="description">Please provide a coma-separated list of values</p>
-                        <p class="description">This field is empty by default</p>
                     </td>
                 </tr>
 <?php endforeach; ?>
