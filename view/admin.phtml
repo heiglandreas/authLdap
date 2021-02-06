@@ -392,14 +392,19 @@
             <p class="description">You can set multiple values per role by separating them with a coma</p>
             <p class="description">The values are empty by default</p>
             <table class="form-table">
+                <thead>
+                    <th scope="row">Assign this WordPress-Role</th>
+                    <th style="width:auto;">to members of this/these LDAP-Groups</th>
+                </thead>
+                <tbody>
 <?php
     foreach ($roles->get_names() as $group => $vals) :
         $aGroup=$authLDAPGroups[$group]; ?>
                 <tr>
-                    <th scope="row" style="text-align: right">
+                    <th scope="row" style="width:auto; min-width: 200px;">
                         <label for="authLDAPGroups[<?php echo $group; ?>]">
                             <?php echo $vals; ?>
-                        </label> <span style="font-weight: normal">shall match to</span>
+                        </label>
                     </th>
                     <td>
                         <input type="text" name="authLDAPGroups[<?php echo $group; ?>]" id="authLDAPGroups[<?php echo $group; ?>]"
@@ -407,6 +412,7 @@
                     </td>
                 </tr>
 <?php endforeach; ?>
+                </tbody>
             </table>
         </fieldset>
             </div>
