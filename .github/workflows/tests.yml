@@ -45,8 +45,9 @@ jobs:
         with:
           php-version: "7.4"
           coverage: xdebug
-      - name: Install
-        run: composer update
+          tools: phive
+      - name: install tools
+        run: phive install --trust-gpg-keys 4AA394086372C20A phpunit
       - name: run testsuite
         run: ./tools/phpunit --colors=always --coverage-clover clover.xml
       - name: upload to codecov
