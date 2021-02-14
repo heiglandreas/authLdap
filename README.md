@@ -4,12 +4,12 @@
 
 Use your existing LDAP as authentication-backend for your wordpress!
 
-[![Build Status](https://travis-ci.org/heiglandreas/authLdap.svg?branch=master)](https://travis-ci.org/heiglandreas/authLdap)
+[![Build Status](https://github.com/heiglandreas/authLdap/workflows/CI/badge.svg)](https://github.com/heiglandreas/authLdap/workflows/CI)
 [![WordPress Stats](https://img.shields.io/wordpress/plugin/dt/authldap.svg)](https://wordpress.org/plugins/authldap/stats/)
 [![WordPress Version](https://img.shields.io/wordpress/plugin/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
 [![WordPress testet](https://img.shields.io/wordpress/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
 [![Code Climate](https://codeclimate.com/github/heiglandreas/authLdap/badges/gpa.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
-[![Test Coverage](https://codeclimate.com/github/heiglandreas/authLdap/badges/coverage.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
+[![codecov](https://codecov.io/gh/heiglandreas/authLdap/branch/master/graph/badge.svg?token=AYAhEeWtRQ)](https://codecov.io/gh/heiglandreas/authLdap)
 
 So what are the differences to other Wordpress-LDAP-Authentication-Plugins?
 
