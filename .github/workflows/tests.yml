@@ -1,0 +1,60 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PORT_LDAP: 3389
+      PORT_LDAPS: 6363
+      LDAP_ADMIN_PASSWORD: ${{ secrets.LDAP_ADMIN_PASSWORD }}
+      LDAP_LOG_LEVEL: 0
+    strategy:
+      matrix:
+        # operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        php-versions: [ '7.3', '7.4', '8.0' ]
+    name: Test on ${{ matrix.php-versions }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build the docker-compose stack
+        run: docker-compose -f docker-compose.yml up -d
+      - name: Check running containers
+        run: docker ps -a
+      - name: Check logs
+        run: docker-compose logs openldap
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: ldap
+          tools: phive
+      - name: install dependencies
+        run: composer install
+      - name: install tools
+        run: phive install --trust-gpg-keys 4AA394086372C20A phpunit
+      - name: Run Unit-Tests
+        run: ./tools/phpunit
+  coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+          coverage: xdebug
+      - name: Install
+        run: composer update
+      - name: run testsuite
+        run: ./tools/phpunit --colors=always --coverage-clover clover.xml
+      - name: upload to codecov
+        uses: codecov/codecov-action@v1
+        with:
+          #token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          files: ./clover.xml # optional
+          #flags: unittests # optional
+          #name: codecov-umbrella # optional
+          #fail_ci_if_error: true # optional (default = false)
+          #verbose: true # optional (default = false)
