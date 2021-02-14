@@ -1,6 +1,0 @@
-dn: dc=example,dc=org
-dc: example
-description: LDAP Example
-objectClass: dcObject
-objectClass: organization
-o: example

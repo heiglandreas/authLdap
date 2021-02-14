@@ -1,5 +1,0 @@
-dn: uid=user1,dc=example,dc=org
-objectClass: account
-objectClass: simpleSecurityObject
-uid: user1
-userPassword: user1

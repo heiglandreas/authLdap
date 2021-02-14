@@ -1,6 +1,0 @@
-dn: dc=test space,dc=example,dc=org
-dc: test space
-description: LDAP Example with space
-objectClass: dcObject
-objectClass: organization
-o: test space

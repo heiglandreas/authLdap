@@ -1,3 +1,0 @@
-dn: ou=test,dc=example,dc=org
-objectClass: organizationalUnit
-ou: test
