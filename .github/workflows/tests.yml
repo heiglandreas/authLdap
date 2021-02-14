@@ -46,6 +46,8 @@ jobs:
           php-version: "7.4"
           coverage: xdebug
           tools: phive
+      - name: install dependencies
+        run: composer install
       - name: install tools
         run: phive install --trust-gpg-keys 4AA394086372C20A phpunit
       - name: run testsuite
