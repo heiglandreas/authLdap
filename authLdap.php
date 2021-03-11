@@ -370,7 +370,18 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         } else {
             $roles = new WP_Roles();
             // not sure if this is needed, but it can't hurt
-            if (!$roles->is_role($role)) {
+
+            // handle if multiple roles allowed.
+            if (is_array($role)) {
+                foreach ($role as $k => $v) {
+                    if (!$roles->is_role($v)) {
+                        unset($k);
+                    }
+                }
+            }
+
+            // check if single role or an empty array provided
+            if (!$roles->is_role($role) && !is_array($role) || empty($role)) {
                 trigger_error('no group found');
                 authLdap_debug('role is invalid');
                 return false;
@@ -591,25 +602,47 @@ function authLdap_groupmap($username, $dn)
 
     authLdap_debug('LDAP groups: ' . json_encode($grp));
 
-    // Check whether the user is member of one of the groups that are
-    // allowed acces to the blog. If the user is not member of one of
-    // The groups throw her out! ;-)
-    // If the user is member of more than one group only the first one
-    // will be taken into account!
+    if (apply_filters('authLdap_allow_multiple_roles', false) === false ) {
 
-    $role = '';
-    foreach ($authLDAPGroups as $key => $val) {
-        $currentGroup = explode($authLDAPGroupSeparator, $val);
-        // Remove whitespaces around the group-ID
-        $currentGroup = array_map('trim', $currentGroup);
-        if (0 < count(array_intersect($currentGroup, $grp))) {
-            $role = $key;
-            break;
+        // Check whether the user is member of one of the groups that are
+        // allowed acces to the blog. If the user is not member of one of
+        // The groups throw her out! ;-)
+        // If the user is member of more than one group only the first one
+        // will be taken into account!
+
+        $role = '';
+        foreach ($authLDAPGroups as $key => $val) {
+            $currentGroup = explode($authLDAPGroupSeparator, $val);
+            // Remove whitespaces around the group-ID
+            $currentGroup = array_map('trim', $currentGroup);
+            if (0 < count(array_intersect($currentGroup, $grp))) {
+                $role = $key;
+                break;
+            }
         }
-    }
 
-    authLdap_debug("Role from LDAP group: {$role}");
-    return $role;
+        authLdap_debug("Role from LDAP group: {$role}");
+        return $role;
+
+    } else {
+
+        // Return multiple user roles. WordPress supports this functionality,
+        // but not natively via UI from Users overview (you need to use
+        // a plugin). However, it's still widely used, for example, by
+        // WooCommerce, etc. Use if you know what you're doing.
+
+        $roles = [];
+        foreach ($authLDAPGroups as $key => $val) {
+            $currentGroup = explode($authLDAPGroupSeparator, $val);
+            // Remove whitespaces around the group-ID
+            $currentGroup = array_map('trim', $currentGroup);
+            if (0 < count(array_intersect($currentGroup, $grp))) {
+                $roles[] = $key;
+            }
+        }
+        authLdap_debug("Roles from LDAP group: " . json_encode($roles));
+        return $roles;
+    }
 }
 
 /**
