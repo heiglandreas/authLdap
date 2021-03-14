@@ -32,7 +32,7 @@ jobs:
       - name: install tools
         run: phive install --trust-gpg-keys 4AA394086372C20A phpunit
       - name: Run Unit-Tests
-        run: ./tools/phpunit
+        run: ./tools/phpunit --testdox
   coverage:
     needs: test
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
       - name: install tools
         run: phive install --trust-gpg-keys 4AA394086372C20A phpunit
       - name: run testsuite
-        run: ./tools/phpunit --colors=always --coverage-clover clover.xml
+        run: ./tools/phpunit --testdox --colors=always --coverage-clover clover.xml
       - name: upload to codecov
         uses: codecov/codecov-action@v1
         with:
