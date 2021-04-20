@@ -448,6 +448,13 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             $userid = wp_insert_user($user_info);
         }
 
+        // if the user exists, wp_insert_user will update the existing user record
+        if (is_wp_error($userid)) {
+            authLdap_debug('Error creating user : ' . $userid->get_error_message());
+            trigger_error('Error creating user: ' . $userid->get_error_message());
+            return $userid;
+        }
+
         // Update user roles.
         $user = new \WP_User($userid);
         if (empty($user->roles) || $user->roles !== $roles) {
@@ -469,7 +476,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             foreach ($roles as $role) {
                 $user->add_role($role);
             }
-
         }
 
         /**
@@ -479,13 +485,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
          * @param array $attribs[0] Attributes retrieved from LDAP for the user.
          */
         do_action('authLdap_login_successful', $userid, $attribs[0]);
-
-        // if the user exists, wp_insert_user will update the existing user record
-        if (is_wp_error($userid)) {
-            authLdap_debug('Error creating user : ' . $userid->get_error_message());
-            trigger_error('Error creating user: ' . $userid->get_error_message());
-            return $userid;
-        }
 
         authLdap_debug('user id = ' . $userid);
 
