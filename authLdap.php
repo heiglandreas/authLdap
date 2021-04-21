@@ -641,7 +641,7 @@ function authLdap_groupmap($username, $dn)
     // supports this functionality, but not natively via UI from Users
     // overview (you need to use a plugin). However, it's still widely used,
     // for example, by WooCommerce, etc. Use if you know what you're doing.
-    if (apply_filters('authLdap_allow_multiple_roles', false) === false && count($roles)) {
+    if (apply_filters('authLdap_allow_multiple_roles', false) === false && count($roles) > 1) {
         $roles = array_slice($roles, 0, 1);
     }
 
