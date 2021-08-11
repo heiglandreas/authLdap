@@ -311,7 +311,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         try {
             $attribs = authLdap_get_server()->search(
-                sprintf($authLDAPFilter, $username),
+                str_replace("%s", $username, $authLDAPFilter),
                 $attributes
             );
             // First get all the relevant group informations so we can see if

@@ -246,7 +246,7 @@ class LDAP
         //return true;
         $this->connect();
         $this->bind();
-        $res = $this->search(sprintf($filter, ldap_escape($username, '', LDAP_ESCAPE_FILTER)));
+        $res = $this->search(str_replace("%s", ldap_escape($username, '', LDAP_ESCAPE_FILTER), $filter));
         if (! $res || ! is_array($res) || ( $res ['count'] != 1 )) {
             return false;
         }
