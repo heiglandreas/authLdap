@@ -519,7 +519,7 @@ function authLdap_user_role($uid)
     $editable_roles = apply_filters('editable_roles', $wp_roles->roles);
 
     $userroles = array_keys( array_intersect_key($editable_roles, $usercapabilities) );
-    $role = &$userroles[0];
+    $role = $userroles[0];
 
     authLdap_debug("Existing user's role: {$role}");
     return $role;
