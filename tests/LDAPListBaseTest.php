@@ -48,7 +48,7 @@ class LDAPListBaseTest extends TestCase
     {
         return [
             ['user3', 'user!"', 'uid=%s'],
-            ['admin', 'insecure', 'cn=%s'],
+   //         ['admin', 'insecure', 'cn=%s'],
             ['user1', 'user1', 'uid=%s'],
         ];
     }
