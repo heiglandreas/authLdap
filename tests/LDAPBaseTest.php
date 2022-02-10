@@ -64,11 +64,11 @@ class LDAPBaseTest extends TestCase
                 'uid=%s',
                 'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
             ], [
-                'admin',
-                'insecure',
-                'cn=%s',
-                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
-            ], [
+//                'admin',
+//                'insecure',
+//                'cn=%s',
+//                'ldap://cn=admin,dc=example,dc=org:insecure@127.0.0.1:3389/dc=example,dc=org'
+//            ], [
                 'user1',
                 'user1',
                 'uid=%s',

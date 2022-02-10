@@ -46,7 +46,7 @@ class LDAP
     /**
      * This property contains the connection handle to the ldap-server
      *
-     * @var Ressource
+     * @var Ressource|Connection|null
      */
     private $ch = null;
 
@@ -117,7 +117,8 @@ class LDAP
         }
 
         $this->ch = @ldap_connect($this->scheme . '://' . $this->server . ':' . $this -> port);
-        if (! $this->ch) {
+        if (false === $this->ch) {
+            $this->ch = null;
             throw new Error('Could not connect to the server');
         }
         ldap_set_option($this->ch, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -136,7 +137,7 @@ class LDAP
      */
     public function disconnect()
     {
-        if (is_resource($this->ch)) {
+        if (null !== $this->ch ) {
             @ldap_unbind($this->ch);
         }
         $this->ch = null;
@@ -154,8 +155,8 @@ class LDAP
         if (! $this->ch) {
             $this->connect();
         }
-        if (! is_resource($this->ch)) {
-            throw new Error('No Resource-handle given');
+        if (null === $this->ch) {
+            throw new Error('No valid LDAP connection available');
         }
         $bind = false;
         if (( ( $this->username )
@@ -195,7 +196,7 @@ class LDAP
      */
     public function search($filter, $attributes = array('uid'), $base = '')
     {
-        if (! is_Resource($this->ch)) {
+        if (null === $this->ch) {
             throw new Error('No resource handle avbailable');
         }
         if (! $base) {
