@@ -42,6 +42,7 @@ class LdapList
 
     public function authenticate($username, $password, $filter = '(uid=%s)')
     {
+        /** @var LDAP $item */
         foreach ($this->items as $key => $item) {
             if (! $item->authenticate($username, $password, $filter)) {
                 unset($this->items[$key]);
