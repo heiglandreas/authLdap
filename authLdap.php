@@ -505,23 +505,21 @@ function authLdap_get_uid($username)
  */
 function authLdap_user_role($uid)
 {
-    global $wpdb;
+    global $wpdb, $wp_roles;
 
     if (!$uid) {
         return '';
     }
 
-    $meta_value = $wpdb->get_var(
-        "SELECT meta_value FROM {$wpdb->usermeta} WHERE meta_key = '{$wpdb->prefix}capabilities' AND user_id = {$uid}"
-    );
-
-    if (!$meta_value) {
+    $usercapabilities = get_user_meta( $uid, "{$wpdb->prefix}capabilities", true);
+    if ( ! is_array( $usercapabilities ) ) {
         return '';
     }
+    
+    $editable_roles = apply_filters('editable_roles', $wp_roles->roles);
 
-    $capabilities = unserialize($meta_value);
-    $roles = is_array($capabilities) ? array_keys($capabilities) : array('');
-    $role = $roles[0];
+    $userroles = array_keys( array_intersect_key($editable_roles, $usercapabilities) );
+    $role = $userroles[0];
 
     authLdap_debug("Existing user's role: {$role}");
     return $role;
