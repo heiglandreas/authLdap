@@ -41,6 +41,9 @@ Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
 
+= 2.5.0 =
+* Ignore the order of capabilities to tell the role. In addition the filter `editable_roles` can be used to limit the roles
+
 = 2.4.11 =
 * Fix issue with running on PHP8.1
 
