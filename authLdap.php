@@ -286,7 +286,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         }
 	
 		// Make optional querying from the admin account #213
-        if (authLdap_get_option('UserRead')) {
+        if (! authLdap_get_option('UserRead')) {
 			// Rebind with the default credentials after the user has been loged in
 			// Otherwise the credentials of the user trying to login will be used
 			// This fixes #55
