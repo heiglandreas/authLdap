@@ -82,6 +82,7 @@ function authLdap_options_panel()
             'GroupEnable'   => authLdap_get_post('authLDAPGroupEnable', false),
             'GroupOverUser' => authLdap_get_post('authLDAPGroupOverUser', false),
             'DoNotOverwriteNonLdapUsers' => authLdap_get_post('authLDAPDoNotOverwriteNonLdapUsers', false),
+			'UserRead' => authLdap_get_post('authLDAPUseUserAccount', false),
         );
         if (authLdap_set_options($new_options)) {
             echo "<div class='updated'><p>Saved Options!</p></div>";
@@ -112,6 +113,7 @@ function authLdap_options_panel()
     $authLDAPGroupEnable   = authLdap_get_option('GroupEnable');
     $authLDAPGroupOverUser = authLdap_get_option('GroupOverUser');
     $authLDAPDoNotOverwriteNonLdapUsers = authLdap_get_option('DoNotOverwriteNonLdapUsers');
+	$authLDAPUseUserAccount= authLdap_get_option('UserRead');
 
     $tChecked              = ($authLDAP)               ? ' checked="checked"' : '';
     $tDebugChecked         = ($authLDAPDebug)          ? ' checked="checked"' : '';
@@ -120,6 +122,7 @@ function authLdap_options_panel()
     $tGroupOverUserChecked = ($authLDAPGroupOverUser)  ? ' checked="checked"' : '';
     $tStartTLSChecked      = ($authLDAPStartTLS)       ? ' checked="checked"' : '';
     $tDoNotOverwriteNonLdapUsers = ($authLDAPDoNotOverwriteNonLdapUsers)       ? ' checked="checked"' : '';
+	$tUserRead             = ($authLDAPUseUserAccount) ? ' checked="checked"' : '';
 
     $roles = new WP_Roles();
 
@@ -233,6 +236,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         $authLDAPDefaultRole    = authLdap_get_option('DefaultRole');
         $authLDAPGroupEnable    = authLdap_get_option('GroupEnable');
         $authLDAPGroupOverUser  = authLdap_get_option('GroupOverUser');
+		$authLDAPUseUserAccount = authLdap_get_option('UserRead');
 
         if (! $username) {
             authLdap_debug('Username not supplied: return false');
@@ -280,11 +284,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             authLdap_debug('LDAP authentication failed with exception: ' . $e->getMessage());
             return false;
         }
-
-        // Rebind with the default credentials after the user has been loged in
-        // Otherwise the credentials of the user trying to login will be used
-        // This fixes #55
-        authLdap_get_server()->bind();
+	
+		// Make optional querying from the admin account #213
+        if (authLdap_get_option('UserRead')) {
+			// Rebind with the default credentials after the user has been loged in
+			// Otherwise the credentials of the user trying to login will be used
+			// This fixes #55
+			authLdap_get_server()->bind();
+		}
 
         if (true !== $result) {
             authLdap_debug('LDAP authentication failed');
@@ -515,7 +522,7 @@ function authLdap_user_role($uid)
     if ( ! is_array( $usercapabilities ) ) {
         return '';
     }
-    
+
     $editable_roles = apply_filters('editable_roles', $wp_roles->roles);
 
     $userroles = array_keys( array_intersect_key($editable_roles, $usercapabilities) );
