@@ -582,8 +582,12 @@ function authLdap_groupmap($username, $dn)
 
     $grp = array();
     for ($i = 0; $i < $groups ['count']; $i++) {
-        for ($k = 0; $k < $groups[$i][strtolower($authLDAPGroupAttr)]['count']; $k++) {
-            $grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
+        if ($authLDAPGroupAttr == "dn") {
+            $grp[] = $groups[$i]['dn'];
+        } else {
+            for ($k = 0; $k < $groups[$i][strtolower($authLDAPGroupAttr)]['count']; $k++) {
+                $grp[] = $groups[$i][strtolower($authLDAPGroupAttr)][$k];
+            }
         }
     }
 
