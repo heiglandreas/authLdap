@@ -186,6 +186,18 @@
             <table class="form-table">
                 <tr>
                     <th scope="row">
+                        <label for="authLDAPUseUserAccount">User-Read</label>
+                    </th>
+                    <td>
+                        <input type="checkbox" name="authLDAPUseUserAccount" id="authLDAPUseUserAccount" value="1"<?php echo $tUserRead; ?>/><br />
+                        <p class="description">
+                            If checked the plugin will use the user's account to query their own information. If not it will use the admin account.
+                        </p>
+						
+                    </td>
+                </tr>
+				<tr>
+                    <th scope="row">
                         <label for="authLDAPNameAttr">Name-Attribute</label>
                     </th>
                     <td>
