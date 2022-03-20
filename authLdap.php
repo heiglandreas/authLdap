@@ -284,7 +284,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             authLdap_debug('LDAP authentication failed with exception: ' . $e->getMessage());
             return false;
         }
-	
+
 		// Make optional querying from the admin account #213
         if (! authLdap_get_option('UserRead')) {
 			// Rebind with the default credentials after the user has been loged in
@@ -518,14 +518,18 @@ function authLdap_user_role($uid)
         return '';
     }
 
+    /** @var array<string, bool> $usercapabilities */
     $usercapabilities = get_user_meta( $uid, "{$wpdb->prefix}capabilities", true);
     if ( ! is_array( $usercapabilities ) ) {
         return '';
     }
 
-    $editable_roles = apply_filters('editable_roles', $wp_roles->roles);
+    /** @var array<string, array{name: string, capabilities: array<mixed>} $editable_roles */
+    $editable_roles = $wp_roles->roles;
 
-    $userroles = array_keys( array_intersect_key($editable_roles, $usercapabilities) );
+    // By using this approach we are now using the order of the roles from the WP_Roles object
+    // and not from the capabilities any more.
+    $userroles = array_keys(array_intersect_key($editable_roles, $usercapabilities));
     $role = $userroles[0];
 
     authLdap_debug("Existing user's role: {$role}");
