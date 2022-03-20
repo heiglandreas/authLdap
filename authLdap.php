@@ -293,7 +293,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
             return;
         }
 
-        authLdap_debug('LDAP authentication successfull');
+        authLdap_debug('LDAP authentication successful');
         $attributes = array_values(
             array_filter(
                 apply_filters(
