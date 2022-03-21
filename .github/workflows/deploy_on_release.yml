@@ -9,6 +9,7 @@ jobs:
   tag:
     name: New release
     runs-on: ubuntu-latest
+    environment: deploy_on_release
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
