@@ -41,6 +41,11 @@ Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
 
+= 2.5.3 =
+* Fix issue with broken role-assignement in combination with WooCommerce
+* Fix spelling issue
+* Allow DN as role-definition
+
 = 2.5.0 =
 * Ignore the order of capabilities to tell the role. In addition the filter `editable_roles` can be used to limit the roles
 
