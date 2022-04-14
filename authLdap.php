@@ -13,6 +13,7 @@ License URI: https://opensource.org/licenses/MIT
 // phpcs:disable PSR1.Files.SideEffects
 
 use Org_Heigl\AuthLdap\LdapUri;
+use Org_Heigl\AuthLdap\UserRoleHandler;
 
 require_once dirname(__FILE__) . '/ldap.php';
 require_once __DIR__ . '/src/LdapUri.php';
@@ -464,26 +465,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
         // Update user roles.
         $user = new \WP_User($userid);
-        if (empty($user->roles) || $user->roles !== $roles) {
 
-            // Remove unused roles from existing.
-            foreach ($user->roles as $role) {
-                if (!in_array($role, $roles)) {
-                    // Remove unused roles.
-                    $user->remove_role($role);
-                } else {
-                    // Remove the existing role from roles.
-                    if (($key = array_search($role, $roles)) !== false) {
-                        unset($roles[$key]);
-                    }
-                }
-            }
-
-            // Add new ones if not already assigned.
-            foreach ($roles as $role) {
-                $user->add_role($role);
-            }
-        }
+        /**
+         * Add hook for custom User-Role assignment
+         *
+         * @param WP_User $user This user-object will be returned. Can be modified as necessary in the actions.
+         * @param array $roles
+         */
+        do_action('authldap_user_roles', $user, $roles);
 
         /**
          * Add hook for custom updates
@@ -499,7 +488,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
         update_user_meta($userid, 'authLDAP', true);
 
         // return a user object upon positive authorization
-        return new WP_User($userid);
+        return $user;
     } catch (Exception $e) {
         authLdap_debug($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
         trigger_error($e->getMessage() . '. Exception thrown in line ' . $e->getLine());
@@ -925,3 +914,4 @@ add_filter('authenticate', 'authLdap_login', 10, 3);
 /** This only works from WP 4.3.0 on */
 add_filter('send_password_change_email', 'authLdap_send_change_email', 10, 3);
 add_filter('send_email_change_email', 'authLdap_send_change_email', 10, 3);
+add_action('authldap_user_roles', [new UserRoleHandler(), 'addRolesToUser'], 10, 2);
