@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
     Document   : phpunit.xml
     Created on : 21.09.2010
     Author     : heiglandreas
  -->
-
-<phpunit bootstrap="vendor/autoload.php">
-    <testsuite name="authLdap Test-Suite">
-        <directory>tests</directory>
-    </testsuite>
-
-    <groups>
-        <exclude>
-            <group>disable</group>
-        </exclude>
-    </groups>
-    <!--listeners>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="tests/bootstrap.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <report>
+      <html outputDirectory="build/coverage" lowUpperBound="35" highLowerBound="70"/>
+    </report>
+  </coverage>
+  <testsuite name="authLdap Test-Suite">
+    <directory>tests</directory>
+  </testsuite>
+  <groups>
+    <exclude>
+      <group>disable</group>
+    </exclude>
+  </groups>
+  <!--listeners>
         <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
     </listeners-->
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
   <logging>
-    <log type="coverage-html" target="build/coverage"
-         lowUpperBound="35" highLowerBound="70" />
     <!--log type="coverage-xml" target="../report/coverage.xml"/-->
     <!--log type="graphviz" target="../report/logfile.dot"/-->
     <!--log type="json" target="../report/logfile.json"/-->
