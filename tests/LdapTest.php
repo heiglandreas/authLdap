@@ -1,4 +1,5 @@
 <?php
+
 /**
  * $Id: LdapTest.php 292156 2010-09-21 19:32:01Z heiglandreas $
  *
@@ -35,71 +36,72 @@ namespace Org_Heigl\AuthLdapTest;
 use Exception;
 use Generator;
 use Org_Heigl\AuthLdap\LdapUri;
+use Org_Heigl\AuthLdap\Wrapper\LdapFactory;
 use PHPUnit\Framework\TestCase;
-use Org_Heigl\AuthLdap\LDAP;
+use Org_Heigl\AuthLdap\Manager\Ldap;
 
 class LdapTest extends TestCase
 {
-    /**
-     *
-     * @dataProvider dpInstantiateLdapClass
-     * @param array $expected
-     * @param array $given
-     */
-    public function testInstantiateLdapClass($ldapUri, $debug, $startTls)
-    {
-        $ldap = new LDAP(LdapUri::fromString($ldapUri), $debug, $startTls);
-        self::assertInstanceOf(LDAP::class, $ldap);
-    }
+	/**
+	 *
+	 * @dataProvider dpInstantiateLdapClass
+	 * @param array $expected
+	 * @param array $given
+	 */
+	public function testInstantiateLdapClass($ldapUri, $debug, $startTls)
+	{
+		$ldap = new Ldap(new LdapFactory(), LdapUri::fromString($ldapUri), $debug, $startTls);
+		self::assertInstanceOf(Ldap::class, $ldap);
+	}
 
-    /**
-     * @dataProvider dpExceptionsWhenInstantiatingLdapClass
-     * @param string $expected
-     */
-    public function testExceptionsWhenInstantiatingLdapClass(string $expected)
-    {
-        self::expectException(Exception::class);
-        new LDAP(LdapUri::fromString($expected));
-    }
+	/**
+	 * @dataProvider dpExceptionsWhenInstantiatingLdapClass
+	 * @param string $expected
+	 */
+	public function testExceptionsWhenInstantiatingLdapClass(string $expected)
+	{
+		self::expectException(Exception::class);
+		new Ldap(new LdapFactory(), LdapUri::fromString($expected));
+	}
 
-    public function dpInstantiateLdapClass(): Generator
-    {
-        yield [
-            'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
-            true,
-            false,
-            [
-                'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-                'password' => 'secret',
-                'server'   => 'ldap.example.org',
-                'baseDn'   => 'cn=example,c=org',
-                'debug'    => true
-            ]
-        ];
-        yield [
-            'ldap://uid=jondoe,cn=users,cn=example,c=org@ldap.example.org/cn=example,c=org',
-            true,
-            false,
-            [
-                'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-                'password' => '',
-                'server'   => 'ldap.example.org',
-                'baseDn'   => 'cn=example,c=org',
-                'debug'    => true
-            ]
-        ];
-        yield [
-            'ldap://ldap.example.org/cn=example,c=org',
-            true,
-            false,
-            [
-                'username' => 'anonymous',
-                'password' => '',
-                'server'   => 'ldap.example.org',
-                'baseDn'   => 'cn=example,c=org',
-                'debug'    => true
-            ]
-        ];
+	public function dpInstantiateLdapClass(): Generator
+	{
+		yield [
+			'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
+			true,
+			false,
+			[
+				'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+				'password' => 'secret',
+				'server' => 'ldap.example.org',
+				'baseDn' => 'cn=example,c=org',
+				'debug' => true,
+			],
+		];
+		yield [
+			'ldap://uid=jondoe,cn=users,cn=example,c=org@ldap.example.org/cn=example,c=org',
+			true,
+			false,
+			[
+				'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+				'password' => '',
+				'server' => 'ldap.example.org',
+				'baseDn' => 'cn=example,c=org',
+				'debug' => true,
+			],
+		];
+		yield [
+			'ldap://ldap.example.org/cn=example,c=org',
+			true,
+			false,
+			[
+				'username' => 'anonymous',
+				'password' => '',
+				'server' => 'ldap.example.org',
+				'baseDn' => 'cn=example,c=org',
+				'debug' => true,
+			],
+		];
 //      yield [
 //           'ldap://ldap.example.org',
 //              true,
@@ -112,83 +114,85 @@ class LdapTest extends TestCase
 //                  'debug'    => true
 //             ]
 //          ];
-        yield [
-            'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
-            false,
-            false,
-            [
-                'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-                'password' => 'secret',
-                'server'   => 'ldap.example.org',
-                'baseDn'   => 'cn=example,c=org',
-                'debug'    => false
-            ],
-        ];
-        yield [
-            'ldap://ldap.example.org/cn=test%20example,c=org',
-            false,
-            false,
-            [
-                'username' => 'anonymous',
-                'password' => '',
-                'server'   => 'ldap.example.org',
-                'baseDn'   => 'cn=test example,c=org',
-                'debug'    => false
-             ]
-        ];
-    }
+		yield [
+			'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
+			false,
+			false,
+			[
+				'username' => 'uid=jondoe,cn=users,cn=example,c=org',
+				'password' => 'secret',
+				'server' => 'ldap.example.org',
+				'baseDn' => 'cn=example,c=org',
+				'debug' => false,
+			],
+		];
+		yield [
+			'ldap://ldap.example.org/cn=test%20example,c=org',
+			false,
+			false,
+			[
+				'username' => 'anonymous',
+				'password' => '',
+				'server' => 'ldap.example.org',
+				'baseDn' => 'cn=test example,c=org',
+				'debug' => false,
+			],
+		];
+	}
 
-    public function dpExceptionsWhenInstantiatingLdapClass(): Generator
-    {
-        yield ['ldap://ldap.example.org'];
-        yield ['ldap://foo:bar@/cn=example,c=org'];
-        yield ['http://ldap.example.org'];
-        yield ['fooBar'];
-        yield ['ldap://ldap.example.org/'];
-        yield ['()123üäö'];
-    }
+	public function dpExceptionsWhenInstantiatingLdapClass(): Generator
+	{
+		yield ['ldap://ldap.example.org'];
+		yield ['ldap://foo:bar@/cn=example,c=org'];
+		yield ['http://ldap.example.org'];
+		yield ['fooBar'];
+		yield ['ldap://ldap.example.org/'];
+		yield ['()123üäö'];
+	}
 
-    public function testThatGroupMappingWorks()
-    {
-        $groups = [
-            'count' => 1,
-            0 => [
-                'dn' => 'dn-1',
-                'count' => 1,
-                0 => 'group',
-                'group' => [
-                    'count' => 2,
-                    0 => '7310T270:Překladatelství:čeština - angličtina@ff.cuni.cz',
-                    1 => '7310T033:Český jazyk a literatura@ff.cuni.cz',
-                ]
-            ]
-        ];
+	public function testThatGroupMappingWorks()
+	{
+		$groups = [
+			'count' => 1,
+			0 => [
+				'dn' => 'dn-1',
+				'count' => 1,
+				0 => 'group',
+				'group' => [
+					'count' => 2,
+					0 => 'angličtina@ff.cuni.cz',
+					1 => 'literatura@ff.cuni.cz',
+				],
+			],
+		];
 
-        $grp = array();
-        for ($i = 0; $i < $groups ['count']; $i++) {
-            for ($k = 0; $k < $groups[$i][strtolower('group')]['count']; $k++) {
-                $grp[] = $groups[$i][strtolower('group')][$k];
-            }
-        }
+		$grp = [];
+		for ($i = 0; $i < $groups ['count']; $i++) {
+			for ($k = 0; $k < $groups[$i][strtolower('group')]['count']; $k++) {
+				$grp[] = $groups[$i][strtolower('group')][$k];
+			}
+		}
 
-        $this->assertEquals([
-            '7310T270:Překladatelství:čeština - angličtina@ff.cuni.cz',
-            '7310T033:Český jazyk a literatura@ff.cuni.cz',
-        ], $grp);
+		$this->assertEquals([
+			'angličtina@ff.cuni.cz',
+			'literatura@ff.cuni.cz',
+		], $grp);
 
-        $role = '';
-        foreach ([
-            'testrole' => '7310T031:Český jazyk a literatura@ff.cuni.cz,7310T033:Český jazyk a literatura@ff.cuni.cz'
-                 ] as $key => $val) {
-            $currentGroup = explode(',', $val);
-            // Remove whitespaces around the group-ID
-            $currentGroup = array_map('trim', $currentGroup);
-            if (0 < count(array_intersect($currentGroup, $grp))) {
-                $role = $key;
-                break;
-            }
-        }
+		$role = '';
+		foreach (
+			[
+				'testrole' => 'literatura@ff.cuni.cz,literatura@ff.cuni.cz',
+			] as $key => $val
+		) {
+			$currentGroup = explode(',', $val);
+			// Remove whitespaces around the group-ID
+			$currentGroup = array_map('trim', $currentGroup);
+			if (0 < count(array_intersect($currentGroup, $grp))) {
+				$role = $key;
+				break;
+			}
+		}
 
-        $this->assertEquals('testrole', $role);
-    }
+		$this->assertEquals('testrole', $role);
+	}
 }

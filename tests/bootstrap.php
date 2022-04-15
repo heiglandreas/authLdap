@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright Andreas Heigl <andreas@heigl.org>
  *

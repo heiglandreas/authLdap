@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) Andreas Heigl<andreas@heigl.org>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,23 +27,26 @@
 
 namespace Org_Heigl\AuthLdap;
 
+use Exception;
 use Org_Heigl\AuthLdap\Exception\Error;
+use Org_Heigl\AuthLdap\Exception\SearchUnsuccessfull;
+use Org_Heigl\AuthLdap\Manager\Ldap;
 
 class LdapList
 {
     /**
-     * @var \LDAP[]
+     * @var Ldap[]
      */
     protected $items = [];
 
-    public function addLdap(LDAP $ldap)
+    public function addLdap(Ldap $ldap)
     {
         $this->items[] = $ldap;
     }
 
     public function authenticate($username, $password, $filter = '(uid=%s)')
     {
-        /** @var LDAP $item */
+        /** @var Ldap $item */
         foreach ($this->items as $key => $item) {
             if (! $item->authenticate($username, $password, $filter)) {
                 unset($this->items[$key]);
@@ -81,10 +85,9 @@ class LdapList
                 $result = $item->search($filter, $attributes, $base);
                 return $result;
             } catch (Exception $e) {
-                throw $e;
             }
         }
 
-        throw new \AuthLDAP_Exception('No Results found');
+        throw SearchUnsuccessfull::fromSearchFilter($filter);
     }
 }
