@@ -17,6 +17,7 @@ use Org_Heigl\AuthLdap\UserRoleHandler;
 
 require_once dirname(__FILE__) . '/ldap.php';
 require_once __DIR__ . '/src/LdapUri.php';
+require_once __DIR__ . '/src/UserRoleHandler.php';
 require_once __DIR__ . '/src/Exception/Error.php';
 require_once __DIR__ . '/src/Exception/InvalidLdapUri.php';
 
