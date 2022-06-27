@@ -19,6 +19,7 @@ use Org_Heigl\AuthLdap\Manager\Ldap;
 use Org_Heigl\AuthLdap\UserRoleHandler;
 use Org_Heigl\AuthLdap\Wrapper\LdapFactory;
 
+require_once __DIR__ . '/src/Wrapper/LdapInterface.php';
 require_once __DIR__ . '/src/Exception/Error.php';
 require_once __DIR__ . '/src/Exception/InvalidLdapUri.php';
 require_once __DIR__ . '/src/Exception/Error.php';
@@ -27,8 +28,9 @@ require_once __DIR__ . '/src/Exception/MissingValidLdapConnection.php';
 require_once __DIR__ . '/src/Exception/SearchUnsuccessfull.php';
 require_once __DIR__ . '/src/Manager/Ldap.php';
 require_once __DIR__ . '/src/Wrapper/Ldap.php';
+require_once __DIR__ . '/src/Wrapper/LdapFactory.php';
 require_once __DIR__ . '/src/LdapList.php';
-require_once __DIR__ . '/src/LdapList.php';
+require_once __DIR__ . '/src/LdapUri.php';
 require_once __DIR__ . '/src/UserRoleHandler.php';
 
 function authLdap_debug($message)

@@ -30,8 +30,7 @@ interface LdapInterface
 		array $attributes = [],
 		$attributes_only = 0,
 		$sizelimit = -1,
-		$timelimit = -1,
-		$deref = null
+		$timelimit = -1
 	);
 
 	public function getEntries($search_result);

@@ -121,7 +121,7 @@ class Ldap
 	 * @return array<string|int, mixed>
 	 * @throws Error
 	 */
-	public function search(string $filter, array $attributes = ['uid'], string $base = ''): array
+	public function search(string $filter, array $attributes = ['uid'], ?string $base = ''): array
 	{
 		if (null === $this->connection) {
 			throw new Error('No resource handle available');

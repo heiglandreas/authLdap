@@ -30,6 +30,9 @@ final class Ldap implements LdapInterface
 
 	public function bind($dn = null, $password = null)
 	{
+		if (null === $dn && null === $password) {
+			return ldap_bind($this->connection);
+		}
 		return ldap_bind($this->connection, $dn, $password);
 	}
 
@@ -64,8 +67,7 @@ final class Ldap implements LdapInterface
 		array $attributes = [],
 		$attributes_only = 0,
 		$sizelimit = -1,
-		$timelimit = -1,
-		$deref = null
+		$timelimit = -1
 	) {
 		return ldap_search(
 			$this->connection,
@@ -74,8 +76,7 @@ final class Ldap implements LdapInterface
 			$attributes,
 			$attributes_only,
 			$sizelimit,
-			$timelimit,
-			$deref
+			$timelimit
 		);
 	}
 
