@@ -565,7 +565,7 @@ function authLdap_user_role($uid)
 	// By using this approach we are now using the order of the roles from the WP_Roles object
 	// and not from the capabilities any more.
 	$userroles = array_keys(array_intersect_key($editable_roles, $usercapabilities));
-	$role = count($userroles) > 0 ? $userroles[0] : '';
+	$role = ($userroles !== []) ? $userroles[0] : '';
 
 	authLdap_debug("Existing user's role: {$role}");
 	return $role;
