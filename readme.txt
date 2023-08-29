@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 5.9.0
+Tested up to: 6.3.0
 Requires PHP: 7.4
 Stable tag: trunk
 License: MIT
@@ -40,6 +40,9 @@ Go to https://github.com/heiglandreas/authLdap
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
+
+= 2.5.4 =
+* Update Tested up to
 
 = 2.5.3 =
 * Fix issue with broken role-assignement in combination with WooCommerce
