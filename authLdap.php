@@ -378,8 +378,11 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		// do LDAP group mapping if needed
 		// (if LDAP groups override worpress user role, $role is still empty)
 		if (empty($roles) && $authLDAPGroupEnable) {
-			$roles[] = authLdap_groupmap($realuid, $dn);
-			authLdap_debug('role from group mapping: ' . json_encode($roles));
+			$mappedRoles = authLdap_groupmap($realuid, $dn);
+			if ($mappedRoles !== []) {
+				$roles = $mappedRoles;
+				authLdap_debug('role from group mapping: ' . json_encode($roles));
+			}
 		}
 
 		// if we don't have a role yet, use default role
@@ -579,7 +582,7 @@ function authLdap_user_role($uid)
  *
  * @param string $username
  * @param string $dn
- * @return string role, empty string if no mapping found, first found role otherwise
+ * @return array role, empty array if no mapping found, first or all role(s) found otherwise
  * @conf array authLDAPGroups, associative array, role => ldap_group
  * @conf string authLDAPGroupBase, base dn to look up groups
  * @conf string authLDAPGroupAttr, ldap attribute that holds name of group
@@ -606,7 +609,7 @@ function authLdap_groupmap($username, $dn)
 
 	if (!is_array($authLDAPGroups) || count(array_filter(array_values($authLDAPGroups))) == 0) {
 		authLdap_debug('No group names defined');
-		return '';
+		return [];
 	}
 
 	try {
@@ -626,7 +629,7 @@ function authLdap_groupmap($username, $dn)
 		);
 	} catch (Exception $e) {
 		authLdap_debug('Exception getting LDAP group attributes: ' . $e->getMessage());
-		return '';
+		return [];
 	}
 
 	$grp = [];
