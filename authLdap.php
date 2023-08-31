@@ -367,7 +367,10 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		// we only need this if either LDAP groups are disabled or
 		// if the WordPress role of the user overrides LDAP groups
 		if (!$authLDAPGroupEnable || !$authLDAPGroupOverUser) {
-			$roles[] = authLdap_user_role($uid);
+			$role = authLdap_user_role($uid);
+			if ($role !== '') {
+				$roles[] = $role;
+			}
 			// TODO, this needs to be revised, it seems, like authldap is taking only the first role
 			// even if in WP there are assigned multiple.
 		}
