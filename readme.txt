@@ -41,6 +41,11 @@ Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
 == Changelog ==
 
+= 2.5.7 =
+
+* Fix regressions from 2.5.4
+* Fix CI system
+
 = 2.5.4 =
 * Update Tested up to
 
