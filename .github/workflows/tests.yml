@@ -30,9 +30,9 @@ jobs:
       - name: install dependencies
         run: composer install
       - name: install tools
-        run: phive install --trust-gpg-keys 4AA394086372C20A phpunit
+        run: composer require --dev phpunit/phpunit
       - name: Run Unit-Tests
-        run: ./tools/phpunit --testdox
+        run: ./vendor/bin/phpunit --testdox
   coverage:
     needs: test
     runs-on: ubuntu-latest
