@@ -375,7 +375,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		// do LDAP group mapping if needed
 		// (if LDAP groups override worpress user role, $role is still empty)
 		if (empty($roles) && $authLDAPGroupEnable) {
-			$roles = authLdap_groupmap($realuid, $dn);
+			$roles[] = authLdap_groupmap($realuid, $dn);
 			authLdap_debug('role from group mapping: ' . json_encode($roles));
 		}
 
