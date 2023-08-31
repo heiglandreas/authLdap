@@ -4,7 +4,7 @@
 
 Use your existing LDAP as authentication-backend for your wordpress!
 
-[![Build Status](https://github.com/heiglandreas/authLdap/workflows/CI/badge.svg)](https://github.com/heiglandreas/authLdap/workflows/CI)
+[![Build Status](https://github.com/heiglandreas/authLdap/actions/workflows/tests.yml/badge.svg)](https://github.com/heiglandreas/authLdap/actions/workflows/tests.yml)
 [![WordPress Stats](https://img.shields.io/wordpress/plugin/dt/authldap.svg)](https://wordpress.org/plugins/authldap/stats/)
 [![WordPress Version](https://img.shields.io/wordpress/plugin/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
 [![WordPress testet](https://img.shields.io/wordpress/v/authldap.svg)](https://wordpress.org/plugins/authldap/)
