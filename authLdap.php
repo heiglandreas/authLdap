@@ -74,6 +74,13 @@ function authLdap_options_panel()
 	wp_enqueue_style('authLdap-style', plugin_dir_url(__FILE__) . 'authLdap.css');
 
 	if (($_SERVER['REQUEST_METHOD'] == 'POST') && array_key_exists('ldapOptionsSave', $_POST)) {
+		if (!isset($_POST['authLdapNonce'])) {
+			die("Go away!");
+		}
+		if (!wp_verify_nonce($_POST['authLdapNonce'],'authLdapNonce')) {
+			die("Go away!");
+		}
+
 		$new_options = [
 			'Enabled' => authLdap_get_post('authLDAPAuth', false),
 			'CachePW' => authLdap_get_post('authLDAPCachePW', false),

@@ -37,6 +37,7 @@
     <?php endif ?>
     <h2>AuthLDAP Options</h2>
     <form class="authldap-options" method="post" id="authLDAP_options" action="<?php echo $action;?>">
+		<input name="authLdapNonce" type="hidden" value="<?php echo wp_create_nonce('authLdapNonce'); ?>" />
         <h3 class="title">General Usage of authLDAP</h3>
         <fieldset class="options">
             <table class="form-table">
@@ -193,7 +194,7 @@
                         <p class="description">
                             If checked the plugin will use the user's account to query their own information. If not it will use the admin account.
                         </p>
-						
+
                     </td>
                 </tr>
 				<tr>
