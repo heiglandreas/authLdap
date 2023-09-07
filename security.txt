@@ -1,0 +1,6 @@
+Contact: mailto://andreas@heigl.net
+Contact: https://github.com/heiglandreas/authLdap/security/advisories/new
+Expires: 2026-09-07T10:00:00.000Z
+Encryption: https://andreas.heigl.org/publickey/
+Encryption: https://heigl.org/.well-known/openpgpkey/hu/sfqdema7hgdj146cwzo4rxgsoujxis31
+Preferred-Languages: en,de
