@@ -39,6 +39,12 @@ Go to https://github.com/heiglandreas/authLdap
 
 Please use the issuetracker at https://github.com/heiglandreas/authLdap/issues
 
+= Where can I report sensitive security issues with the plugin? =
+
+In essence: Report a security vulnerability at https://github.com/heiglandreas/authLdap/security/advisories/new
+
+Please see https://github.com/heiglandreas/authLdap/blob/master/SECURITY.md for more details
+
 == Changelog ==
 
 = 2.5.8 =
