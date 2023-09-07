@@ -47,6 +47,11 @@ Please see https://github.com/heiglandreas/authLdap/blob/master/SECURITY.md for 
 
 == Changelog ==
 
+= 2.5.9 =
+
+* Adds information about security-contacts
+* Addresses CVE-2023-41655
+
 = 2.5.8 =
 
 * Fix regression from 2.5.7
