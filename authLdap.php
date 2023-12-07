@@ -374,9 +374,9 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		// we only need this if either LDAP groups are disabled or
 		// if the WordPress role of the user overrides LDAP groups
 		if (!$authLDAPGroupEnable || !$authLDAPGroupOverUser) {
-			$role = authLdap_user_role($uid);
-			if ($role !== '') {
-				$roles[] = $role;
+			$userRoles = authLdap_user_role($uid);
+			if ($userRoles !== []) {
+				$roles = array_merge($roles, $userRoles);
 			}
 			// TODO, this needs to be revised, it seems, like authldap is taking only the first role
 			// even if in WP there are assigned multiple.
@@ -556,20 +556,20 @@ function authLdap_get_uid($username)
  * Returns empty string if not found.
  *
  * @param int $uid wordpress user id
- * @return string role, empty if none found
+ * @return array roles, empty if none found
  */
 function authLdap_user_role($uid)
 {
 	global $wpdb, $wp_roles;
 
 	if (!$uid) {
-		return '';
+		return [];
 	}
 
 	/** @var array<string, bool> $usercapabilities */
 	$usercapabilities = get_user_meta($uid, "{$wpdb->prefix}capabilities", true);
 	if (!is_array($usercapabilities)) {
-		return '';
+		return [];
 	}
 
 	/** @var array<string, array{name: string, capabilities: array<mixed>} $editable_roles */
@@ -578,10 +578,10 @@ function authLdap_user_role($uid)
 	// By using this approach we are now using the order of the roles from the WP_Roles object
 	// and not from the capabilities any more.
 	$userroles = array_keys(array_intersect_key($editable_roles, $usercapabilities));
-	$role = ($userroles !== []) ? $userroles[0] : '';
 
-	authLdap_debug("Existing user's role: {$role}");
-	return $role;
+	authLdap_debug(sprintf("Existing user's roles: %s", implode(', ', $userroles);
+
+	return $userroles;
 }
 
 /**
