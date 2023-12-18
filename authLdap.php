@@ -579,7 +579,7 @@ function authLdap_user_role($uid)
 	// and not from the capabilities any more.
 	$userroles = array_keys(array_intersect_key($editable_roles, $usercapabilities));
 
-	authLdap_debug(sprintf("Existing user's roles: %s", implode(', ', $userroles);
+	authLdap_debug(sprintf("Existing user's roles: %s", implode(', ', $userroles)));
 
 	return $userroles;
 }
