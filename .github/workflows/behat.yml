@@ -11,15 +11,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
+        php-version: [ '8.0', '8.1', '8.2', '8.3' ]
         wordpress-version: ['6.1', '6.2', '6.3', '6.4']
         exclude:
-          - php-version: 7.4
-            wordpress-version: 6.2
-          - php-version: 7.4
-            wordpress-version: 6.3
-          - php-version: 7.4
-            wordpress-version: 6.4
           - php-version: 8.3
             wordpress-version: 6.1
           - php-version: 8.3
@@ -38,5 +32,14 @@ jobs:
         run: docker ps -a
       - name: Check logs
         run: docker compose logs openldap
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: phive
+      - name: install dependencies
+        run: composer install
+      - name: install tools
+        run: phive install --force-accept-unsigned behat/behat --copy
       - name: run behat
         run: docker compose exec wp bash -c "cd wp-content/plugins/authldap && ./tools/behat"
