@@ -11,14 +11,14 @@ jobs:
     strategy:
       matrix:
         # operating-system: [ubuntu-latest, windows-latest, macos-latest]
-        php-versions: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
-        wordpress-versions: ['6.1', '6.2', '6.3', '6.4']
+        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
+        wordpress-version: ['6.1', '6.2', '6.3', '6.4']
 
-    name: Test on PHP${{ matrix.php-versions }} with WordPress ${{ matrix.wordpress_version }}
+    name: Test on PHP${{ matrix.php-version }} with WordPress ${{ matrix.wordpress_version }}
     steps:
       - uses: actions/checkout@v1
       - name: Build the docker-compose stack
-        run: docker compose -e PHP_VERSION=${{ matrix.php-version }} -e WORDPRESS_VERSION=${{ matrix.wordpress-versions }} -f docker-compose.yml up -d
+        run: docker compose -e PHP_VERSION=${{ matrix.php-version }} -e WORDPRESS_VERSION=${{ matrix.wordpress-version }} -f docker-compose.yml up -d
       - name: Check running containers
         run: docker ps -a
       - name: Check logs
