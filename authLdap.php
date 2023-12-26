@@ -430,23 +430,23 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		$user_info['user_nicename'] = '';
 
 		// first name
-		if (isset($attribs[0][strtolower($authLDAPNameAttr)][0])) {
-			$user_info['first_name'] = $attribs[0][strtolower($authLDAPNameAttr)][0];
+		if (isset($attribs[0][strtolower((string) $authLDAPNameAttr)][0])) {
+			$user_info['first_name'] = $attribs[0][strtolower((string) $authLDAPNameAttr)][0];
 		}
 
 		// last name
-		if (isset($attribs[0][strtolower($authLDAPSecName)][0])) {
-			$user_info['last_name'] = $attribs[0][strtolower($authLDAPSecName)][0];
+		if (isset($attribs[0][strtolower((string) $authLDAPSecName)][0])) {
+			$user_info['last_name'] = $attribs[0][strtolower((string) $authLDAPSecName)][0];
 		}
 
 		// mail address
-		if (isset($attribs[0][strtolower($authLDAPMailAttr)][0])) {
-			$user_info['user_email'] = $attribs[0][strtolower($authLDAPMailAttr)][0];
+		if (isset($attribs[0][strtolower((string) $authLDAPMailAttr)][0])) {
+			$user_info['user_email'] = $attribs[0][strtolower((string) $authLDAPMailAttr)][0];
 		}
 
 		// website
-		if (isset($attribs[0][strtolower($authLDAPWebAttr)][0])) {
-			$user_info['user_url'] = $attribs[0][strtolower($authLDAPWebAttr)][0];
+		if (isset($attribs[0][strtolower((string) $authLDAPWebAttr)][0])) {
+			$user_info['user_url'] = $attribs[0][strtolower((string) $authLDAPWebAttr)][0];
 		}
 		// display name, nickname, nicename
 		if (array_key_exists('first_name', $user_info)) {

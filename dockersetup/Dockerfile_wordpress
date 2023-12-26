@@ -1,9 +1,21 @@
-FROM wordpress:latest
+ARG WORDPRESS_VERSION=$WORDPRESS_VERSION
+ARG PHP_VERSION=$PHP_VERSION
+
+FROM wordpress:$WORDPRESS_VERSION-php$PHP_VERSION
 
 RUN set -x \
     && apt-get update \
-    && apt-get install -y libldap2-dev \
+    && apt-get install -y libldap2-dev ldap-utils\
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
     && docker-php-ext-install ldap \
-&& apt-get purge -y --auto-remove libldap2-dev
+    && pecl install xdebug${XDEBUG_VERSION} \
+    && docker-php-ext-enable xdebug \
+    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.discover_client_host=on" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+	&& apt-get purge -y --auto-remove libldap2-dev
+
+RUN set -x \
+    && curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod 755 /usr/local/bin/wp
+

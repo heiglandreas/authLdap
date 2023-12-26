@@ -8,4 +8,4 @@
 
 require_once __DIR__ . '/../vendor/autoload.php'; // adjust the path as needed
 
-\WorDBless\Load::load();
+//\WorDBless\Load::load();

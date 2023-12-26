@@ -18,6 +18,7 @@ use function ldap_get_entries;
 use function ldap_set_option;
 use function ldap_start_tls;
 use function ldap_unbind;
+use function var_dump;
 
 final class Ldap implements LdapInterface
 {

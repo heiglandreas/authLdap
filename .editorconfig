@@ -9,7 +9,9 @@ indent_style = tab
 insert_final_newline = true
 end_of_line = lf
 
-[*.yml]
+[{*.yml,*.yml.dist}]
+indent_style = space
+indent_size = 2
 tab_width = 2
 
 [*.xml]
