@@ -25,6 +25,8 @@ class FeatureContext implements Context
 	 */
 	public function __construct()
 	{
+		exec('wp --allow-root core install --url=localhost --title=Example --admin_user=lccaladmin --admin_password=P@ssw0rd --admin_email=info@example.com');
+		exec('wp --allow-root plugin activate authldap');
 	}
 
 
