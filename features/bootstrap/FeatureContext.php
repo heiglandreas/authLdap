@@ -25,7 +25,7 @@ class FeatureContext implements Context
 	 */
 	public function __construct()
 	{
-		exec('wp --allow-root core install --url=localhost --title=Example --admin_user=lccaladmin --admin_password=P@ssw0rd --admin_email=info@example.com');
+		exec('wp --allow-root core install --url=localhost --title=Example --admin_user=localadmin --admin_password=P@ssw0rd --admin_email=info@example.com');
 		exec('wp --allow-root plugin activate authldap');
 	}
 
@@ -57,7 +57,7 @@ class FeatureContext implements Context
 		exec(sprintf(
 			'wp --allow-root option patch update authLDAPOptions %1$s %2$s --format=json',
 			$arg1,
-			$arg2
+			"'" . json_encode($arg2) . "'"
 		));
 	}
 
@@ -225,7 +225,7 @@ LDIF',
     public function ldapUserIsMemberOfLdapGroup($arg1, $arg2)
     {
 	    exec(sprintf(
-		    'ldapmodify -x -H %1$s -D "%2$s" -w %3$s <<LDIF
+		    'ldapmodify -x -H %1$s -D "%2$s" -w %3$s 2>&1 <<LDIF
 %4$s
 LDIF',
 		    'ldap://openldap',
@@ -237,7 +237,8 @@ LDIF',
 			add: uniqueMember
 			uniqueMember: uid=$arg1,dc=example,dc=org
 			LDIF
-	    ));    }
+	    ));
+	}
 
     /**
      * @Given a WordPress user :arg1 does not exist
@@ -249,4 +250,41 @@ LDIF',
 		    $arg1,
 	    ));
     }
+
+    /**
+     * @Given configuration value :arg1 is set to :arg2 and :arg3
+     */
+    public function configurationValueIsSetToAnd($arg1, $arg2, $arg3)
+    {
+		$roles = [];
+		foreach ([$arg2, $arg3] as $arg) {
+			$access = explode('=', $arg);
+			$roles[$access[0]] = $access[1];
+		}
+
+		exec(sprintf(
+			'echo %2$s | wp --allow-root option patch update authLDAPOptions %1$s --format=json',
+			$arg1,
+			"'" . json_encode($roles) . "'"
+		), $result);
+		var_dump($result);
+    }
+
+    /**
+     * @Then the WordPress user :arg1 is not member of role :arg2
+     */
+    public function theWordpressUserIsNotMemberOfRole($arg1, $arg2)
+    {
+		exec(sprintf(
+			'wp --allow-root user get %1$s --format=json 2> /dev/null',
+			$arg1,
+		), $output, $result);
+		Assert::eq(0, $result);
+		$user = json_decode($output[0], true);
+		$roles = array_map(function($item): string {
+			return trim($item);
+		}, explode(',', $user['roles']));
+		Assert::false(in_array($arg2, $roles));
+
+	}
 }
