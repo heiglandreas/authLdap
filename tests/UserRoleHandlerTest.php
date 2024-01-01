@@ -37,7 +37,7 @@ class UserRoleHandlerTest extends BaseTestCase
 
 		self::assertEquals(['administrator', 'author'], $user->roles);
 	}
-	
+
 	public function testUserRolesAreNotAssignedWhenUserAlreadyHasRole() : void
 	{
 		$user = new WP_User(1);
