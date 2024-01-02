@@ -45,3 +45,5 @@ jobs:
         run: phive install --force-accept-unsigned behat/behat --copy
       - name: run behat
         run: docker compose exec wp bash -c "cd wp-content/plugins/authldap && ./tools/behat"
+      - name: Check logs
+        run: docker compose logs
