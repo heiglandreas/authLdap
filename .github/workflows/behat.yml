@@ -46,4 +46,5 @@ jobs:
       - name: run behat
         run: docker compose exec wp bash -c "cd wp-content/plugins/authldap && ./tools/behat"
       - name: Check logs
+        if: ${{ failure() }}
         run: docker compose logs
