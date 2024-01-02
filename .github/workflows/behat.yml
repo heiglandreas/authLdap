@@ -11,23 +11,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
-        wordpress-version: ['6.1', '6.2', '6.3', '6.4']
+        php-version: [ '8.0', '8.1', '8.2', '8.3' ]
+        wordpress-version: ['6.2', '6.3', '6.4']
         exclude:
-          - php-version: 8.3
-            wordpress-version: 6.1
           - php-version: 8.3
             wordpress-version: 6.2
           - php-version: 8.3
             wordpress-version: 6.3
-          - php-version: 8.2
-            wordpress-version: 6.1
-          - php-version: 8.1
-            wordpress-version: 6.1
           - php-version: 8.1
             wordpress-version: 6.2
-          - php-version: 8.0
-            wordpress-version: 6.1
           - php-version: 8.0
             wordpress-version: 6.2
 
