@@ -21,7 +21,10 @@ services:
       WORDPRESS_DB_PASSWORD: "wppasswd"
       WORDPRESS_DEBUG: 0
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      openldap:
+        condition: service_healthy
     links:
       - db
 
@@ -55,6 +58,10 @@ services:
     environment:
       MYSQL_DATABASE: "wordpress"
       MYSQL_ROOT_PASSWORD: "wppasswd"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 1s
+      retries: 5
 
   openldap:
     image: osixia/openldap:latest
@@ -71,6 +78,10 @@ services:
       LDAP_LOG_LEVEL: "0"
       LDAP_TLS: "false"
       LDAP_ADMIN_PASSWORD: "insecure"
+    healthcheck:
+      test: ["CMD", "/usr/bin/ldapsearch", "-H",  "ldap://localhost/", "-x", "-s", "base", "-LLL", "+"]
+      timeout: 1s
+      retries: 5
 
 volumes:
   db_data:
