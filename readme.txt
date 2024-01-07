@@ -47,6 +47,11 @@ Please see https://github.com/heiglandreas/authLdap/blob/master/SECURITY.md for 
 
 == Changelog ==
 
+= 2.6.0 =
+
+* Fix reducing assigned WordPress roles to single role on login when WordPress roles shall be kept
+* Add Behavioural testing and first 3 scenarios
+
 = 2.5.9 =
 
 * Adds information about security-contacts
