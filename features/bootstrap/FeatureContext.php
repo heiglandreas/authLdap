@@ -267,7 +267,6 @@ LDIF',
 			$arg1,
 			"'" . json_encode($roles) . "'"
 		), $result);
-		var_dump($result);
     }
 
     /**
