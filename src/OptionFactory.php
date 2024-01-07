@@ -1,12 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright Andreas Heigl <andreas@heigl.org>
  *
  * Licensed under the MIT-license. For details see the included file LICENSE.md
  */
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap;
 

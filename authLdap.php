@@ -77,7 +77,7 @@ function authLdap_options_panel()
 		if (!isset($_POST['authLdapNonce'])) {
 			die("Go away!");
 		}
-		if (!wp_verify_nonce($_POST['authLdapNonce'],'authLdapNonce')) {
+		if (!wp_verify_nonce($_POST['authLdapNonce'], 'authLdapNonce')) {
 			die("Go away!");
 		}
 

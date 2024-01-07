@@ -14,7 +14,7 @@ use WP_User;
 
 class UserRoleHandlerTest extends TestCase
 {
-	public function testUserRolesAreAssignedAsExpected() : void
+	public function testUserRolesAreAssignedAsExpected(): void
 	{
 		$user = new WP_User(1);
 
@@ -25,7 +25,7 @@ class UserRoleHandlerTest extends TestCase
 		self::assertEquals(['author'], $user->roles);
 	}
 
-	public function testEqualUserRolesAreEasy() : void
+	public function testEqualUserRolesAreEasy(): void
 	{
 		$user = new WP_User(1);
 		$user->add_role('administrator');
@@ -38,7 +38,7 @@ class UserRoleHandlerTest extends TestCase
 		self::assertEquals(['administrator', 'author'], $user->roles);
 	}
 
-	public function testUserRolesAreNotAssignedWhenUserAlreadyHasRole() : void
+	public function testUserRolesAreNotAssignedWhenUserAlreadyHasRole(): void
 	{
 		$user = new WP_User(1);
 		$user->add_role('administrator');
@@ -51,7 +51,7 @@ class UserRoleHandlerTest extends TestCase
 		self::assertEquals(['author', 'editor'], $user->roles);
 	}
 
-	public function testEmptyRolesAreIgnored() : void
+	public function testEmptyRolesAreIgnored(): void
 	{
 		$user = new WP_User(1);
 		$user->add_role('administrator');

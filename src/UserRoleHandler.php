@@ -23,7 +23,7 @@ class UserRoleHandler
 	 * @param string[] $roles
 	 * @return void
 	 */
-	public function addRolesToUser(WP_User $user, $roles) : void
+	public function addRolesToUser(WP_User $user, $roles): void
 	{
 		if ($roles === []) {
 			return;

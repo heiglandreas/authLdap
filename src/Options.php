@@ -1,16 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright Andreas Heigl <andreas@heigl.org>
  *
  * Licensed under the MIT-license. For details see the included file LICENSE.md
  */
 
+declare(strict_types=1);
+
 namespace Org_Heigl\AuthLdap;
 
 use Org_Heigl\AuthLdap\Exception\UnknownOption;
+
 use function array_key_exists;
 
 class Options
