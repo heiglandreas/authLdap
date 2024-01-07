@@ -1,42 +1,58 @@
 {
-    "name" : "org_heigl/authldap",
-    "type" : "library",
-    "description": "Enables wordpress-authentication via LDAP",
-    "keywords": ["ldap","authenticate", "auth", "wordpress"],
-    "homepage": "http://github.com/heiglandreas/authLdap",
-    "license": "MIT",
-    "authors": [{
-        "name": "Andreas Heigl",
-        "email": "andreas@heigl.org",
-        "homepage": "http://andreas.heigl.org",
-        "role": "Developer"
-    }],
-    "require" : {
-        "php": ">=7.4",
-      "ext-ldap": "*"
-    },
-    "require-dev": {
-        "automattic/wordbless": "^0.3.1"
-    },
-    "autoload" : {
-        "classmap" : [
-            "authLdap.php"
-        ],
-        "psr-4" : {
-            "Org_Heigl\\AuthLdap\\" : "src/"
-        }
-    },
-    "autoload-dev" : {
-        "psr-4" : {
-            "Org_Heigl\\AuthLdapTest\\" : "tests/"
-        }
-    },
-    "scripts": {
-        "post-update-cmd": "php -r \"copy('vendor/automattic/wordbless/src/dbless-wpdb.php', 'wordpress/wp-content/db.php');\""
-    },
-    "config": {
-        "allow-plugins": {
-            "roots/wordpress-core-installer": true
-        }
-    }
+	"name": "org_heigl/authldap",
+	"type": "library",
+	"description": "Enables wordpress-authentication via LDAP",
+	"keywords": [
+		"ldap",
+		"authenticate",
+		"auth",
+		"wordpress"
+	],
+	"homepage": "http://github.com/heiglandreas/authLdap",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Andreas Heigl",
+			"email": "andreas@heigl.org",
+			"homepage": "http://andreas.heigl.org",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": "^7.4|^8.0",
+		"ext-ldap": "*",
+		"ext-json": "*"
+	},
+	"require-dev": {
+		"automattic/wordbless": "dev-patch-1",
+		"guzzlehttp/guzzle": "^7.8",
+		"webmozart/assert": "^1.11"
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/heiglandreas/wordbless"
+		}
+	],
+	"autoload": {
+		"classmap": [
+			"authLdap.php"
+		],
+		"psr-4": {
+			"Org_Heigl\\AuthLdap\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Org_Heigl\\AuthLdapTest\\": "tests/"
+		}
+	},
+	"scripts": {
+		"post-update-cmd": "php -r \"copy('vendor/automattic/wordbless/src/dbless-wpdb.php', 'wordpress/wp-content/db.php');\""
+	},
+	"config": {
+		"allow-plugins": {
+			"roots/wordpress-core-installer": true
+		}
+	}
 }

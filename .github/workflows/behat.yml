@@ -1,0 +1,54 @@
+name: Behat Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PORT_LDAP: 3389
+      PORT_LDAPS: 6363
+      LDAP_ADMIN_PASSWORD: ${{ secrets.LDAP_ADMIN_PASSWORD }}
+      LDAP_LOG_LEVEL: 0
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '8.0', '8.1', '8.2', '8.3' ]
+        wordpress-version: ['6.2', '6.3', '6.4']
+        exclude:
+          - php-version: 8.3
+            wordpress-version: 6.2
+          - php-version: 8.3
+            wordpress-version: 6.3
+          - php-version: 8.2
+            wordpress-version: 6.2
+          - php-version: 8.2
+            wordpress-version: 6.3
+          - php-version: 8.1
+            wordpress-version: 6.2
+          - php-version: 8.0
+            wordpress-version: 6.2
+
+    name: Test on PHP ${{ matrix.php-version }}/WordPress ${{ matrix.wordpress-version }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build the docker-compose stack
+        run: docker compose build --build-arg PHP_VERSION=${{ matrix.php-version }} --build-arg WORDPRESS_VERSION=${{ matrix.wordpress-version }} wp
+      - name: run the stack
+        run: docker compose -f docker-compose.yml up -d
+      - name: Check running containers
+        run: docker ps -a
+      - name: Check logs
+        run: docker compose logs openldap
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: phive
+      - name: install dependencies
+        run: composer install
+      - name: install tools
+        run: phive install --force-accept-unsigned behat/behat --copy
+      - name: run behat
+        run: docker compose exec wp bash -c "cd wp-content/plugins/authldap && ./tools/behat"
+      - name: Check logs
+        if: ${{ failure() }}
+        run: docker compose logs

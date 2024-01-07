@@ -116,7 +116,7 @@ final class LdapUri
 		if (isset($url['pass'])) {
 			$this->password = $url['pass'];
 		}
-		if ($this->scheme === 'ldaps' && $this->port = 389) {
+		if ($this->scheme === 'ldaps' && $this->port === 389) {
 			$this->port = 636;
 		}
 

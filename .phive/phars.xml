@@ -3,4 +3,6 @@
   <phar name="phpunit" version="^9.5.21" installed="9.5.21" location="./tools/phpunit" copy="true"/>
   <phar name="phpcs" version="^3.7.1" installed="3.7.1" location="./tools/phpcs" copy="true"/>
   <phar name="phpcbf" version="^3.7.1" installed="3.7.1" location="./tools/phpcbf" copy="true"/>
+  <phar name="behat/behat" version="^3.13.0" installed="3.13.0" location="./tools/behat" copy="true"/>
+  <phar name="wp-cli/wp-cli" version="^2.9.0" installed="2.9.0" location="./tools/wp-cli" copy="true"/>
 </phive>

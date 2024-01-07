@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 6.3.0
+Tested up to: 6.4.0
 Requires PHP: 7.4
 Stable tag: trunk
 License: MIT

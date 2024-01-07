@@ -9,10 +9,10 @@
 namespace Org_Heigl\AuthLdapTest;
 
 use Org_Heigl\AuthLdap\UserRoleHandler;
-use WorDBless\BaseTestCase;
+use PHPUnit\Framework\TestCase;
 use WP_User;
 
-class UserRoleHandlerTest extends BaseTestCase
+class UserRoleHandlerTest extends TestCase
 {
 	public function testUserRolesAreAssignedAsExpected() : void
 	{
@@ -37,7 +37,7 @@ class UserRoleHandlerTest extends BaseTestCase
 
 		self::assertEquals(['administrator', 'author'], $user->roles);
 	}
-	
+
 	public function testUserRolesAreNotAssignedWhenUserAlreadyHasRole() : void
 	{
 		$user = new WP_User(1);
