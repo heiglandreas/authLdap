@@ -420,8 +420,9 @@
                         </label>
                     </th>
                     <td>
-                        <input type="text" name="authLDAPGroups[<?php echo $group; ?>]" id="authLDAPGroups[<?php echo $group; ?>]"
-                          value="<?php echo $aGroup; ?>" />
+						<textarea name="authLDAPGroups[<?php echo $group; ?>]" id="authLDAPGroups[<?php echo $group; ?>]" cols=60 rows=5><?php
+							echo $aGroup;
+						?></textarea>
                     </td>
                 </tr>
 <?php endforeach; ?>
