@@ -101,7 +101,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPURI" id="authLDAPURI" placeholder="LDAP-URI"
-                          class="regular-text" value="<?php echo $authLDAPURI; ?>"/>
+                          class="regular-text" value="<?php echo esc_attr($authLDAPURI); ?>"/>
                         <p class="description">
                             The <abbr title="Uniform Ressource Identifier">URI</abbr>
                             for connecting to the LDAP-Server. This usualy takes the form
@@ -139,7 +139,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPURISeparator" id="authLDAPURISeparator" placeholder="LDAP-URI Separator"
-                               class="regular-text" value="<?php echo $authLDAPURISeparator; ?>"/>
+                               class="regular-text" value="<?php echo esc_attr($authLDAPURISeparator); ?>"/>
                         <p class="description">
                             A separator that separates multiple LDAP-URIs from one another.
                             You can use that feature to try to authenticate against multiple LDAP-Servers
@@ -152,7 +152,7 @@
                           <label for="authLDAPStartTLS" class="description">StartTLS</label>
                       </th>
                       <td>
-                          <input type="checkbox" name="authLDAPStartTLS" id="authLDAPStartTLS" value="1"<?php echo $tStartTLSChecked; ?>/>
+                          <input type="checkbox" name="authLDAPStartTLS" id="authLDAPStartTLS" value="1"<?php echo esc_attr($tStartTLSChecked); ?>/>
                           <p class="description">
                               Use StartTLS for encryption of ldap connections. This setting is not to be used in combination with ldaps connections (ldap:// only).
                           </p>
@@ -163,7 +163,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPFilter" id="authLDAPFilter" placeholder="(uid=%s)"
-                          class="regular-text" value="<?php echo $authLDAPFilter; ?>"/>
+                          class="regular-text" value="<?php echo esc_attr($authLDAPFilter); ?>"/>
                         <p class="description">
                             Please provide a valid filter that can be used for querying the
                             <abbr title="Lightweight Directory Access Protocol">LDAP</abbr>
@@ -190,7 +190,7 @@
                         <label for="authLDAPUseUserAccount">User-Read</label>
                     </th>
                     <td>
-                        <input type="checkbox" name="authLDAPUseUserAccount" id="authLDAPUseUserAccount" value="1"<?php echo $tUserRead; ?>/><br />
+                        <input type="checkbox" name="authLDAPUseUserAccount" id="authLDAPUseUserAccount" value="1"<?php echo esc_attr($tUserRead); ?>/><br />
                         <p class="description">
                             If checked the plugin will use the user's account to query their own information. If not it will use the admin account.
                         </p>
@@ -203,7 +203,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPNameAttr" id="authLDAPNameAttr" placeholder="name"
-                          class="regular-text" value="<?php echo $authLDAPNameAttr; ?>"/><br />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPNameAttr); ?>"/><br />
                         <p class="description">
                             Which Attribute from the LDAP contains the Full or the First name
                             of the user trying to log in.
@@ -220,7 +220,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPSecName" id="authLDAPSecName" placeholder=""
-                          class="regular-text" value="<?php echo $authLDAPSecName; ?>" />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPSecName); ?>" />
                         <p class="description">
                             If the above Name-Attribute only contains the First Name of the
                             user you can here specify an Attribute that contains the second name.
@@ -236,7 +236,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPUidAttr" id="authLDAPUidAttr" placeholder="uid"
-                          class="regular-text" value="<?php echo $authLDAPUidAttr; ?>" />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPUidAttr); ?>" />
                         <p class="description">
                             Please give the Attribute, that is used to identify the user. This
                             should be the same as you used in the above <em>Filter</em>-Option
@@ -252,7 +252,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPMailAttr" id="authLDAPMailAttr" placeholder="mail"
-                          class="regular-text" value="<?php echo $authLDAPMailAttr; ?>" />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPMailAttr); ?>" />
                         <p class="description">
                             Which Attribute holds the eMail-Address of the user?
                         </p>
@@ -270,7 +270,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPWebAttr" id="authLDAPWebAttr" placeholder=""
-                          class="regular-text" value="<?php echo $authLDAPWebAttr; ?>" />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPWebAttr); ?>" />
                         <p class="description">
                             If your users have a personal page (URI) stored in the LDAP, it can
                             be provided here.
@@ -291,7 +291,7 @@
                             </option>
 <?php foreach ($roles->get_names() as $group => $vals) : ?>
                             <option value="<?php echo $group; ?>" <?php echo ( $authLDAPDefaultRole == $group ? 'selected="selected"' : '' ); ?>>
-                                <?php echo $vals; ?>
+                                <?php echo esc_attr($vals); ?>
                             </option>
 <?php endforeach; ?>
                         </select>
@@ -317,7 +317,7 @@
                         <label for="authLDAPGroupOverUser">LDAP Groups override role of existing users?</label>
                     </th>
                     <td>
-                        <input type="checkbox" name="authLDAPGroupOverUser" id="authLDAPGroupOverUser" value="1"<?php echo $tGroupOverUserChecked; ?>/>
+                        <input type="checkbox" name="authLDAPGroupOverUser" id="authLDAPGroupOverUser" value="1"<?php echo esc_attr($tGroupOverUserChecked); ?>/>
                         <p class="description">
                             If role determined by LDAP Group differs from existing Wordpress User's role, use LDAP Group.
                         </p>
@@ -329,7 +329,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPGroupBase" id="authLDAPGroupBase" placeholder=""
-                          class="regular-text" value="<?php echo $authLDAPGroupBase; ?>" />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPGroupBase); ?>" />
                         <p class="description">
                             This is the base dn to lookup groups.
                         </p>
@@ -344,7 +344,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPGroupAttr" id="authLDAPGroupAttr" placeholder="gidNumber"
-                          class="regular-text" value="<?php echo $authLDAPGroupAttr; ?>" />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPGroupAttr); ?>" />
                         <p class="description">
                             This is the attribute that defines the Group-ID that can be matched
                             against the Groups defined further down
@@ -360,7 +360,7 @@
                     </th>
                     <td>
                         <input type="text" name="authLDAPGroupSeparator" id="authLDAPGroupSeparator" placeholder=","
-                          class="regular-text" value="<?php echo $authLDAPGroupSeparator; ?>" />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPGroupSeparator); ?>" />
                         <p class="description">
                             This attribute defines the separator used for the Group-IDs listed in the
                             Groups defined further down. This is useful if the value of Group-Attribute
@@ -378,7 +378,7 @@
                     <td>
                         <input type="text" name="authLDAPGroupFilter" id="authLDAPGroupFilter"
                           placeholder="(&amp;(objectClass=posixGroup)(memberUid=%s))"
-                          class="regular-text" value="<?php echo $authLDAPGroupFilter; ?>" />
+                          class="regular-text" value="<?php echo esc_attr($authLDAPGroupFilter); ?>" />
                         <p class="description">
                             Here you can add the filter for selecting groups for ther
                             currentlly logged in user
@@ -416,12 +416,12 @@
                 <tr>
                     <th scope="row" style="width:auto; min-width: 200px;">
                         <label for="authLDAPGroups[<?php echo $group; ?>]">
-                            <?php echo $vals; ?>
+                            <?php echo esc_attr($vals); ?>
                         </label>
                     </th>
                     <td>
 						<textarea name="authLDAPGroups[<?php echo $group; ?>]" id="authLDAPGroups[<?php echo $group; ?>]" cols=60 rows=5><?php
-							echo $aGroup;
+							echo esc_textarea($aGroup);
 						?></textarea>
                     </td>
                 </tr>
