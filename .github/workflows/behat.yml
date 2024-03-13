@@ -46,7 +46,10 @@ jobs:
       - name: install dependencies
         run: composer install
       - name: install tools
-        run: phive install --force-accept-unsigned behat/behat --copy
+        run: |
+          mkdir -p tools
+          curl -o tools/behat https://github.com/Behat/Behat/releases/download/v3.13.0/behat.phar
+          chmod 755 tools/behat
       - name: run behat
         run: docker compose exec wp bash -c "cd wp-content/plugins/authldap && ./tools/behat"
       - name: Check logs
