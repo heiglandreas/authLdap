@@ -32,6 +32,10 @@ jobs:
     name: Test on PHP ${{ matrix.php-version }}/WordPress ${{ matrix.wordpress-version }}
     steps:
       - uses: actions/checkout@v1
+      - name: Docker Compose Pull
+        run: docker compose pull
+      - uses: jpribyl/action-docker-layer-caching@v0.1.1
+        continue-on-error: true
       - name: Build the docker-compose stack
         run: docker compose build --build-arg PHP_VERSION=${{ matrix.php-version }} --build-arg WORDPRESS_VERSION=${{ matrix.wordpress-version }} wp
       - name: run the stack
