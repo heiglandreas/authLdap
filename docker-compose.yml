@@ -21,12 +21,10 @@ services:
       WORDPRESS_DB_PASSWORD: "wppasswd"
       WORDPRESS_DEBUG: 0
     depends_on:
-    #  db:
-    #    condition: service_healthy
-    #  openldap:
-    #    condition: service_healthy
-      - db
-      - openldap
+      db:
+        condition: service_healthy
+      openldap:
+        condition: service_healthy
     links:
       - db
 
