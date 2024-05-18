@@ -48,7 +48,7 @@ services:
     ports:
       - 3306:3306 # change ip if required
     command: [
-      '--default_authentication_plugin=mysql_native_password',
+      '--mysql_native_password=ON',
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci'
     ]
@@ -61,7 +61,8 @@ services:
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 1s
-      retries: 5
+      retries: 10
+      interval: 2s
 
   openldap:
     image: osixia/openldap:latest
@@ -81,7 +82,8 @@ services:
     healthcheck:
       test: ["CMD", "/usr/bin/ldapsearch", "-H",  "ldap://localhost/", "-x", "-s", "base", "-LLL", "+"]
       timeout: 1s
-      retries: 5
+      retries: 10
+      interval: 2s
 
 volumes:
   db_data:

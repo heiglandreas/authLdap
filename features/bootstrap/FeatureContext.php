@@ -284,6 +284,25 @@ LDIF',
 			return trim($item);
 		}, explode(',', $user['roles']));
 		Assert::false(in_array($arg2, $roles));
-
 	}
+
+	/**
+	 * @Given LDAP user :arg1 is not member of LDAP group :arg2
+	 */
+	public function ldapUserIsNotMemberOfLdapGroup($arg1, $arg2)
+	{
+		exec(sprintf(
+			'ldapmodify -x -H %1$s -D "%2$s" -w %3$s 2>&1 <<LDIF
+%4$s
+LDIF',
+			'ldap://openldap',
+			'cn=admin,dc=example,dc=org',
+			'insecure',
+			<<<LDIF
+			dn: cn=$arg2,dc=example,dc=org
+			changetype: modify
+			delete: uniqueMember
+			uniqueMember: uid=$arg1,dc=example,dc=org
+			LDIF
+		));	}
 }

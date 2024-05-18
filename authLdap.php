@@ -255,8 +255,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		$authLDAPUidAttr = authLdap_get_option('UidAttr');
 		$authLDAPWebAttr = authLdap_get_option('WebAttr');
 		$authLDAPDefaultRole = authLdap_get_option('DefaultRole');
-		$authLDAPGroupEnable = authLdap_get_option('GroupEnable');
-		$authLDAPGroupOverUser = authLdap_get_option('GroupOverUser');
+		$authLDAPGroupEnable = filter_var(authLdap_get_option('GroupEnable'), FILTER_VALIDATE_BOOLEAN);
+		$authLDAPGroupOverUser = filter_var(authLdap_get_option('GroupOverUser'), FILTER_VALIDATE_BOOLEAN);
 		$authLDAPUseUserAccount = authLdap_get_option('UserRead');
 
 		if (!$username) {
@@ -373,7 +373,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
 		// we only need this if either LDAP groups are disabled or
 		// if the WordPress role of the user overrides LDAP groups
-		if (!$authLDAPGroupEnable || $authLDAPGroupOverUser) {
+		if ($authLDAPGroupEnable === false || $authLDAPGroupOverUser === false) {
 			$userRoles = authLdap_user_role($uid);
 			if ($userRoles !== []) {
 				$roles = array_merge($roles, $userRoles);
@@ -383,8 +383,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		}
 
 		// do LDAP group mapping if needed
-		// (if LDAP groups override worpress user role, $role is still empty)
-		if (empty($roles) && $authLDAPGroupEnable) {
+		// (if LDAP groups override wordpress user role, $role is still empty)
+		if ((empty($roles) || $authLDAPGroupOverUser === true) && $authLDAPGroupEnable === true) {
 			$mappedRoles = authLdap_groupmap($realuid, $dn);
 			if ($mappedRoles !== []) {
 				$roles = $mappedRoles;

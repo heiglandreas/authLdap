@@ -61,3 +61,24 @@ Feature: Log in without group assignment
 		And the WordPress user "ldapuser" is member of role "wordpressrole"
 		And the WordPress user "ldapuser" is not member of role "editor"
 		And the WordPress user "ldapuser" is not member of role "subscriber"
+
+	Scenario: Second Login with group assignment that changes between first and second login
+		Given a default configuration
+		And configuration value "GroupEnable" is set to "true"
+		And configuration value "DefaultRole" is set to "subscriber"
+		And configuration value "Groups" is set to "administrator=ldapgroup1" and "editor=ldapgroup2"
+		And configuration value "GroupAttr" is set to "cn"
+		And configuration value "GroupFilter" is set to "uniquemember=%dn%"
+		And configuration value "GroupOverUser" is set to "true"
+		And an LDAP user "ldapuser" with name "LDAP User", password "P@ssw0rd" and email "ldapuser@example.com" exists
+		And an LDAP group "ldapgroup1" exists
+		And an LDAP group "ldapgroup2" exists
+		And LDAP user "ldapuser" is member of LDAP group "ldapgroup1"
+		And LDAP user "ldapuser" logs in with password "P@ssw0rd"
+		And LDAP user "ldapuser" is member of LDAP group "ldapgroup2"
+		And LDAP user "ldapuser" is not member of LDAP group "ldapgroup1"
+		When LDAP user "ldapuser" logs in with password "P@ssw0rd"
+		Then the login suceeds
+		And the WordPress user "ldapuser" is member of role "editor"
+		And the WordPress user "ldapuser" is not member of role "administrator"
+		And the WordPress user "ldapuser" is not member of role "subscriber"
