@@ -21,10 +21,12 @@ services:
       WORDPRESS_DB_PASSWORD: "wppasswd"
       WORDPRESS_DEBUG: 0
     depends_on:
-      db:
-        condition: service_healthy
-      openldap:
-        condition: service_healthy
+    #  db:
+    #    condition: service_healthy
+    #  openldap:
+    #    condition: service_healthy
+      - db
+      - openldap
     links:
       - db
 
@@ -61,7 +63,8 @@ services:
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 1s
-      retries: 5
+      retries: 10
+      interval: 2s
 
   openldap:
     image: osixia/openldap:latest
@@ -81,7 +84,8 @@ services:
     healthcheck:
       test: ["CMD", "/usr/bin/ldapsearch", "-H",  "ldap://localhost/", "-x", "-s", "base", "-LLL", "+"]
       timeout: 1s
-      retries: 5
+      retries: 10
+      interval: 2s
 
 volumes:
   db_data:
