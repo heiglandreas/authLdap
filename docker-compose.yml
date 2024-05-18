@@ -48,7 +48,7 @@ services:
     ports:
       - 3306:3306 # change ip if required
     command: [
-      '--default_authentication_plugin=mysql_native_password',
+      '--mysql_native_password=ON',
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci'
     ]
