@@ -1,8 +1,5 @@
-version: "3.5"
-
 services:
   wp:
-    #image: wordpress:6-php8.3
     build:
       context: dockersetup
       dockerfile: Dockerfile_wordpress
@@ -48,7 +45,6 @@ services:
     ports:
       - 3306:3306 # change ip if required
     command: [
-      '--mysql_native_password=ON',
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci'
     ]
