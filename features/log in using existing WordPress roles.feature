@@ -1,5 +1,5 @@
-Feature: Log in using exosting WordPress roles
-	Scenario: A user logs in that has a dedicated WordPress role that shall not be removed or overwritten but it is not existent in LDAP
+Feature: Log in with multiple role-assignements in LDAP
+	Scenario: A user logs in that has multiple LDAP-roles where each LDAP-role has an existing WordPress role that shall be assigned
 		Given a default configuration
 		And configuration value "GroupEnable" is set to "true"
 		And configuration value "DefaultRole" is set to "subscriber"
