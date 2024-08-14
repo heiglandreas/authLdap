@@ -9,7 +9,6 @@ services:
     ports:
       - 80:80 # change ip if required
     volumes:
-      - wordpress:/var/www/html
       - .:/var/www/html/wp-content/plugins/authldap
     environment:
       WORDPRESS_DB_HOST: db
