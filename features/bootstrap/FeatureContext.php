@@ -67,6 +67,22 @@ class FeatureContext implements Context
 	public function anLdapUserWithNamePasswordAndEmailExists($arg1, $arg2, $arg3, $arg4)
 	{
 		exec(sprintf(
+			'ldapsearch -x -H %1$s -D "%2$s" -w %3$s -b "%4$s" "(&(objectClass=inetOrgPerson))"',
+			'ldap://openldap',
+			'cn=admin,dc=example,dc=org',
+			'insecure',
+			'uid=' . $arg1 . ',dc=example,dc=org'
+		), $result, $code);
+		if ($code === 0) {
+			exec(sprintf(
+				'ldapdelete -x -H %1$s -D "%2$s" -w %3$s "%4$s"',
+				'ldap://openldap',
+				'cn=admin,dc=example,dc=org',
+				'insecure',
+				'uid=' . $arg1 . ',dc=example,dc=org'
+			), $result, $code);
+		}
+		exec(sprintf(
 			'ldapadd -x -H %1$s -D "%2$s" -w %3$s <<LDIF
 %4$s
 LDIF',
@@ -88,7 +104,7 @@ LDIF',
 			LDIF
 		));
 		exec(sprintf(
-			'ldappasswd -H ldap://openldap:389 -x -D "uid=admin,dc=example,dc=org" -w "%3$s" -s "%2$s" "uid=%1$s,dc=example,dc=org"',
+			'ldappasswd -H ldap://openldap:389 -x -D "cn=admin,dc=example,dc=org" -w "%3$s" -s "%2$s" "uid=%1$s,dc=example,dc=org"',
 			$arg1,
 			$arg3,
 			'insecure'
@@ -100,6 +116,22 @@ LDIF',
 	 */
 	public function anLdapGroupExists($arg1)
 	{
+		exec(sprintf(
+			'ldapsearch -x -H %1$s -D "%2$s" -w %3$s -b "%4$s" "(&(objectClass=groupOfUniqueNames))"',
+			'ldap://openldap',
+			'cn=admin,dc=example,dc=org',
+			'insecure',
+			'cn=' . $arg1 . ',dc=example,dc=org'
+		), $result, $code);
+		if ($code === 0) {
+			exec(sprintf(
+				'ldapdelete -x -H %1$s -D "%2$s" -w %3$s "%4$s"',
+				'ldap://openldap',
+				'cn=admin,dc=example,dc=org',
+				'insecure',
+				'cn=' . $arg1 . ',dc=example,dc=org'
+			), $result, $code);
+		}
 		exec(sprintf(
 			'ldapadd -x -H %1$s -D "%2$s" -w %3$s <<LDIF
 %4$s
