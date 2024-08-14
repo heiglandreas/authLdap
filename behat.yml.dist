@@ -1,1 +1,4 @@
 default:
+  formatters:
+    pretty: false
+    progress: true
