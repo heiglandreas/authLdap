@@ -22,11 +22,21 @@ class FeatureContext implements Context
 	 * Every scenario gets its own context instance.
 	 * You can also pass arbitrary arguments to the
 	 * context constructor through behat.yml.
+	 *
+	 * @BeforeSuite
 	 */
-	public function __construct()
+	public static function beforeSuite()
 	{
 		exec('wp --allow-root core install --url=localhost --title=Example --admin_user=localadmin --admin_password=P@ssw0rd --admin_email=info@example.com');
-		exec('wp --allow-root plugin activate authldap');
+		exec('wp --allow-root plugin is-active authldap', $response, $code);
+		if ($code !== 0) {
+			exec('wp --allow-root plugin activate authldap');
+		}
+		exec('wp --allow-root theme list | grep -E "\Wactive" | awk \'{ print $1; }\'', $result);
+		exec ('wp --allow-root theme path ' . $result[0] . ' --dir', $output, $code);
+		file_put_contents($output[0] . '/functions.php', <<<'EOF'
+			<?php add_filter( 'admin_email_check_interval', '__return_false' );
+			EOF);
 	}
 
 
@@ -154,6 +164,18 @@ LDIF',
 	public function aWordpressUserWithNameAndEmailExists($arg1, $arg2, $arg3)
 	{
 		exec(sprintf(
+			'wp --allow-root user get %1$s',
+			$arg1
+		), $result, $code);
+		if ($code === 0) {
+
+			exec(sprintf(
+				'wp --allow-root user delete %1$s --yes',
+				$arg1
+			));
+		}
+
+		exec(sprintf(
 			'wp --allow-root user create %1$s %3$s --display_name=%2$s --porcelain',
 			$arg1,
 			$arg2,
@@ -167,9 +189,15 @@ LDIF',
 	public function aWordpressRoleExists($arg1)
 	{
 		exec(sprintf(
-			'wp --allow-root role create %1$s %1$s',
-			$arg1,
-		));
+			'wp --allow-root role exists %1$s',
+			$arg1
+		), $result, $code);
+		if ($code !== 0) {
+			exec(sprintf(
+				'wp --allow-root role create %1$s %1$s',
+				$arg1,
+			));
+		}
 	}
 
 	/**
