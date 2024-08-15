@@ -22,7 +22,7 @@ jobs:
       - name: Check running containers
         run: docker ps -a
       - name: Check logs
-        run: docker-compose logs openldap
+        run: docker compose logs openldap
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
