@@ -1,7 +1,7 @@
 ARG WORDPRESS_VERSION=$WORDPRESS_VERSION
 ARG PHP_VERSION=$PHP_VERSION
 
-FROM wordpress:$WORDPRESS_VERSION-php$PHP_VERSION
+FROM php:$PHP_VERSION-fpm
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -19,13 +19,14 @@ RUN set -x \
        esac \
     && docker-php-ext-configure ldap --with-libdir=lib/$ARCH-$TARGETOS-gnu/ \
     && docker-php-ext-install ldap \
-    && pecl install xdebug${XDEBUG_VERSION} \
-    && docker-php-ext-enable xdebug \
-    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.discover_client_host=on" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-	&& apt-get purge -y --auto-remove libldap2-dev
+    && docker-php-ext-install mysqli \
+    && apt-get purge -y --auto-remove libldap2-dev
 
+WORKDIR /var/www/html
 RUN set -x \
     && curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-    && chmod 755 /usr/local/bin/wp
+    && chmod 755 /usr/local/bin/wp \
+    && /usr/local/bin/wp --allow-root core download --version $WORDPRESS_VERSION \
+
+
 

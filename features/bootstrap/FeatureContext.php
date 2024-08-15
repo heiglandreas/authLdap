@@ -13,22 +13,40 @@ use Org_Heigl\AuthLdap\OptionFactory;
 use Org_Heigl\AuthLdap\Options;
 use Webmozart\Assert\Assert;
 
+error_reporting(error_reporting() & ~E_USER_DEPRECATED);
 class FeatureContext implements Context
 {
 	private ?Response $res = null;
+
+	private static string $themePath = '';
 	/**
 	 * Initializes context.
 	 *
 	 * Every scenario gets its own context instance.
 	 * You can also pass arbitrary arguments to the
 	 * context constructor through behat.yml.
+	 *
+	 * @BeforeSuite
 	 */
-	public function __construct()
+	public static function beforeSuite()
 	{
+		exec('wp --allow-root config create --dbname=wordpress --dbuser=root --dbpass=wppasswd --dbhost=db');
 		exec('wp --allow-root core install --url=localhost --title=Example --admin_user=localadmin --admin_password=P@ssw0rd --admin_email=info@example.com');
-		exec('wp --allow-root plugin activate authldap');
+		exec('wp --allow-root plugin is-active authldap', $response, $code);
+		if ($code !== 0) {
+			exec('wp --allow-root plugin activate authldap');
+		}
+		exec('wp --allow-root theme list | grep -E "\Wactive" | awk \'{ print $1; }\'', $result);
+		exec ('wp --allow-root theme path ' . $result[0] . ' --dir', $output, $code);
+		self::$themePath = $output[0];
 	}
 
+	public function __construct()
+	{
+		file_put_contents(self::$themePath . '/functions.php', <<<'EOF'
+			<?php add_filter( 'admin_email_check_interval', '__return_false' );
+			EOF);
+	}
 
 	/**
 	 * @Given a default configuration
@@ -67,6 +85,22 @@ class FeatureContext implements Context
 	public function anLdapUserWithNamePasswordAndEmailExists($arg1, $arg2, $arg3, $arg4)
 	{
 		exec(sprintf(
+			'ldapsearch -x -H %1$s -D "%2$s" -w %3$s -b "%4$s" "(&(objectClass=inetOrgPerson))"',
+			'ldap://openldap',
+			'cn=admin,dc=example,dc=org',
+			'insecure',
+			'uid=' . $arg1 . ',dc=example,dc=org'
+		), $result, $code);
+		if ($code === 0) {
+			exec(sprintf(
+				'ldapdelete -x -H %1$s -D "%2$s" -w %3$s "%4$s"',
+				'ldap://openldap',
+				'cn=admin,dc=example,dc=org',
+				'insecure',
+				'uid=' . $arg1 . ',dc=example,dc=org'
+			), $result, $code);
+		}
+		exec(sprintf(
 			'ldapadd -x -H %1$s -D "%2$s" -w %3$s <<LDIF
 %4$s
 LDIF',
@@ -88,7 +122,7 @@ LDIF',
 			LDIF
 		));
 		exec(sprintf(
-			'ldappasswd -H ldap://openldap:389 -x -D "uid=admin,dc=example,dc=org" -w "%3$s" -s "%2$s" "uid=%1$s,dc=example,dc=org"',
+			'ldappasswd -H ldap://openldap:389 -x -D "cn=admin,dc=example,dc=org" -w "%3$s" -s "%2$s" "uid=%1$s,dc=example,dc=org"',
 			$arg1,
 			$arg3,
 			'insecure'
@@ -100,6 +134,22 @@ LDIF',
 	 */
 	public function anLdapGroupExists($arg1)
 	{
+		exec(sprintf(
+			'ldapsearch -x -H %1$s -D "%2$s" -w %3$s -b "%4$s" "(&(objectClass=groupOfUniqueNames))"',
+			'ldap://openldap',
+			'cn=admin,dc=example,dc=org',
+			'insecure',
+			'cn=' . $arg1 . ',dc=example,dc=org'
+		), $result, $code);
+		if ($code === 0) {
+			exec(sprintf(
+				'ldapdelete -x -H %1$s -D "%2$s" -w %3$s "%4$s"',
+				'ldap://openldap',
+				'cn=admin,dc=example,dc=org',
+				'insecure',
+				'cn=' . $arg1 . ',dc=example,dc=org'
+			), $result, $code);
+		}
 		exec(sprintf(
 			'ldapadd -x -H %1$s -D "%2$s" -w %3$s <<LDIF
 %4$s
@@ -122,6 +172,18 @@ LDIF',
 	public function aWordpressUserWithNameAndEmailExists($arg1, $arg2, $arg3)
 	{
 		exec(sprintf(
+			'wp --allow-root user get %1$s',
+			$arg1
+		), $result, $code);
+		if ($code === 0) {
+
+			exec(sprintf(
+				'wp --allow-root user delete %1$s --yes',
+				$arg1
+			));
+		}
+
+		exec(sprintf(
 			'wp --allow-root user create %1$s %3$s --display_name=%2$s --porcelain',
 			$arg1,
 			$arg2,
@@ -135,9 +197,15 @@ LDIF',
 	public function aWordpressRoleExists($arg1)
 	{
 		exec(sprintf(
-			'wp --allow-root role create %1$s %1$s',
-			$arg1,
-		));
+			'wp --allow-root role exists %1$s',
+			$arg1
+		), $result, $code);
+		if ($code !== 0) {
+			exec(sprintf(
+				'wp --allow-root role create %1$s %1$s',
+				$arg1,
+			));
+		}
 	}
 
 	/**
@@ -160,11 +228,11 @@ LDIF',
 		//  curl -i 'http://localhost/wp-login.php' -X POST -H 'Cookie: wordpress_test_cookie=test' --data-raw 'log=localadmin&pwd=P%40ssw0rd'
 		$client = new Client();
 
-		$this->res = $client->post('http://wp/wp-login.php', [
+		$this->res = $client->post('http://nginx/wp-login.php', [
 			'cookies' => CookieJar::fromArray([
 				'wordpress_test_cookie' => 'test',
 				'XDEBUG_SESSION' => 'PHPSTORM',
-			], 'http://wp'),
+			], 'http://nginx'),
 			'form_params' => [
 				'log' => $arg1,
 				'pwd' => $arg2,
@@ -304,5 +372,18 @@ LDIF',
 			delete: uniqueMember
 			uniqueMember: uid=$arg1,dc=example,dc=org
 			LDIF
-		));	}
+		));
+	}
+
+	/**
+	 * @Given a WordPress filter :arg1 with implementation :arg2
+	 */
+	public function aWordpressFilterWithImplementation($arg1, $arg2)
+	{
+		$fh = fopen(self::$themePath . '/functions.php', 'a');
+		fwrite($fh, sprintf(PHP_EOL . 'add_filter("%1$s", %2$s);' . PHP_EOL, $arg1, $arg2));
+		fclose($fh);
+	}
+
+
 }

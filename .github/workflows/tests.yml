@@ -15,16 +15,14 @@ jobs:
     name: Test on ${{ matrix.php-versions }}
     steps:
       - uses: actions/checkout@v1
-      - name: Docker Compose Pull
-        run: docker compose pull
       - uses: jpribyl/action-docker-layer-caching@v0.1.1
         continue-on-error: true
       - name: Build the docker-compose stack
-        run: docker-compose -f docker-compose.yml up -d db openldap
+        run: docker compose -f docker-compose.yml up -d db openldap
       - name: Check running containers
         run: docker ps -a
       - name: Check logs
-        run: docker-compose logs openldap
+        run: docker compose logs openldap
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
