@@ -27,5 +27,7 @@ RUN set -x \
 
 RUN set -x \
     && curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-    && chmod 755 /usr/local/bin/wp
+    && chmod 755 /usr/local/bin/wp \
+    && /usr/local/bin/wp core download --version $WORDPRESS_VERSION
+
 
