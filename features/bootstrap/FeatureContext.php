@@ -13,6 +13,7 @@ use Org_Heigl\AuthLdap\OptionFactory;
 use Org_Heigl\AuthLdap\Options;
 use Webmozart\Assert\Assert;
 
+error_reporting(error_reporting() & ~E_USER_DEPRECATED);
 class FeatureContext implements Context
 {
 	private ?Response $res = null;

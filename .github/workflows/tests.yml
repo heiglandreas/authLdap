@@ -15,8 +15,6 @@ jobs:
     name: Test on ${{ matrix.php-versions }}
     steps:
       - uses: actions/checkout@v1
-      - name: Docker Compose Pull
-        run: docker compose pull
       - uses: jpribyl/action-docker-layer-caching@v0.1.1
         continue-on-error: true
       - name: Build the docker-compose stack
