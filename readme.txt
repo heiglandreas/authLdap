@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 6.5.0
+Tested up to: 6.6.0
 Requires PHP: 7.4
 Stable tag: trunk
 License: MIT
@@ -46,6 +46,10 @@ In essence: Report a security vulnerability at https://github.com/heiglandreas/a
 Please see https://github.com/heiglandreas/authLdap/blob/master/SECURITY.md for more details
 
 == Changelog ==
+= 2.6.3 =
+
+* Internal fixes and adding some more end-to-end tests
+
 = 2.6.2 =
 
 * Fix issue with Groups not being updated on existing accounts (see https://github.com/heiglandreas/authLdap/issues/250 for details)
