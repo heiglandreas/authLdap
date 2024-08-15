@@ -1,16 +1,15 @@
 services:
   wp:
-    image: authldap_test:${WORDPRESS_VERSION:-6.4}-${PHP_VERSION:-8.3}
+    image: authldap_test:${WORDPRESS_VERSION:-6.6}-${PHP_VERSION:-8.4-rc}
     build:
       context: dockersetup
       dockerfile: Dockerfile_wordpress
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
-        WORDPRESS_VERSION: ${WORDPRESS_VERSION:-6.4}
-    ports:
-      - 80:80 # change ip if required
+        PHP_VERSION: ${PHP_VERSION:-8.4-rc}
+        WORDPRESS_VERSION: ${WORDPRESS_VERSION:-6.6}
     volumes:
       - .:/var/www/html/wp-content/plugins/authldap
+      - wordpress:/var/www/html
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: "wordpress"
@@ -24,6 +23,19 @@ services:
         condition: service_healthy
     links:
       - db
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./dockersetup/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www/html/wp-content/plugins/authldap
+      - wordpress:/var/www/html
+    ports:
+      - 80:80
+    links:
+      - wp:wp
+    depends_on:
+      - wp
 
   wpcli:
     image: wordpress:cli
