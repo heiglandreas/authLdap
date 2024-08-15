@@ -1,5 +1,6 @@
 services:
   wp:
+    image: authldap_test:${WORDPRESS_VERSION:-6.4}-${PHP_VERSION:-8.3}
     build:
       context: dockersetup
       dockerfile: Dockerfile_wordpress
