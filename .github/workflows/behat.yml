@@ -32,8 +32,8 @@ jobs:
     name: Test on PHP ${{ matrix.php-version }}/WordPress ${{ matrix.wordpress-version }}
     steps:
       - uses: actions/checkout@v1
-      - name: Docker Compose Pull
-        run: docker compose pull
+#      - name: Docker Compose Pull
+#        run: docker compose pull
       - name: Cache Docker images
         id: docker-cache
         uses: ScribeMD/docker-cache@0.5.0
