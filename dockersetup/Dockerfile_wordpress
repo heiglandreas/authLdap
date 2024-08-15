@@ -27,7 +27,7 @@ RUN set -x \
     && curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod 755 /usr/local/bin/wp \
     && /usr/local/bin/wp --allow-root core download --version $WORDPRESS_VERSION \
-    && /usr/local/bin/wp --allow-root config create
+    && /usr/local/bin/wp --allow-root config create --dbname=wordpress --dbuser=root --dbpass=wppasswd --dbhost=db
 
 
 
