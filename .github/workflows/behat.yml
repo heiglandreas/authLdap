@@ -13,21 +13,6 @@ jobs:
       matrix:
         php-version: ['8.0', '8.1', '8.2', '8.3', '8.4-rc']
         wordpress-version: ['6.2', '6.3', '6.4', '6.5', '6.6']
-        exclude:
-          - php-version: 8.3
-            wordpress-version: 6.2
-          - php-version: 8.3
-            wordpress-version: 6.3
-          - php-version: 8.2
-            wordpress-version: 6.2
-          - php-version: 8.2
-            wordpress-version: 6.3
-          - php-version: 8.1
-            wordpress-version: 6.2
-          - php-version: 8.0
-            wordpress-version: 6.2
-          - php-version: 8.0
-            wordpress-version: 6.5
 
     name: Test on PHP ${{ matrix.php-version }}/WordPress ${{ matrix.wordpress-version }}
     steps:
