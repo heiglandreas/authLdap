@@ -16,6 +16,8 @@ use Webmozart\Assert\Assert;
 class FeatureContext implements Context
 {
 	private ?Response $res = null;
+
+	private static string $themePath = '';
 	/**
 	 * Initializes context.
 	 *
@@ -34,11 +36,15 @@ class FeatureContext implements Context
 		}
 		exec('wp --allow-root theme list | grep -E "\Wactive" | awk \'{ print $1; }\'', $result);
 		exec ('wp --allow-root theme path ' . $result[0] . ' --dir', $output, $code);
-		file_put_contents($output[0] . '/functions.php', <<<'EOF'
+		self::$themePath = $output[0];
+	}
+
+	public function __construct()
+	{
+		file_put_contents(self::$themePath . '/functions.php', <<<'EOF'
 			<?php add_filter( 'admin_email_check_interval', '__return_false' );
 			EOF);
 	}
-
 
 	/**
 	 * @Given a default configuration
@@ -364,5 +370,18 @@ LDIF',
 			delete: uniqueMember
 			uniqueMember: uid=$arg1,dc=example,dc=org
 			LDIF
-		));	}
+		));
+	}
+
+	/**
+	 * @Given a WordPress filter :arg1 with implementation :arg2
+	 */
+	public function aWordpressFilterWithImplementation($arg1, $arg2)
+	{
+		$fh = fopen(self::$themePath . '/functions.php', 'a');
+		fwrite($fh, sprintf(PHP_EOL . 'add_filter("%1$s", %2$s);' . PHP_EOL, $arg1, $arg2));
+		fclose($fh);
+	}
+
+
 }

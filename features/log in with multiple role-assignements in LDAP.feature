@@ -12,6 +12,7 @@ Feature: Log in with multiple role-assignements in LDAP
 		And LDAP user "ldapuser" is member of LDAP group "ldapgroup1"
 		And LDAP user "ldapuser" is member of LDAP group "ldapgroup2"
 		And a WordPress user "ldapuser" does not exist
+		And a WordPress filter "authLdap_allow_multiple_roles" with implementation "function():bool { return true;}"
 		When LDAP user "ldapuser" logs in with password "P@ssw0rd"
 		Then the login suceeds
 		And the WordPress user "ldapuser" is member of role "subscriber"
