@@ -78,7 +78,7 @@ class LDAPBaseTest extends TestCase
         $this->assertTrue($ldap->authenticate($user, $password, $filter));
     }
 
-    public function bindingWithPasswordProvider()
+    public static function bindingWithPasswordProvider()
     {
         return [
             [
@@ -140,7 +140,7 @@ class LDAPBaseTest extends TestCase
         $this->assertTrue($list->bind());
     }
 
-    public function initialBindingToLdapServerWorksProvider()
+    public static function initialBindingToLdapServerWorksProvider()
     {
         return [
             ['ldap://uid=user%205,dc=test%20space,dc=example,dc=org:user!"' .
@@ -159,7 +159,6 @@ class LDAPBaseTest extends TestCase
 
 		$this->wrapper->expects($this->exactly(2))
 			->method('bind')
-			->withConsecutive(
 				['cn=admin,dc=example,dc=org', 'insecure'],
 				['foo', 'password'],
 			)
@@ -174,7 +173,7 @@ class LDAPBaseTest extends TestCase
         $ldap->authenticate($unescaped, 'password');
     }
 
-    public function provideUnescapedData(): array
+    public static function provideUnescapedData(): array
     {
         return [
             ['\’foobar', '(uid=\5c’foobar)'],

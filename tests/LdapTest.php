@@ -64,7 +64,7 @@ class LdapTest extends TestCase
 		new Ldap(new LdapFactory(), LdapUri::fromString($expected));
 	}
 
-	public function dpInstantiateLdapClass(): Generator
+	public static function dpInstantiateLdapClass(): Generator
 	{
 		yield [
 			'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
@@ -140,7 +140,7 @@ class LdapTest extends TestCase
 		];
 	}
 
-	public function dpExceptionsWhenInstantiatingLdapClass(): Generator
+	public static function dpExceptionsWhenInstantiatingLdapClass(): Generator
 	{
 		yield ['ldap://ldap.example.org'];
 		yield ['ldap://foo:bar@/cn=example,c=org'];

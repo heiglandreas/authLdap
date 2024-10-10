@@ -10,7 +10,7 @@ Feature: Log in without group assignment
 		And a WordPress role "wordpressrole" exists
 		And WordPress user "wordpressuser" has role "wordpressrole"
 		And a WordPress user "ldapuser" does not exist
-		When LDAP user "ldapuser" logs in with password "P@ssw0rd"
+		When user "ldapuser" logs in with password "P@ssw0rd"
 		Then the login suceeds
 		And a new WordPress user "ldapuser" was created with name "LDAP User" and email "ldapuser@example.com"
 		And the WordPress user "ldapuser" is member of role "subscriber"
@@ -30,7 +30,7 @@ Feature: Log in without group assignment
 		And a WordPress role "wordpressrole" exists
 		And WordPress user "wordpressuser" has role "wordpressrole"
 		And a WordPress user "ldapuser" does not exist
-		When LDAP user "ldapuser" logs in with password "P@ssw0rd"
+		When user "ldapuser" logs in with password "P@ssw0rd"
 		Then the login suceeds
 		And a new WordPress user "ldapuser" was created with name "LDAP User" and email "ldapuser@example.com"
 		And the WordPress user "ldapuser" is member of role "administrator"
@@ -52,10 +52,10 @@ Feature: Log in without group assignment
 		And a WordPress role "wordpressrole" exists
 		And WordPress user "wordpressuser" has role "wordpressrole"
 		And a WordPress user "ldapuser" does not exist
-		And LDAP user "ldapuser" logs in with password "P@ssw0rd"
+		And user "ldapuser" logs in with password "P@ssw0rd"
 		And WordPress user "ldapuser" has role "wordpressrole"
 		And the WordPress user "ldapuser" is member of role "wordpressrole"
-		When LDAP user "ldapuser" logs in with password "P@ssw0rd"
+		When user "ldapuser" logs in with password "P@ssw0rd"
 		Then the login suceeds
 		And the WordPress user "ldapuser" is member of role "administrator"
 		And the WordPress user "ldapuser" is member of role "wordpressrole"
@@ -74,10 +74,10 @@ Feature: Log in without group assignment
 		And an LDAP group "ldapgroup1" exists
 		And an LDAP group "ldapgroup2" exists
 		And LDAP user "ldapuser" is member of LDAP group "ldapgroup1"
-		And LDAP user "ldapuser" logs in with password "P@ssw0rd"
+		And user "ldapuser" logs in with password "P@ssw0rd"
 		And LDAP user "ldapuser" is member of LDAP group "ldapgroup2"
 		And LDAP user "ldapuser" is not member of LDAP group "ldapgroup1"
-		When LDAP user "ldapuser" logs in with password "P@ssw0rd"
+		When user "ldapuser" logs in with password "P@ssw0rd"
 		Then the login suceeds
 		And the WordPress user "ldapuser" is member of role "editor"
 		And the WordPress user "ldapuser" is not member of role "administrator"
