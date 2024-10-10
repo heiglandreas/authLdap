@@ -5,7 +5,7 @@ services:
       context: dockersetup
       dockerfile: Dockerfile_wordpress
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.4-rc}
+        PHP_VERSION: ${PHP_VERSION:-8.3}
         WORDPRESS_VERSION: ${WORDPRESS_VERSION:-6.6}
     volumes:
       - .:/var/www/html/wp-content/plugins/authldap
@@ -82,7 +82,7 @@ services:
     volumes:
       - ./.ci/50-init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
     command: "--copy-service --loglevel debug"
-    restart: always
+    restart: unless-stopped
     environment:
       LDAP_LOG_LEVEL: "0"
       LDAP_TLS: "false"

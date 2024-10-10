@@ -192,6 +192,32 @@ LDIF',
 	}
 
 	/**
+	 * @Given a WordPress user :arg1 with name :arg2, email :arg3 and password :arg4 exists
+	 */
+	public function aWordpressUserWithNameEmailAndPasswordExists($arg1, $arg2, $arg3, $arg4)
+	{
+		exec(sprintf(
+			'wp --allow-root user get %1$s',
+			$arg1
+		), $result, $code);
+		if ($code === 0) {
+
+			exec(sprintf(
+				'wp --allow-root user delete %1$s --yes',
+				$arg1
+			));
+		}
+
+		exec(sprintf(
+			'wp --allow-root user create %1$s %3$s --display_name=%2$s --user_pass=%4$s --porcelain',
+			$arg1,
+			$arg2,
+			$arg3,
+			$arg4,
+		));
+	}
+
+	/**
 	 * @Given a WordPress role :arg1 exists
 	 */
 	public function aWordpressRoleExists($arg1)
@@ -221,9 +247,9 @@ LDIF',
 	}
 
 	/**
-	 * @When LDAP user :arg1 logs in with password :arg2
+	 * @When user :arg1 logs in with password :arg2
 	 */
-	public function ldapUserLogsInWithPassword($arg1, $arg2)
+	public function userLogsInWithPassword($arg1, $arg2)
 	{
 		//  curl -i 'http://localhost/wp-login.php' -X POST -H 'Cookie: wordpress_test_cookie=test' --data-raw 'log=localadmin&pwd=P%40ssw0rd'
 		$client = new Client();
@@ -249,6 +275,15 @@ LDIF',
 		Assert::isInstanceOf($this->res, Response::class);
 		Assert::eq( $this->res->getStatusCode(), 302);
 		Assert::startsWith($this->res->getHeader('Location')[0], 'http://localhost/wp-admin');
+	}
+
+	/**
+	 * @Then the login fails
+	 */
+	public function theLoginFails()
+	{
+		Assert::isInstanceOf($this->res, Response::class);
+		Assert::notEq( $this->res->getStatusCode(), 302);
 	}
 
 	/**

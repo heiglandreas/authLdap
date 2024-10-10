@@ -13,7 +13,7 @@ use function putenv;
 
 class LdapUriTest extends TestCase
 {
-	public function toStringProvider(): Generator
+	public static function toStringProvider(): Generator
 	{
 		yield ['ldaps://foo:bar@foo.bar/baz', 'ldaps://foo.bar:636', 'foo', 'bar', 'baz'];
 		yield ['env:LDAP_URI', 'ldaps://foo.bar:636', 'foo', 'bar', 'baz', [
@@ -27,7 +27,7 @@ class LdapUriTest extends TestCase
         ]];
     }
 
-	public function fromStringProvider(): Generator
+	public static function fromStringProvider(): Generator
 	{
 		yield ['ldaps://foo:bar@foo.bar/baz', false];
 		yield ['env:LDAP_URI', false];
@@ -82,7 +82,7 @@ class LdapUriTest extends TestCase
 		Assert::assertTrue($uri->isAnonymous());
 	}
 
-	public function anonymousProvider(): Generator
+	public static function anonymousProvider(): Generator
 	{
 		yield ['ldaps://test.example.com/dc=com'];
 		yield ['ldaps://foo@test.example.com/dc=com'];
