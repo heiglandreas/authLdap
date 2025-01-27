@@ -31,6 +31,7 @@ use Exception;
 use Org_Heigl\AuthLdap\Exception\Error;
 use Org_Heigl\AuthLdap\Exception\SearchUnsuccessfull;
 use Org_Heigl\AuthLdap\Manager\Ldap;
+use Org_Heigl\AuthLdap\Wrapper\LdapInterface;
 
 class LdapList
 {
