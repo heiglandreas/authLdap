@@ -46,7 +46,7 @@ jobs:
     continue-on-error: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build the docker-compose stack
         run: docker compose -f docker-compose.yml up -d
       - name: Check running containers
