@@ -71,10 +71,9 @@ final class Authorize
 	}
 
 	/**
-	 * @param WP_User $user
-	 * @return false|\WP_Error|WP_User
+	 * @return false|WP_User
 	 */
-	public function __invoke(\WP_User $user)
+	public function __invoke(WP_User $user)
 	{
 		try {
 			$roles = [];
@@ -91,7 +90,7 @@ final class Authorize
 			}
 
 			// do LDAP group mapping if needed
-			// (if LDAP groups override wordpress user role, $role is still empty)
+			// (if LDAP groups override WordPress user role, $role is still empty)
 			if (($roles === [] || $this->groupOverUser->isEnabled() === true) && $this->groupEnabled->isEnabled() === true) {
 				// FIXME: add correct parameters
 				$userInfoLdap = $this->backend->search(sprintf(
@@ -124,7 +123,7 @@ final class Authorize
 			$wp_roles = new WP_Roles();
 			// not sure if this is needed, but it can't hurt
 
-			// Get rid of unexisting roles.
+			// Get rid of non-existing roles.
 			foreach ($roles as $k => $v) {
 				if (!$wp_roles->is_role($v)) {
 					unset($k);
@@ -252,10 +251,10 @@ final class Authorize
 	 *
 	 * Returns empty string if not found.
 	 *
-	 * @param int $uid wordpress user id
-	 * @return array roles, empty if none found
+	 * @param int $uid WordPress user id
+	 * @return string[] roles, empty if none found
 	 */
-	private function authLdap_user_role($uid)
+	private function authLdap_user_role($uid): array
 	{
 		global $wpdb, $wp_roles;
 
@@ -273,7 +272,7 @@ final class Authorize
 		$editable_roles = $wp_roles->roles;
 
 		// By using this approach we are now using the order of the roles from the WP_Roles object
-		// and not from the capabilities any more.
+		// and not from the capabilities anymore.
 		$userroles = array_keys(array_intersect_key($editable_roles, $usercapabilities));
 
 		$this->logger->log(sprintf(

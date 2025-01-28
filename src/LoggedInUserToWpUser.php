@@ -189,8 +189,12 @@ final class LoggedInUserToWpUser
 				// TODO: Refactor call to wp_update_user
 				$userid = wp_update_user($user_info);
 			} else {
-				// new wordpress account will be created
+				// new WordPress account will be created
 				$this->logger->log('The LDAP user does not have an entry in the WP-Database, a new WP account will be created');
+				// If we do not set an empty role here, the default mechanism of WordPress
+				// takes over and adds the default role here.
+				// We make sur eto handle that in the Authorize-file later.
+				$user_info['role'] = '';
 				// TODO: Refactor call to wp_insert_user
 				$userid = wp_insert_user($user_info);
 			}

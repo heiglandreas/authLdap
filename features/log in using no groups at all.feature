@@ -48,11 +48,9 @@ Feature: Log in without group assignment
 		And an LDAP user "ldapuser" with name "LDAP User", password "P@ssw0rd" and email "ldapuser@example.com" exists
 		And an LDAP group "ldapgroup" exists
 		And LDAP user "ldapuser" is member of LDAP group "ldapgroup"
-		And a WordPress user "wordpressuser" with name "WordPress_User" and email "wordpressuser@example.com" exists
-		And a WordPress role "wordpressrole" exists
-		And WordPress user "wordpressuser" has role "wordpressrole"
 		And a WordPress user "ldapuser" does not exist
 		And user "ldapuser" logs in with password "P@ssw0rd"
+		And the WordPress user "ldapuser" is not member of role "subscriber"
 		And WordPress user "ldapuser" has role "wordpressrole"
 		And the WordPress user "ldapuser" is member of role "wordpressrole"
 		When user "ldapuser" logs in with password "P@ssw0rd"
