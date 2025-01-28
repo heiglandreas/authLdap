@@ -30,7 +30,6 @@ class FeatureContext implements Context
 	 */
 	public static function beforeSuite()
 	{
-		exec('wp --allow-root cli update --nightly');
 		exec('wp --allow-root config create --dbname=wordpress --dbuser=root --dbpass=wppasswd --dbhost=db');
 		exec('wp --allow-root core install --url=localhost --title=Example --admin_user=localadmin --admin_password=P@ssw0rd --admin_email=info@example.com');
 		exec('wp --allow-root plugin is-active authldap', $response, $code);
