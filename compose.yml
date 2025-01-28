@@ -1,12 +1,12 @@
 services:
   wp:
-    image: authldap_test:${WORDPRESS_VERSION:-6.6}-${PHP_VERSION:-8.4-rc}
+    image: authldap_test:${WORDPRESS_VERSION:-6.7}-${PHP_VERSION:-8.4}
     build:
       context: dockersetup
       dockerfile: Dockerfile_wordpress
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
-        WORDPRESS_VERSION: ${WORDPRESS_VERSION:-6.6}
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+        WORDPRESS_VERSION: ${WORDPRESS_VERSION:-6.7}
     volumes:
       - .:/var/www/html/wp-content/plugins/authldap
       - wordpress:/var/www/html
@@ -15,7 +15,7 @@ services:
       WORDPRESS_DB_NAME: "wordpress"
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: "wppasswd"
-      WORDPRESS_DEBUG: 0
+      WORDPRESS_DEBUG: 1
     depends_on:
       db:
         condition: service_healthy
@@ -30,8 +30,8 @@ services:
       - ./dockersetup/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - .:/var/www/html/wp-content/plugins/authldap
       - wordpress:/var/www/html
-    ports:
-      - 80:80
+    #ports:
+    #  - 80:80
     links:
       - wp:wp
     depends_on:
@@ -54,8 +54,8 @@ services:
 
   db:
     image: mysql:latest # https://hub.docker.com/_/mysql/ - or mariadb https://hub.docker.com/_/mariadb
-    ports:
-      - 3306:3306 # change ip if required
+    #ports:
+    #  - 3306:3306 # change ip if required
     command: [
       '--character-set-server=utf8mb4',
       '--collation-server=utf8mb4_unicode_ci'

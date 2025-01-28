@@ -1,5 +1,9 @@
 name: CI
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - 'master'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -14,11 +18,11 @@ jobs:
         php-versions: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4' ]
     name: Test on ${{ matrix.php-versions }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: jpribyl/action-docker-layer-caching@v0.1.1
         continue-on-error: true
-      - name: Build the docker-compose stack
-        run: docker compose -f docker-compose.yml up -d db openldap
+      - name: Build the docker compose stack
+        run: docker compose -f compose.yml up -d db openldap
       - name: Check running containers
         run: docker ps -a
       - name: Check logs
@@ -28,7 +32,6 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ldap
-          tools: phive
       - name: install dependencies
         run: composer install
       - name: install tools
@@ -46,9 +49,9 @@ jobs:
     continue-on-error: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build the docker-compose stack
-        run: docker compose -f docker-compose.yml up -d
+        uses: actions/checkout@v4
+      - name: Build the docker compose stack
+        run: docker compose -f compose.yml up -d
       - name: Check running containers
         run: docker ps -a
       - name: Setup PHP
