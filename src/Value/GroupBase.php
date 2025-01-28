@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
 final class GroupBase
 {
 	private string $groupBase;
-	private function __construct(string $groupBase) {
+	private function __construct(string $groupBase)
+	{
 		$this->groupBase = $groupBase;
 	}
 

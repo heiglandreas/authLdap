@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
@@ -7,7 +9,8 @@ final class GroupFilter
 	private string $groupFilter;
 
 	private string $dn;
-	private function __construct(string $groupFilter, string $dn = '') {
+	private function __construct(string $groupFilter, string $dn = '')
+	{
 		$this->groupFilter = $groupFilter;
 		$this->dn = ldap_escape($dn, '', LDAP_ESCAPE_FILTER);
 	}

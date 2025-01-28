@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
 final class MailAttribute
 {
 	private string $mailAttribute;
-	private function __construct(string $mailAttribute) {
+	private function __construct(string $mailAttribute)
+	{
 		$this->mailAttribute = $mailAttribute;
 	}
 

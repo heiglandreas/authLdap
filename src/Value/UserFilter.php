@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
 final class UserFilter
 {
 	private string $userFilter;
-	private function __construct(string $userFilter) {
+	private function __construct(string $userFilter)
+	{
 		$this->userFilter = $userFilter;
 	}
 

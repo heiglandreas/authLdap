@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
@@ -7,7 +9,8 @@ use InvalidArgumentException;
 final class Username
 {
 	private string $username;
-	private function __construct(string $username) {
+	private function __construct(string $username)
+	{
 		$this->username = $username;
 	}
 

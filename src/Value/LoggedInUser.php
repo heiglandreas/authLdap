@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
@@ -10,7 +12,8 @@ final class LoggedInUser
 
 	private string $password;
 
-	private function __construct(string $username, string $password) {
+	private function __construct(string $username, string $password)
+	{
 		$this->username = $username;
 		$this->password = $password;
 	}

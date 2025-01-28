@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
 final class GroupSeparator
 {
 	private string $groupSeparator;
-	private function __construct(string $groupSeparator) {
+	private function __construct(string $groupSeparator)
+	{
 		$this->groupSeparator = $groupSeparator;
 	}
 

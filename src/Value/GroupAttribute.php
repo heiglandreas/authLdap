@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
 final class GroupAttribute
 {
 	private string $groupAttribute;
-	private function __construct(string $groupAttribute) {
+	private function __construct(string $groupAttribute)
+	{
 		$this->groupAttribute = $groupAttribute;
 	}
 

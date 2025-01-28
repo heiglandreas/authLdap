@@ -292,7 +292,7 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
 	if ($loggedInUser instanceof LoggedInUser) {
 		// The user was just logged in, so let's create a WP_User-Object from it.
-	$logger->log(var_export($loggedInUser, true));
+		$logger->log(var_export($loggedInUser, true));
 		$mapper = new LoggedInUserToWpUser(
 			$ldapServerList,
 			$logger,

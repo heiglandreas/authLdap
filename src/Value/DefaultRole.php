@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
 final class DefaultRole
 {
 	private string $defaultRole;
-	private function __construct(string $defaultRole) {
+	private function __construct(string $defaultRole)
+	{
 		$this->defaultRole = $defaultRole;
 	}
 

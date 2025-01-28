@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
 final class GroupOverUser
 {
 	private bool $enabled;
-	private function __construct(bool $enabled) {
+	private function __construct(bool $enabled)
+	{
 		$this->enabled = $enabled;
 	}
 
@@ -20,6 +23,6 @@ final class GroupOverUser
 	}
 	public function __toString(): string
 	{
-		return $this->enabled ? 'true': 'false';
+		return $this->enabled ? 'true' : 'false';
 	}
 }

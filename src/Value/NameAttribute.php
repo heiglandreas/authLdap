@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap\Value;
 
 final class NameAttribute
 {
 	private string $nameAttribute;
-	private function __construct(string $nameAttribute) {
+	private function __construct(string $nameAttribute)
+	{
 		$this->nameAttribute = $nameAttribute;
 	}
 

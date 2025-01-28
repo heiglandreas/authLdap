@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap;
 
@@ -64,11 +66,7 @@ final class Authenticate
 
 		try {
 			$this->logger->log('about to do LDAP authentication');
-			if ($this->backend->Authenticate(
-				(string) $username,
-				(string) $password,
-				(string) $this->filter
-			)) {
+			if ($this->backend->Authenticate((string) $username, (string) $password, (string) $this->filter)) {
 				$this->logger->log('LDAP authentication successful');
 				return LoggedInUser::fromUsernameAndPassword($username, $password);
 			}

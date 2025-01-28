@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Org_Heigl\AuthLdap;
 
@@ -81,7 +83,7 @@ final class Authorize
 			// we only need this if either LDAP groups are disabled or
 			// if the WordPress role of the user overrides LDAP groups
 			if ($this->groupEnabled->isEnabled() === false || $this->groupOverUser->isEnabled() === false) {
-				$userRoles = $this->authLdap_user_role($user->ID);
+				$userRoles = $this->getUserRoles($user->ID);
 				if ($userRoles !== []) {
 					$roles = array_merge($roles, $userRoles);
 				}
@@ -91,7 +93,10 @@ final class Authorize
 
 			// do LDAP group mapping if needed
 			// (if LDAP groups override WordPress user role, $role is still empty)
-			if (($roles === [] || $this->groupOverUser->isEnabled() === true) && $this->groupEnabled->isEnabled() === true) {
+			if (
+				($roles === [] || $this->groupOverUser->isEnabled() === true) &&
+				$this->groupEnabled->isEnabled() === true
+			) {
 				// FIXME: add correct parameters
 				$userInfoLdap = $this->backend->search(sprintf(
 					(string) $this->userFilter,
@@ -100,7 +105,10 @@ final class Authorize
 				if ($userInfoLdap === []) {
 					$this->logger->log('Retrieving userinfo again failed');
 				}
-				$mappedRoles = $this->authLdap_groupmap($userInfoLdap[0][(string) $this->uidAttribute][0], $userInfoLdap[0]['dn']);
+				$mappedRoles = $this->groupmap(
+					$userInfoLdap[0][(string) $this->uidAttribute][0],
+					$userInfoLdap[0]['dn']
+				);
 				if ($mappedRoles !== []) {
 					$roles = $mappedRoles;
 					$this->logger->log('role from group mapping: ' . json_encode($roles));
@@ -144,7 +152,6 @@ final class Authorize
 			 * @param array $roles
 			 */
 			do_action('authldap_user_roles', $user, $roles);
-
 		} catch (Exception $e) {
 			$this->logger->log($e->getMessage());
 			return false;
@@ -164,7 +171,7 @@ final class Authorize
 	 * @conf string authLDAPGroupAttr, ldap attribute that holds name of group
 	 * @conf string authLDAPGroupFilter, LDAP filter to find groups. can contain %s and %dn% placeholders
 	 */
-	private function authLdap_groupmap($username, $dn)
+	private function groupmap($username, $dn)
 	{
 		$authLDAPGroups = $this->sortRolesByCapabilities(
 			$this->groups
@@ -254,7 +261,7 @@ final class Authorize
 	 * @param int $uid WordPress user id
 	 * @return string[] roles, empty if none found
 	 */
-	private function authLdap_user_role($uid): array
+	private function getUserRoles($uid): array
 	{
 		global $wpdb, $wp_roles;
 
