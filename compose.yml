@@ -1,12 +1,12 @@
 services:
   wp:
-    image: authldap_test:${WORDPRESS_VERSION:-6.6}-${PHP_VERSION:-8.4-rc}
+    image: authldap_test:${WORDPRESS_VERSION:-6.7}-${PHP_VERSION:-8.4}
     build:
       context: dockersetup
       dockerfile: Dockerfile_wordpress
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.3}
-        WORDPRESS_VERSION: ${WORDPRESS_VERSION:-6.6}
+        PHP_VERSION: ${PHP_VERSION:-8.4}
+        WORDPRESS_VERSION: ${WORDPRESS_VERSION:-6.7}
     volumes:
       - .:/var/www/html/wp-content/plugins/authldap
       - wordpress:/var/www/html

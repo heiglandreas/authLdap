@@ -24,12 +24,12 @@ jobs:
         uses: ScribeMD/docker-cache@0.5.0
         with:
           key:
-            docker-${{ runner.os }}-${{ matrix.php-version }}-${{ matrix.wordpress-version }}-${{ hashFiles('docker-compose.yml') }}
-      - name: Build the docker-compose stack
+            docker-${{ runner.os }}-${{ matrix.php-version }}-${{ matrix.wordpress-version }}-${{ hashFiles('compose.yml') }}
+      - name: Build the docker compose stack
         if: steps.docker-cache.outputs.cache-hit != 'true'
         run: docker compose build --build-arg PHP_VERSION=${{ matrix.php-version }} --build-arg WORDPRESS_VERSION=${{ matrix.wordpress-version }} wp
       - name: run the stack
-        run: docker compose -f docker-compose.yml up -d
+        run: docker compose -f compose.yml up -d
       - name: Check running containers
         run: docker ps -a
       - name: Check logs
