@@ -2,9 +2,9 @@
 Contributors: heiglandreas
 Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 6.6.0
+Tested up to: 6.7.0
 Requires PHP: 7.4
-Stable tag: trunk
+Stable tag: 3.0.0
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -46,6 +46,11 @@ In essence: Report a security vulnerability at https://github.com/heiglandreas/a
 Please see https://github.com/heiglandreas/authLdap/blob/master/SECURITY.md for more details
 
 == Changelog ==
+
+= 3.0.0 =
+
+* Internal split of code to prepare for better testability and allowing in the future authorization without authentication
+
 = 2.6.3 =
 
 * Internal fixes and adding some more end-to-end tests
