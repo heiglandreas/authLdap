@@ -96,13 +96,9 @@ jobs:
       - name: install tools
         run: composer require --dev phpunit/phpunit
       - name: run testsuite
-        run: ./vendor/bin/phpunit --testdox --colors=always --coverage-clover clover.xml
-      - name: upload to codecov
-        uses: codecov/codecov-action@v1
+        run: ./vendor/bin/phpunit --testdox --colors=always --coverage-junit junit.xml
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
         with:
-          #token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-          files: ./clover.xml # optional
-          #flags: unittests # optional
-          #name: codecov-umbrella # optional
-          #fail_ci_if_error: true # optional (default = false)
-          #verbose: true # optional (default = false)
+          token: ${{ secrets.CODECOV_TOKEN }}
