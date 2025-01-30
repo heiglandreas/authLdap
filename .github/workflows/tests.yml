@@ -96,7 +96,7 @@ jobs:
       - name: install tools
         run: composer require --dev phpunit/phpunit
       - name: run testsuite
-        run: ./vendor/bin/phpunit --testdox --colors=always --coverage-junit junit.xml
+        run: ./vendor/bin/phpunit --testdox --colors=always --log-junit junit.xml
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/test-results-action@v1
