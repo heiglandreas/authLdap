@@ -82,11 +82,6 @@ jobs:
   coverage:
     needs: test
     runs-on: ubuntu-latest
-    env:
-      PORT_LDAP: 3389
-      PORT_LDAPS: 6363
-      LDAP_ADMIN_PASSWORD: ${{ secrets.LDAP_ADMIN_PASSWORD }}
-      LDAP_LOG_LEVEL: 0
     continue-on-error: false
     steps:
       - name: Checkout
@@ -98,13 +93,12 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           coverage: xdebug
-          tools: phive
       - name: install dependencies
         run: composer install
       - name: install tools
-        run: phive install --trust-gpg-keys 4AA394086372C20A phpunit
+        run: composer require --dev phpunit/phpunit
       - name: run testsuite
         run: ./tools/phpunit --testdox --colors=always --coverage-clover clover.xml
       - name: upload to codecov
