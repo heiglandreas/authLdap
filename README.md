@@ -1,8 +1,6 @@
 # authLDAP
 
-[![Join the chat at https://gitter.im/heiglandreas/authLdap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/heiglandreas/authLdap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-Use your existing LDAP as authentication-backend for your wordpress!
+Use your existing LDAP as authentication-backend for your WordPress!
 
 [![Build Status](https://github.com/heiglandreas/authLdap/actions/workflows/tests.yml/badge.svg)](https://github.com/heiglandreas/authLdap/actions/workflows/tests.yml)
 [![WordPress Stats](https://img.shields.io/wordpress/plugin/dt/authldap.svg)](https://wordpress.org/plugins/authldap/stats/)
@@ -11,29 +9,29 @@ Use your existing LDAP as authentication-backend for your wordpress!
 [![Code Climate](https://codeclimate.com/github/heiglandreas/authLdap/badges/gpa.svg)](https://codeclimate.com/github/heiglandreas/authLdap)
 [![codecov](https://codecov.io/gh/heiglandreas/authLdap/branch/master/graph/badge.svg?token=AYAhEeWtRQ)](https://codecov.io/gh/heiglandreas/authLdap)
 
-So what are the differences to other Wordpress-LDAP-Authentication-Plugins?
+So what are the differences to other WordPress-LDAP-Authentication-Plugins?
 
 * **Flexible**: You are totaly free in which LDAP-backend to use. Due to the extensive configuration you can
 freely decide how to do the authentication of your users. It simply depends on your
 filters
-* **Independent**: As soon as a user logs in, it is added/updated to the Wordpress' user-database
-to allow wordpress to always use the correct data. You only have to administer your users once.
-* **Failsafe**: Due to the users being created in Wordpress' User-database they can
-also log in when the LDAP-backend currently is gone.
-* **Role-Aware**: You can map Wordpress' roles to values of an existing LDAP-attribute.
+* **Independent**: As soon as a user logs in, it is added/updated to the WordPress' user-database
+to allow WordPress to always use the correct data. You only have to administer your users once.
+* **Failsafe**: Due to the users being created in WordPress' User-database they can
+also log in when the LDAP-backend currently is gone. (If password caching is configured)
+* **Role-Aware**: You can map WordPress' roles to values of an existing LDAP-attribute.
 
 ## How does the plugin work?
 
 Well, as a matter of fact it is rather simple. The plugin verifies, that the user
-seeking authentification can bind to the LDAP using the provided password.
+seeking authentication can bind to the LDAP using the provided password.
 
 If that is so, the user is either created or updated in the wordpress-user-database.
-This update includes the provided password (so the wordpress can authenticate users
+This update includes the provided password (so WordPress can authenticate users
 even without the LDAP), the users name according to the authLDAP-preferences and
 the status of the user depending on the groups-settings of the authLDAP-preferences
 
 Writing this plugin would not have been as easy as it has been, without the
-wonderfull plugin of Alistair Young from http://www.weblogs.uhi.ac.uk/sm00ay/?p=45
+wonderful plugin of Alistair Young from http://www.weblogs.uhi.ac.uk/sm00ay/?p=45
 
 ## Configuration
 
@@ -83,7 +81,7 @@ wonderfull plugin of Alistair Young from http://www.weblogs.uhi.ac.uk/sm00ay/?p=
     issue 54</a>
     wherer a way of adding it is described!
     </dd>
-    <dt>Can I add a user to the LDAP when she creates a user-account on wordpress?</dt>
+    <dt>Can I add a user to the LDAP when she creates a user-account on WordPress?</dt>
     <dd>Short Answer: <strong>No</strong>!<br>Long Answer: Even though that is technically possible
     it's not in the scope of this plugin. As creating a user in an LDAP often involves
     an administrative process that has already been implemented in your departments
