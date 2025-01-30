@@ -158,9 +158,9 @@ class LDAPBaseTest extends TestCase
         ));
 
 		$this->wrapper->expects($this->exactly(2))
-			->method('bind')
+			->method('bind')->with(
 				['cn=admin,dc=example,dc=org', 'insecure'],
-				['foo', 'password'],
+				['foo', 'password']
 			)
 			->willReturnOnConsecutiveCalls(true, true);
 		$this->wrapper->expects($this->once())->method('search')->with(

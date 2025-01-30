@@ -7,7 +7,7 @@
 
 	<file>./src</file>
 	<file>./tests</file>
-	<file>./authldap.php</file>
+	<file>./authLdap.php</file>
 
 	<config name="installed_paths" value="vendor/phpcompatibility/php-compatibility" />
 	<config name="testVersion" value="7.4-"/>
