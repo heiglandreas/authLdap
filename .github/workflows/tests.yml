@@ -5,6 +5,31 @@ on:
     branches:
       - 'master'
 jobs:
+  test_compatibility:
+    runs-on: ubuntu-latest
+    env:
+      PORT_LDAP: 3389
+      PORT_LDAPS: 6363
+      LDAP_ADMIN_PASSWORD: ${{ secrets.LDAP_ADMIN_PASSWORD }}
+      LDAP_LOG_LEVEL: 0
+    strategy:
+      matrix:
+        # operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        php-versions: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4' ]
+    name: Test on ${{ matrix.php-versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: ldap
+      - name: install dependencies
+        run: composer install
+      - name: install tools
+        run: composer require --dev phpcompatibility/php-compatibility
+      - name: Run COmpatibility check
+        run: ./vendor/bin/phpcs --standard=phpcs-version-check.xml
   test:
     runs-on: ubuntu-latest
     env:
