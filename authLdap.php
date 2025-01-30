@@ -172,7 +172,7 @@ function authLdap_options_panel()
 	$authLDAPMailAttr = authLdap_get_option('MailAttr');
 	$authLDAPUidAttr = authLdap_get_option('UidAttr');
 	$authLDAPWebAttr = authLdap_get_option('WebAttr');
-	$authLDAPGroups = authLdap_get_option('Groups');
+	$authLDAPGroups = (array) authLdap_get_option('Groups');
 	$authLDAPGroupSeparator = authLdap_get_option('GroupSeparator');
 	$authLDAPDebug = authLdap_get_option('Debug');
 	$authLDAPGroupBase = authLdap_get_option('GroupBase');
