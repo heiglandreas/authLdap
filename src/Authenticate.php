@@ -31,8 +31,12 @@ final class Authenticate
 	 * @param string $password
 	 * @return WP_User|WP_Error|LoggedInUser|false
 	 */
-	public function __invoke($user, $username, #[\SensitiveParameter] $password)
-	{
+	public function __invoke(
+		$user,
+		$username,
+		#[\SensitiveParameter]
+		$password
+	) {
 		// If the user has already been authenticated (only in that case we get a
 		// WP_User-Object as $user) we skip LDAP-authentication and simply return
 		// the existing user-object

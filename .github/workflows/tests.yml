@@ -5,6 +5,47 @@ on:
     branches:
       - 'master'
 jobs:
+  test_compatibility:
+    runs-on: ubuntu-latest
+    env:
+      PORT_LDAP: 3389
+      PORT_LDAPS: 6363
+      LDAP_ADMIN_PASSWORD: ${{ secrets.LDAP_ADMIN_PASSWORD }}
+      LDAP_LOG_LEVEL: 0
+
+    name: Check compatibility with 7.4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: ldap
+      - name: install dependencies
+        run: composer install
+      - name: install tools
+        run: composer require --dev phpcompatibility/php-compatibility
+      - name: Run Compatibility check
+        run: ./vendor/bin/phpcs --standard=phpcs-version-check.xml
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        php-versions: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4' ]
+    name: Lint on ${{ matrix.php-versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: ldap
+      - name: install dependencies
+        run: |
+          composer require --dev php-parallel-lint/php-parallel-lint
+      - name: Lint source files
+        run: ./vendor/bin/parallel-lint . --exclude vendor --exclude wordbless
   test:
     runs-on: ubuntu-latest
     env:
@@ -41,37 +82,23 @@ jobs:
   coverage:
     needs: test
     runs-on: ubuntu-latest
-    env:
-      PORT_LDAP: 3389
-      PORT_LDAPS: 6363
-      LDAP_ADMIN_PASSWORD: ${{ secrets.LDAP_ADMIN_PASSWORD }}
-      LDAP_LOG_LEVEL: 0
     continue-on-error: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build the docker compose stack
-        run: docker compose -f compose.yml up -d
-      - name: Check running containers
-        run: docker ps -a
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           coverage: xdebug
-          tools: phive
       - name: install dependencies
         run: composer install
       - name: install tools
-        run: phive install --trust-gpg-keys 4AA394086372C20A phpunit
+        run: composer require --dev phpunit/phpunit
       - name: run testsuite
-        run: ./tools/phpunit --testdox --colors=always --coverage-clover clover.xml
-      - name: upload to codecov
-        uses: codecov/codecov-action@v1
+        run: ./vendor/bin/phpunit --testdox --colors=always --log-junit junit.xml
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
         with:
-          #token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-          files: ./clover.xml # optional
-          #flags: unittests # optional
-          #name: codecov-umbrella # optional
-          #fail_ci_if_error: true # optional (default = false)
-          #verbose: true # optional (default = false)
+          token: ${{ secrets.CODECOV_TOKEN }}

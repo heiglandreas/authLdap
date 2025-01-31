@@ -14,6 +14,12 @@ use WP_User;
 
 class UserRoleHandlerTest extends TestCase
 {
+	public function setUp(): void
+	{
+		if (! class_exists(WP_User::class)) {
+			$this->markTestSkipped('Can\'t test without WP_User');
+		}
+	}
 	public function testUserRolesAreAssignedAsExpected(): void
 	{
 		$user = new WP_User(1);

@@ -158,17 +158,24 @@ class LDAPBaseTest extends TestCase
         ));
 
 		$this->wrapper->expects($this->exactly(2))
-			->method('bind')
-				['cn=admin,dc=example,dc=org', 'insecure'],
-				['foo', 'password'],
-			)
-			->willReturnOnConsecutiveCalls(true, true);
-		$this->wrapper->expects($this->once())->method('search')->with(
-			'dc=example,dc=org',
-			$escaped,
-			['uid'],
-		);
-		$this->wrapper->method('getEntries')->willReturn(['count' => 1, 0 => ['dn' => 'foo']]);
+			->method('bind')->willReturnCallback(function ($user, $password) {
+				if ($user === 'cn=admin,dc=example,dc=org' && $password === 'insecure') {
+					return true;
+				}
+				if ($user === 'foo' && $password === 'insecure') {
+					return true;
+				}
+				return false;
+			});
+		$this->wrapper->expects($this->once())
+			->method('search')
+			->with('dc=example,dc=org', $escaped, ['uid'],);
+		$this->wrapper->method('getEntries')->willReturn([
+			'count' => 1,
+			0 => [
+				'dn' => 'foo'
+			]
+		]);
 
         $ldap->authenticate($unescaped, 'password');
     }

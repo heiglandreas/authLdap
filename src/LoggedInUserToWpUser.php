@@ -53,7 +53,7 @@ final class LoggedInUserToWpUser
 		UidAttribute $uidAttribute,
 		WebAttribute $webAttribute,
 		DoNotOverwriteNonLdapUsers $doNotOverwriteNonLdapUsers,
-		CachePassword $cachePassword,
+		CachePassword $cachePassword
 	) {
 		$this->backend = $backend;
 		$this->logger = $logger;

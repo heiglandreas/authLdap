@@ -1,10 +1,10 @@
 === authLdap ===
 Contributors: heiglandreas
-Tags: ldap, auth, authentication, active directory, AD, openLDAP, Open Directory
+Tags: ldap, auth, authentication, active directory, openLDAP, Open Directory
 Requires at least: 2.5.0
 Tested up to: 6.7.0
 Requires PHP: 7.4
-Stable tag: 3.0.0
+Stable tag: 3.0.3
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -46,6 +46,18 @@ In essence: Report a security vulnerability at https://github.com/heiglandreas/a
 Please see https://github.com/heiglandreas/authLdap/blob/master/SECURITY.md for more details
 
 == Changelog ==
+
+= 3.0.3 =
+
+* Fix further issues with PHP7.4
+
+= 3.0.2 =
+
+* Fix an issue with annotations in PHP7.4
+
+= 3.0.1 =
+
+* Fix admin interface when no group mappings are set up
 
 = 3.0.0 =
 
