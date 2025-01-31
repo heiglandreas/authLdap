@@ -24,6 +24,7 @@ use Org_Heigl\AuthLdap\UserRoleHandler;
 use Org_Heigl\AuthLdap\Value\CachePassword;
 use Org_Heigl\AuthLdap\Value\DefaultRole;
 use Org_Heigl\AuthLdap\Value\DoNotOverwriteNonLdapUsers;
+use Org_Heigl\AuthLdap\Value\ExternalUsers;
 use Org_Heigl\AuthLdap\Value\GroupAttribute;
 use Org_Heigl\AuthLdap\Value\GroupBase;
 use Org_Heigl\AuthLdap\Value\GroupEnabled;
@@ -31,6 +32,7 @@ use Org_Heigl\AuthLdap\Value\GroupFilter;
 use Org_Heigl\AuthLdap\Value\GroupOverUser;
 use Org_Heigl\AuthLdap\Value\Groups;
 use Org_Heigl\AuthLdap\Value\GroupSeparator;
+use Org_Heigl\AuthLdap\Value\LocalWithExternal;
 use Org_Heigl\AuthLdap\Value\LoggedInUser;
 use Org_Heigl\AuthLdap\Value\MailAttribute;
 use Org_Heigl\AuthLdap\Value\NameAttribute;
@@ -60,6 +62,7 @@ require_once __DIR__ . '/src/Value/CachePassword.php';
 require_once __DIR__ . '/src/Value/DefaultRole.php';
 require_once __DIR__ . '/src/Value/DoNotOverwriteNonLdapUsers.php';
 require_once __DIR__ . '/src/Value/Enabled.php';
+require_once __DIR__ . '/src/Value/ExternalUsers.php';
 require_once __DIR__ . '/src/Value/GroupAttribute.php';
 require_once __DIR__ . '/src/Value/GroupBase.php';
 require_once __DIR__ . '/src/Value/GroupEnabled.php';
@@ -67,6 +70,7 @@ require_once __DIR__ . '/src/Value/GroupFilter.php';
 require_once __DIR__ . '/src/Value/GroupOverUser.php';
 require_once __DIR__ . '/src/Value/Groups.php';
 require_once __DIR__ . '/src/Value/GroupSeparator.php';
+require_once __DIR__ . '/src/Value/LocalWithExternal.php';;
 require_once __DIR__ . '/src/Value/MailAttribute.php';
 require_once __DIR__ . '/src/Value/NameAttribute.php';
 require_once __DIR__ . '/src/Value/Password.php';
@@ -152,6 +156,8 @@ function authLdap_options_panel()
 			'GroupOverUser' => authLdap_get_post('authLDAPGroupOverUser', false),
 			'DoNotOverwriteNonLdapUsers' => authLdap_get_post('authLDAPDoNotOverwriteNonLdapUsers', false),
 			'UserRead' => authLdap_get_post('authLDAPUseUserAccount', false),
+			'ExternalUsers' => authLdap_get_post('authLDAPExternalUsers', false),
+			'LocalWithExternal' => authLdap_get_post('authLDAPLocalWithExternal', false),
 		];
 		if (authLdap_set_options($new_options)) {
 			echo "<div class='updated'><p>Saved Options!</p></div>";
@@ -183,6 +189,8 @@ function authLdap_options_panel()
 	$authLDAPGroupOverUser = authLdap_get_option('GroupOverUser');
 	$authLDAPDoNotOverwriteNonLdapUsers = authLdap_get_option('DoNotOverwriteNonLdapUsers');
 	$authLDAPUseUserAccount = authLdap_get_option('UserRead');
+	$authLDAPExternalUsers = authLdap_get_option('ExternalUsers');
+	$authLDAPLocalWithExternal = authLdap_get_option('LocalWithExternal');
 
 	$tChecked = ($authLDAP) ? ' checked="checked"' : '';
 	$tDebugChecked = ($authLDAPDebug) ? ' checked="checked"' : '';
@@ -192,6 +200,8 @@ function authLdap_options_panel()
 	$tStartTLSChecked = ($authLDAPStartTLS) ? ' checked="checked"' : '';
 	$tDoNotOverwriteNonLdapUsers = ($authLDAPDoNotOverwriteNonLdapUsers) ? ' checked="checked"' : '';
 	$tUserRead = ($authLDAPUseUserAccount) ? ' checked="checked"' : '';
+	$tExtChecked = ($authLDAPExternalUsers) ? ' checked="checked"' : '';
+	$tLocalWExtChecked = ($authLDAPLocalWithExternal) ? ' checked="checked"' : '';
 
 	$roles = new WP_Roles();
 
@@ -210,15 +220,16 @@ function authLdap_options_panel()
  *
  * throws exception if there is a problem connecting
  *
+ * @param boolean $reset; allows a forceful reset of the LDAP server connections for External User scenario
  * @conf boolean authLDAPDebug true, if debugging should be turned on
  * @conf string  authLDAPURI LDAP server URI
  *
  * @return Org_Heigl\AuthLdap\LdapList LDAP server object
  */
-function authLdap_get_server()
+function authLdap_get_server($reset = false)
 {
 	static $_ldapserver = null;
-	if (is_null($_ldapserver)) {
+	if (is_null($_ldapserver)|| $reset === "reset") {
 		$authLDAPDebug = authLdap_get_option('Debug');
 		$authLDAPURI = explode(
 			authLdap_get_option('URISeparator', ' '),
@@ -275,6 +286,14 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		return $user;
 	}
 
+	// don't do anything when the password is not defined - assume an alternate method of authentication
+	if ($password == null) {
+		authLdap_debug(
+			'No password provided - cannot perform LDAP authentication'
+		);
+		return $user;
+	}
+
 	$logger = new Logger(authLdap_get_option('Debug'));
 	$ldapServerList = authLdap_get_server();
 
@@ -292,7 +311,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
 	if ($loggedInUser instanceof LoggedInUser) {
 		// The user was just logged in, so let's create a WP_User-Object from it.
-		$logger->log(var_export($loggedInUser, true));
+		// Commenting out the line below, as it exposes user credentials
+		// $logger->log(var_export($loggedInUser, true));
 		$mapper = new LoggedInUserToWpUser(
 			$ldapServerList,
 			$logger,
@@ -324,6 +344,85 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 			GroupSeparator::fromString(authLdap_get_option('GroupSeparator')),
 			Groups::fromArray(authLdap_get_option('Groups', [])),
 			UidAttribute::fromString(authLdap_get_option('UidAttr')),
+			ExternalUsers::fromString(authLdap_get_option('ExternalUsers')),
+			LocalWithExternal::fromString(authLdap_get_option('LocalWithExternal')),
+		);
+		$loggedInUser = $authorizer($loggedInUser);
+	}
+
+	// Set global variable to distinguish LDAP and non-LDAP logins
+	global $isLdapLogin;
+	$isLdapLogin = true;
+
+	return $loggedInUser;
+}
+
+
+
+/**
+ * This method authorizes a user based on their LDAP group memberships
+ * after logging in via another method.
+ * 
+ * Changes to the Authorize flow in authLdap_login should be mirrored here
+ * for parity in functionality.
+ *
+ * Relies on the authLDAPExternalUsers boolean being true
+ *
+ * @param null|WP_User|WP_Error
+ * @param string $username
+ * @return boolean true, if login was successfull or false, if it wasn't
+ * @conf boolean authLDAP true, if authLDAP should be used, false if not. Defaults to false
+ * @conf boolean authLDAPExternalUsers true, if LDAP should be used for authorization of non-LDAP logins, false if not. Defaults to false
+ * @conf string authLDAPFilter LDAP filter to use to find correct user, defaults to '(uid=%s)'
+ * @conf string authLDAPNameAttr LDAP attribute containing user (display) name, defaults to 'name'
+ * @conf string authLDAPSecName LDAP attribute containing second name, defaults to ''
+ * @conf string authLDAPMailAttr LDAP attribute containing user e-mail, defaults to 'mail'
+ * @conf string authLDAPUidAttr LDAP attribute containing user id (the username we log on with), defaults to 'uid'
+ * @conf string authLDAPWebAttr LDAP attribute containing user website, defaults to ''
+ * @conf string authLDAPDefaultRole default role for authenticated user, defaults to ''
+ * @conf boolean authLDAPGroupEnable true, if we try to map LDAP groups to Wordpress roles
+ * @conf boolean authLDAPGroupOverUser true, if LDAP Groups have precedence over existing user roles
+ */
+function authLdap_authorize_only($loggedInUser, $username)
+{
+	// If $isLdapLogin is true - due to authLdap_login success - just return
+	// the supplied user object and do nothing here
+	global $isLdapLogin;
+
+	if($isLdapLogin == true){
+		authLdap_debug('User authenticated via LDAP - skipping LDAP AuthZ and Update');
+		return $loggedInUser;
+	}
+
+	if (!authLdap_get_option('ExternalUsers')) {
+		return $loggedInUser;
+	}
+
+	if ($loggedInUser === false) {
+		return false;
+	}
+
+	$logger = new Logger(authLdap_get_option('Debug'));
+	$ldapServerList = authLdap_get_server("reset");
+	$ldapServerList->bind();
+
+	if ($loggedInUser instanceof WP_User) {
+		$logger->log(var_export(authLdap_get_option('Groups'), true));
+		$authorizer = new Authorize(
+			$ldapServerList,
+			$logger,
+			GroupOverUser::fromString(authLdap_get_option('GroupOverUser')),
+			GroupEnabled::fromString(authLdap_get_option('GroupEnable')),
+			DefaultRole::fromString(authLdap_get_option('DefaultRole')),
+			UserFilter::fromString(authLdap_get_option('Filter')),
+			GroupFilter::fromString(authLdap_get_option('GroupFilter')),
+			GroupAttribute::fromString(authLdap_get_option('GroupAttr')),
+			GroupBase::fromString(authLdap_get_option('GroupBase')),
+			GroupSeparator::fromString(authLdap_get_option('GroupSeparator')),
+			Groups::fromArray(authLdap_get_option('Groups', [])),
+			UidAttribute::fromString(authLdap_get_option('UidAttr')),
+			ExternalUsers::fromString(authLdap_get_option('ExternalUsers')),
+			LocalWithExternal::fromString(authLdap_get_option('LocalWithExternal')),
 		);
 		$loggedInUser = $authorizer($loggedInUser);
 	}
@@ -573,6 +672,8 @@ add_action($hook . 'admin_menu', 'authLdap_addmenu');
 add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
 add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);
 add_filter('authenticate', 'authLdap_login', 10, 3);
+/** Trigger authorize-only chain against LDAP */
+add_filter('authenticate', 'authLdap_authorize_only', 50, 3);
 /** This only works from WP 4.3.0 on */
 add_filter('send_password_change_email', 'authLdap_send_change_email', 10, 3);
 add_filter('send_email_change_email', 'authLdap_send_change_email', 10, 3);

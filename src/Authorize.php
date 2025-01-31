@@ -6,6 +6,7 @@ namespace Org_Heigl\AuthLdap;
 
 use Exception;
 use Org_Heigl\AuthLdap\Value\DefaultRole;
+use Org_Heigl\AuthLdap\Value\ExternalUsers;
 use Org_Heigl\AuthLdap\Value\GroupAttribute;
 use Org_Heigl\AuthLdap\Value\GroupBase;
 use Org_Heigl\AuthLdap\Value\GroupEnabled;
@@ -13,6 +14,7 @@ use Org_Heigl\AuthLdap\Value\GroupFilter;
 use Org_Heigl\AuthLdap\Value\GroupOverUser;
 use Org_Heigl\AuthLdap\Value\Groups;
 use Org_Heigl\AuthLdap\Value\GroupSeparator;
+use Org_Heigl\AuthLdap\Value\LocalWithExternal;
 use Org_Heigl\AuthLdap\Value\UidAttribute;
 use Org_Heigl\AuthLdap\Value\UserFilter;
 use WP_Roles;
@@ -44,6 +46,10 @@ final class Authorize
 
 	private UidAttribute $uidAttribute;
 
+	private ExternalUsers $externalUsers;
+
+	private LocalWithExternal $localWithExternal;
+
 	public function __construct(
 		LdapList $backend,
 		LoggerInterface $logger,
@@ -56,7 +62,9 @@ final class Authorize
 		GroupBase $groupBase,
 		GroupSeparator $groupSeparator,
 		Groups $groups,
-		UidAttribute $uidAttribute
+		UidAttribute $uidAttribute,
+		ExternalUsers $externalUsers,
+		LocalWithExternal $localWithExternal
 	) {
 		$this->backend = $backend;
 		$this->logger = $logger;
@@ -70,6 +78,8 @@ final class Authorize
 		$this->groupSeparator = $groupSeparator;
 		$this->groups = $groups;
 		$this->uidAttribute = $uidAttribute;
+		$this->externalUsers = $externalUsers;
+		$this->localWithExternal = $localWithExternal;
 	}
 
 	/**
@@ -105,14 +115,29 @@ final class Authorize
 				if ($userInfoLdap === []) {
 					$this->logger->log('Retrieving userinfo again failed');
 				}
-				$mappedRoles = $this->groupmap(
-					$userInfoLdap[0][(string) $this->uidAttribute][0],
-					$userInfoLdap[0]['dn']
-				);
+				// Suppress PHP errors when no entries are returned
+				$mappedRoles = [];
+				if(isset($userInfoLdap[0])) {
+					$mappedRoles = $this->groupmap(
+						$userInfoLdap[0][(string) $this->uidAttribute][0],
+						$userInfoLdap[0]['dn']
+					);
+				}
 				if ($mappedRoles !== []) {
 					$roles = $mappedRoles;
 					$this->logger->log('role from group mapping: ' . json_encode($roles));
 				}
+			}
+
+			// if the DN is not present in LDAP, and we both allow External users and local users
+			// alongside them, then just return the user object untouched so that roles are not changed
+			if (
+				( !isset($userInfoLdap[0]['dn']) || $userInfoLdap[0]['dn'] === null ) && 
+				$this->externalUsers->isEnabled() === true &&
+				$this->localWithExternal->isEnabled() === true
+			) {
+				$this->logger->log('user not found in LDAP, but permitted due to LocalWithExternal setting');
+				return $user;
 			}
 
 			// if we don't have a role yet, use default role
@@ -179,6 +204,11 @@ final class Authorize
 
 		if (array_filter(array_values($authLDAPGroups)) === []) {
 			$this->logger->log('No group names defined');
+			return [];
+		}
+	
+		// Return an empty array if dn is not set or is null
+		if (!isset($dn) || $dn === null) {
 			return [];
 		}
 
