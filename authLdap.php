@@ -65,6 +65,7 @@ require_once __DIR__ . '/src/Value/GroupBase.php';
 require_once __DIR__ . '/src/Value/GroupEnabled.php';
 require_once __DIR__ . '/src/Value/GroupFilter.php';
 require_once __DIR__ . '/src/Value/GroupOverUser.php';
+require_once __DIR__ . '/src/Value/GroupAssignment.php';
 require_once __DIR__ . '/src/Value/Groups.php';
 require_once __DIR__ . '/src/Value/GroupSeparator.php';
 require_once __DIR__ . '/src/Value/MailAttribute.php';

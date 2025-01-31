@@ -9,14 +9,20 @@ use Iterator;
 final class Groups
 {
 	private array $groups;
-	private function __construct(string ...$groups)
+	private function __construct(GroupAssignment ...$groups)
 	{
-		$this->groups = $groups;
+		foreach ($groups as $group) {
+			$this->groups[$group->getRole()] = $group->getGroups();
+		}
 	}
 
 	public static function fromArray(array $groups): self
 	{
-		return new self(...$groups);
+		$assignements = [];
+		foreach ($groups as $key => $group) {
+			$assignements[] = GroupAssignment::fromKeyValue($key, $group);
+		}
+		return new self(...$assignements);
 	}
 
 	public function has(string $key): bool
