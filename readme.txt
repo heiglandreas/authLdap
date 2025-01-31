@@ -4,7 +4,7 @@ Tags: ldap, auth, authentication, active directory, openLDAP, Open Directory
 Requires at least: 2.5.0
 Tested up to: 6.7.0
 Requires PHP: 7.4
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -46,6 +46,10 @@ In essence: Report a security vulnerability at https://github.com/heiglandreas/a
 Please see https://github.com/heiglandreas/authLdap/blob/master/SECURITY.md for more details
 
 == Changelog ==
+
+= 3.0.4 =
+
+* Fix PHP7.4 issue with dereferencing associative arrays
 
 = 3.0.3 =
 
