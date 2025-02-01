@@ -352,8 +352,8 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 	}
 
 	// Set global variable to distinguish LDAP and non-LDAP logins
-	global $isLdapLogin;
-	$isLdapLogin = true;
+	global $authLDAPisLdapLogin;
+	$authLDAPisLdapLogin = true;
 
 	return $loggedInUser;
 }
@@ -386,11 +386,11 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
  */
 function authLdap_authorize_only($loggedInUser, $username)
 {
-	// If $isLdapLogin is true - due to authLdap_login success - just return
+	// If $authLDAPisLdapLogin is true - due to authLdap_login success - just return
 	// the supplied user object and do nothing here
-	global $isLdapLogin;
+	global $authLDAPisLdapLogin;
 
-	if($isLdapLogin == true){
+	if($authLDAPisLdapLogin == true){
 		authLdap_debug('User authenticated via LDAP - skipping LDAP AuthZ and Update');
 		return $loggedInUser;
 	}
