@@ -265,7 +265,7 @@ function authLdap_get_server($reset = false)
  * @param string $username
  * @param string $password
  * @param boolean $already_md5
- * @return boolean true, if login was successfull or false, if it wasn't
+ * @return WP_User, if login was successfull or false, if it wasn't
  * @conf boolean authLDAP true, if authLDAP should be used, false if not. Defaults to false
  * @conf string authLDAPFilter LDAP filter to use to find correct user, defaults to '(uid=%s)'
  * @conf string authLDAPNameAttr LDAP attribute containing user (display) name, defaults to 'name'
@@ -274,8 +274,6 @@ function authLdap_get_server($reset = false)
  * @conf string authLDAPUidAttr LDAP attribute containing user id (the username we log on with), defaults to 'uid'
  * @conf string authLDAPWebAttr LDAP attribute containing user website, defaults to ''
  * @conf string authLDAPDefaultRole default role for authenticated user, defaults to ''
- * @conf boolean authLDAPGroupEnable true, if we try to map LDAP groups to Wordpress roles
- * @conf boolean authLDAPGroupOverUser true, if LDAP Groups have precedence over existing user roles
  */
 function authLdap_login($user, $username, $password, $already_md5 = false)
 {
@@ -312,8 +310,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 
 	if ($loggedInUser instanceof LoggedInUser) {
 		// The user was just logged in, so let's create a WP_User-Object from it.
-		// Commenting out the line below, as it exposes user credentials
-		// $logger->log(var_export($loggedInUser, true));
 		$mapper = new LoggedInUserToWpUser(
 			$ldapServerList,
 			$logger,
@@ -330,82 +326,47 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 		$loggedInUser = $mapper($loggedInUser);
 	}
 
-	if ($loggedInUser instanceof WP_User) {
-		$logger->log(var_export(authLdap_get_option('Groups'), true));
-		$authorizer = new Authorize(
-			$ldapServerList,
-			$logger,
-			GroupOverUser::fromString(authLdap_get_option('GroupOverUser')),
-			GroupEnabled::fromString(authLdap_get_option('GroupEnable')),
-			DefaultRole::fromString(authLdap_get_option('DefaultRole')),
-			UserFilter::fromString(authLdap_get_option('Filter')),
-			GroupFilter::fromString(authLdap_get_option('GroupFilter')),
-			GroupAttribute::fromString(authLdap_get_option('GroupAttr')),
-			GroupBase::fromString(authLdap_get_option('GroupBase')),
-			GroupSeparator::fromString(authLdap_get_option('GroupSeparator')),
-			Groups::fromArray(authLdap_get_option('Groups', [])),
-			UidAttribute::fromString(authLdap_get_option('UidAttr')),
-			ExternalUsers::fromString(authLdap_get_option('ExternalUsers')),
-			LocalWithExternal::fromString(authLdap_get_option('LocalWithExternal')),
-		);
-		$loggedInUser = $authorizer($loggedInUser);
-	}
-
-	// Set global variable to distinguish LDAP and non-LDAP logins
+	// Set global variable to distinguish LDAP and non-LDAP logins for authorization flow
 	global $authLDAPisLdapLogin;
 	$authLDAPisLdapLogin = true;
 
 	return $loggedInUser;
 }
 
-
-
 /**
  * This method authorizes a user based on their LDAP group memberships
- * after logging in via another method.
+ * after logging in, including External users if enabled.
  * 
- * Changes to the Authorize flow in authLdap_login should be mirrored here
- * for parity in functionality.
- *
- * Relies on the authLDAPExternalUsers boolean being true
  *
  * @param null|WP_User|WP_Error
  * @param string $username
- * @return boolean true, if login was successfull or false, if it wasn't
+ * @return WP_User object
  * @conf boolean authLDAP true, if authLDAP should be used, false if not. Defaults to false
  * @conf boolean authLDAPExternalUsers true, if LDAP should be used for authorization of non-LDAP logins, false if not. Defaults to false
+ * @conf boolean authLDAPLocalWithExternal true, if local users are still allowed when authorizing external users, false if not. Defaults to false
  * @conf string authLDAPFilter LDAP filter to use to find correct user, defaults to '(uid=%s)'
- * @conf string authLDAPNameAttr LDAP attribute containing user (display) name, defaults to 'name'
- * @conf string authLDAPSecName LDAP attribute containing second name, defaults to ''
- * @conf string authLDAPMailAttr LDAP attribute containing user e-mail, defaults to 'mail'
  * @conf string authLDAPUidAttr LDAP attribute containing user id (the username we log on with), defaults to 'uid'
- * @conf string authLDAPWebAttr LDAP attribute containing user website, defaults to ''
  * @conf string authLDAPDefaultRole default role for authenticated user, defaults to ''
  * @conf boolean authLDAPGroupEnable true, if we try to map LDAP groups to Wordpress roles
  * @conf boolean authLDAPGroupOverUser true, if LDAP Groups have precedence over existing user roles
  */
-function authLdap_authorize_only($loggedInUser, $username)
-{
-	// If $authLDAPisLdapLogin is true - due to authLdap_login success - just return
-	// the supplied user object and do nothing here
+function authLdap_authorization($loggedInUser, $username){
 	global $authLDAPisLdapLogin;
-
-	if($authLDAPisLdapLogin == true){
-		authLdap_debug('User authenticated via LDAP - skipping LDAP AuthZ and Update');
+	// Don't trigger if this isn't an LDAP login AND External Users aren't enabled
+	if (!($authLDAPisLdapLogin === true) && !authLdap_get_option('ExternalUsers')) {
+		authLdap_debug('User ineligible for LDAP Authorization ');
 		return $loggedInUser;
 	}
 
-	if (!authLdap_get_option('ExternalUsers')) {
-		return $loggedInUser;
-	}
-
-	if ($loggedInUser === false) {
-		return false;
+	// If this isn't already an LDAP user, force a reset in the LDAP server list, or LDAP lookups will fail
+	if (!($authLDAPisLdapLogin === true)) {
+		$ldapServerList = authLdap_get_server("reset");
+		$ldapServerList->bind();
+	} else {
+		$ldapServerList = authLdap_get_server();
 	}
 
 	$logger = new Logger(authLdap_get_option('Debug'));
-	$ldapServerList = authLdap_get_server("reset");
-	$ldapServerList->bind();
 
 	if ($loggedInUser instanceof WP_User) {
 		$logger->log(var_export(authLdap_get_option('Groups'), true));
@@ -674,8 +635,8 @@ add_action($hook . 'admin_menu', 'authLdap_addmenu');
 add_filter('show_password_fields', 'authLdap_show_password_fields', 10, 2);
 add_filter('allow_password_reset', 'authLdap_allow_password_reset', 10, 2);
 add_filter('authenticate', 'authLdap_login', 10, 3);
-/** Trigger authorize-only chain against LDAP */
-add_filter('authenticate', 'authLdap_authorize_only', 50, 3);
+/** Trigger authorization chain against LDAP */
+add_filter('authenticate', 'authLdap_authorization', 100, 3);
 /** This only works from WP 4.3.0 on */
 add_filter('send_password_change_email', 'authLdap_send_change_email', 10, 3);
 add_filter('send_email_change_email', 'authLdap_send_change_email', 10, 3);
