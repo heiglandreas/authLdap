@@ -230,7 +230,7 @@ function authLdap_options_panel()
 function authLdap_get_server($reset = false)
 {
 	static $_ldapserver = null;
-	if (is_null($_ldapserver)|| $reset === "reset") {
+	if (is_null($_ldapserver)|| $reset == true) {
 		$authLDAPDebug = authLdap_get_option('Debug');
 		$authLDAPURI = explode(
 			authLdap_get_option('URISeparator', ' '),
@@ -265,7 +265,7 @@ function authLdap_get_server($reset = false)
  * @param string $username
  * @param string $password
  * @param boolean $already_md5
- * @return WP_User, if login was successfull or false, if it wasn't
+ * @return WP_User|WP_Error|null|false WP_User is returned if successful login, false if not. WP_Error or null may also be returned if $user is null or a WP_Error
  * @conf boolean authLDAP true, if authLDAP should be used, false if not. Defaults to false
  * @conf string authLDAPFilter LDAP filter to use to find correct user, defaults to '(uid=%s)'
  * @conf string authLDAPNameAttr LDAP attribute containing user (display) name, defaults to 'name'
@@ -281,14 +281,6 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 	if (!authLdap_get_option('Enabled')) {
 		authLdap_debug(
 			'LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)'
-		);
-		return $user;
-	}
-
-	// don't do anything when the password is not defined - assume an alternate method of authentication
-	if ($password == null) {
-		authLdap_debug(
-			'No password provided - cannot perform LDAP authentication'
 		);
 		return $user;
 	}
@@ -350,7 +342,15 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
  * @conf boolean authLDAPGroupEnable true, if we try to map LDAP groups to Wordpress roles
  * @conf boolean authLDAPGroupOverUser true, if LDAP Groups have precedence over existing user roles
  */
-function authLdap_authorization($loggedInUser, $username){
+function authLdap_authorization($loggedInUser){
+	// don't do anything when authLDAP is disabled
+	if (!authLdap_get_option('Enabled')) {
+		authLdap_debug(
+			'LDAP disabled in AuthLDAP plugin options (use the first option in the AuthLDAP options to enable it)'
+		);
+		return $user;
+	}
+	
 	global $authLDAPisLdapLogin;
 	// Don't trigger if this isn't an LDAP login AND External Users aren't enabled
 	if (!($authLDAPisLdapLogin === true) && !authLdap_get_option('ExternalUsers')) {
@@ -360,7 +360,7 @@ function authLdap_authorization($loggedInUser, $username){
 
 	// If this isn't already an LDAP user, force a reset in the LDAP server list, or LDAP lookups will fail
 	if (!($authLDAPisLdapLogin === true)) {
-		$ldapServerList = authLdap_get_server("reset");
+		$ldapServerList = authLdap_get_server(true);
 		$ldapServerList->bind();
 	} else {
 		$ldapServerList = authLdap_get_server();

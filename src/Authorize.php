@@ -198,6 +198,11 @@ final class Authorize
 	 */
 	private function groupmap($username, $dn)
 	{
+		// Return an empty array if dn is not set or is null
+		if ($dn === null) {
+			return [];
+		}
+		
 		$authLDAPGroups = $this->sortRolesByCapabilities(
 			$this->groups
 		);
@@ -207,11 +212,6 @@ final class Authorize
 			return [];
 		}
 	
-		// Return an empty array if dn is not set or is null
-		if (!isset($dn) || $dn === null) {
-			return [];
-		}
-
 		try {
 			// To allow searches based on the DN instead of the uid, we replace the
 			// string %dn% with the users DN.
