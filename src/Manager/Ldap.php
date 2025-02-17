@@ -107,7 +107,11 @@ class Ldap
 			$bind = $this->connection->bind($this->uri->getUsername(), $this->uri->getPassword());
 		}
 		if (!$bind) {
-			throw new Error('bind was not successfull: ' . $this->connection->error());
+			throw new Error(sprintf(
+				'bind was not successfull to %1$s: %2$s',
+				$this->uri->toString(),
+				$this->connection->error()
+			));
 		}
 		return $this;
 	}
