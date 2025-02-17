@@ -44,6 +44,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           tools: phive
+          ini-values: "memory_limit=-1"
       - name: install dependencies
         run: composer install
       - name: install behat

@@ -6,6 +6,7 @@ use Generator;
 use Org_Heigl\AuthLdap\Exception\InvalidLdapUri;
 use Org_Heigl\AuthLdap\LdapUri;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function getenv;
@@ -37,6 +38,7 @@ class LdapUriTest extends TestCase
 	/**
 	 * @dataProvider toStringProvider
 	 */
+	#[DataProvider('toStringProvider')]
 	public function testToString(string $uri, string $result, $user, $password, $baseDn, array $env = []): void
 	{
 		foreach ($env as $key => $value) {
@@ -50,6 +52,7 @@ class LdapUriTest extends TestCase
 	}
 
 	/** @dataProvider fromStringProvider */
+	#[DataProvider('fromStringProvider')]
 	public function testFromString(string $uri, bool $failure = false): void
 	{
 		if ($failure) {
@@ -76,6 +79,7 @@ class LdapUriTest extends TestCase
 	/**
 	 * @dataProvider anonymousProvider
 	 */
+	#[DataProvider('anonymousProvider')]
 	public function testUriIsAnonymous(string $uri): void
 	{
 		$uri = LdapUri::fromString($uri);

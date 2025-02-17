@@ -54,7 +54,10 @@ final class Ldap implements LdapInterface
 
 	public function error()
 	{
-		return ldap_error($this->connection);
+		$error = ldap_error($this->connection);
+		ldap_get_option($this->connection, LDAP_OPT_DIAGNOSTIC_MESSAGE, $err);
+
+		return $error . "\n" . $err;
 	}
 
 	public function errno()

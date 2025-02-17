@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2016-2016} Andreas Heigl<andreas@heigl.org>
+ * Copyright (c) Andreas Heigl<andreas@heigl.org>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -19,7 +19,7 @@
  * THE SOFTWARE.
  *
  * @author    Andreas Heigl<andreas@heigl.org>
- * @copyright 2016-2016 Andreas Heigl
+ * @copyright Andreas Heigl
  * @license   http://www.opensource.org/licenses/mit-license.php MIT-License
  * @version   0.0
  * @since     07.06.2016
@@ -32,10 +32,11 @@ use Org_Heigl\AuthLdap\Exception\Error;
 use Org_Heigl\AuthLdap\LdapList;
 use Org_Heigl\AuthLdap\LdapUri;
 use Org_Heigl\AuthLdap\Manager\Ldap;
-use Org_Heigl\AuthLdap\Wrapper\Ldap as LdapWrapper;
 use Org_Heigl\AuthLdap\Wrapper\LdapFactory;
 use Org_Heigl\AuthLdap\Wrapper\LdapInterface;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 
 class LDAPBaseTest extends TestCase
@@ -58,6 +59,8 @@ class LDAPBaseTest extends TestCase
      * @dataProvider bindingWithPasswordProvider
      * @testdox Binding user $user with password $password using a filter $filter works
      */
+	#[TestDox('Binding user $user with password $password using a filter $filter works')]
+	#[DataProvider('bindingWithPasswordProvider')]
     public function testThatBindingWithPasswordWorks($user, $password, $filter, $uri)
     {
 		$uri = LdapUri::fromString($uri);
@@ -111,9 +114,10 @@ class LDAPBaseTest extends TestCase
     }
 
     /**
-     * @param $uri
+     * @param string $uri
      * @dataProvider initialBindingToLdapServerWorksProvider
      */
+	#[DataProvider('initialBindingToLdapServerWorksProvider')]
     public function testThatInitialBindingWorks($uri)
     {
 	    $this->wrapper
@@ -125,9 +129,10 @@ class LDAPBaseTest extends TestCase
     }
 
     /**
-     * @param $uri
+     * @param string $uri
      * @dataProvider initialBindingToLdapServerWorksProvider
      */
+	#[DataProvider('initialBindingToLdapServerWorksProvider')]
     public function testThatInitialBindingToMultipleLdapsWorks($uri)
     {
 		$this->wrapper->expects($this->once())
@@ -151,6 +156,7 @@ class LDAPBaseTest extends TestCase
     /**
      * @dataProvider provideUnescapedData
      */
+	#[DataProvider('provideUnescapedData')]
     public function testThatPassedDataIsEscaped($unescaped, $escaped): void
     {
         $ldap = new LDAP($this->factory, LdapUri::fromString(
