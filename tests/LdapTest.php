@@ -37,6 +37,7 @@ use Exception;
 use Generator;
 use Org_Heigl\AuthLdap\LdapUri;
 use Org_Heigl\AuthLdap\Wrapper\LdapFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Org_Heigl\AuthLdap\Manager\Ldap;
 
@@ -48,6 +49,7 @@ class LdapTest extends TestCase
 	 * @param array $expected
 	 * @param array $given
 	 */
+	#[DataProvider('dpInstantiateLdapClass')]
 	public function testInstantiateLdapClass($ldapUri, $debug, $startTls)
 	{
 		$ldap = new Ldap(new LdapFactory(), LdapUri::fromString($ldapUri), $debug, $startTls);
@@ -58,6 +60,7 @@ class LdapTest extends TestCase
 	 * @dataProvider dpExceptionsWhenInstantiatingLdapClass
 	 * @param string $expected
 	 */
+	#[DataProvider('dpExceptionsWhenInstantiatingLdapClass')]
 	public function testExceptionsWhenInstantiatingLdapClass(string $expected)
 	{
 		self::expectException(Exception::class);
