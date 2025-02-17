@@ -22,6 +22,8 @@ RUN set -x \
     && docker-php-ext-install mysqli \
     && apt-get purge -y --auto-remove libldap2-dev
 
+RUN echo -n "memory_limit=-1" >> /usr/local/etc/php/conf.d/docker-fpm.ini
+
 WORKDIR /var/www/html
 RUN set -x \
     && curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
