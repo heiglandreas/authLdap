@@ -48,6 +48,15 @@ final class Authenticate
 			return $user;
 		}
 
+		// don't do anything when the password is not defined - assume an 
+		// alternate method of authentication
+		if ($password == null) {
+			authLdap_debug(
+				'No password provided - cannot perform LDAP authentication'
+			);
+			return false;
+		}
+
 		$this->logger->log(sprintf(
 			'User "%s" logging in',
 			$username

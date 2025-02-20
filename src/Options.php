@@ -35,6 +35,8 @@ class Options
 	public const GROUP_OVER_USER = 'GroupOverUser';
 	public const VERSION = 'Version';
 	public const DO_NOT_OVERWRITE_NON_LDAP_USERS = 'DoNotOverwriteNonLdapUsers';
+	public const EXTERNAL_USERS = 'ExternalUsers';
+	public const LOCAL_WITH_EXTERNAL = 'LocalWithExternal';
 
 	private array $settings = [
 			'Enabled' => false,
@@ -56,6 +58,8 @@ class Options
 			'GroupOverUser' => true,
 			'Version' => 1,
 			'DoNotOverwriteNonLdapUsers' => false,
+			'ExternalUsers' => false,
+			'LocalWithExternal' => false,
 		];
 
 	public function get(string $key)
