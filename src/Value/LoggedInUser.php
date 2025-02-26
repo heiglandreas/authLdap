@@ -12,8 +12,11 @@ final class LoggedInUser
 
 	private string $password;
 
-	private function __construct(string $username, string $password)
-	{
+	private function __construct(
+		string $username,
+		#[\SensitiveParameter]
+		string $password
+	) {
 		$this->username = $username;
 		$this->password = $password;
 	}
