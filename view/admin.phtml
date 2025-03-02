@@ -324,6 +324,32 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>
+                        <label for="authLDAPExtUsers">EXPERIMENTAL Enable LDAP Group Lookup for 'External' users?</label>
+                    </th>
+                    <td>
+                        <input type="checkbox" name="authLDAPExternalUsers" id="authLDAPExternalUsers" value="1"<?php echo $tExtChecked; ?>/>
+                        <p class="description">
+                            Shall we try to find the user in LDAP even if they logged in through a different mechanism (SAML, OIDC, social logins, local accounts, etc)? CAUTION: This has the potential to break access for users,
+			                depending on the configuration of other settings.
+                        </p>
+                        <p class="description">This should only be checked if you know what you are doing! THIS WILL TRIGGER EVEN IF LDAP AUTHENTICATION IS DISABLED.</p>
+                        <p class="description">Also of note is that the "User-Read" option will not apply to non-LDAP users.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="authLDAPLocalWithExternal">EXPERIMENTAL Allow local accounts when External Users are enabled?</label>
+                    </th>
+                    <td>
+                        <input type="checkbox" name="authLDAPLocalWithExternal" id="authLDAPLocalWithExternal" value="1"<?php echo $tLocalWExtChecked; ?>/>
+                        <p class="description">
+                            If in experimental LDAP Group Lookup mode, should local WordPress users be allowed to log in even when they cannot be found in LDAP. This will cause the user to have their configured WP roles.
+                        </p>
+                        <p class="description">This option has no effect if the External users are not permitted.</p>
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row">
                         <label for="authLDAPGroupBase">Group-Base</label>
                     </th>
