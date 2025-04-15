@@ -306,10 +306,10 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 			DoNotOverwriteNonLdapUsers::fromString(authLdap_get_option('DoNotOverwriteNonLdapUsers')),
 			CachePassword::fromString(authLdap_get_option('CachePW')),
 		);
-		$loggedInUser = $mapper($loggedInUser);
+		$WPUser = $mapper($loggedInUser);
 	}
 
-	if ($loggedInUser instanceof WP_User) {
+	if ($WPUser instanceof WP_User) {
 		$logger->log(var_export(authLdap_get_option('Groups'), true));
 		$authorizer = new Authorize(
 			$ldapServerList,
@@ -325,10 +325,11 @@ function authLdap_login($user, $username, $password, $already_md5 = false)
 			Groups::fromArray(authLdap_get_option('Groups', [])),
 			UidAttribute::fromString(authLdap_get_option('UidAttr')),
 		);
-		$loggedInUser = $authorizer($loggedInUser);
+
+		$WPUser = $authorizer($WPUser, $loggedInUser);
 	}
 
-	return $loggedInUser;
+	return $WPUser;
 }
 
 /**

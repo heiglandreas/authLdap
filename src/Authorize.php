@@ -13,6 +13,7 @@ use Org_Heigl\AuthLdap\Value\GroupFilter;
 use Org_Heigl\AuthLdap\Value\GroupOverUser;
 use Org_Heigl\AuthLdap\Value\Groups;
 use Org_Heigl\AuthLdap\Value\GroupSeparator;
+use Org_Heigl\AuthLdap\Value\LoggedInUser;
 use Org_Heigl\AuthLdap\Value\UidAttribute;
 use Org_Heigl\AuthLdap\Value\UserFilter;
 use WP_Roles;
@@ -75,7 +76,7 @@ final class Authorize
 	/**
 	 * @return false|WP_User
 	 */
-	public function __invoke(WP_User $user)
+	public function __invoke(WP_User $user, LoggedInUser $loggedInUser)
 	{
 		try {
 			$roles = [];
@@ -100,11 +101,12 @@ final class Authorize
 				// FIXME: add correct parameters
 				$userInfoLdap = $this->backend->search(sprintf(
 					(string) $this->userFilter,
-					$user->user_login,
+					$loggedInUser->getUsername(),
 				), [(string) $this->uidAttribute, 'dn']);
-				if ($userInfoLdap === []) {
+				if ($userInfoLdap['count'] === 0) {
 					$this->logger->log('Retrieving userinfo again failed');
 				}
+
 				$mappedRoles = $this->groupmap(
 					$userInfoLdap[0][(string) $this->uidAttribute][0],
 					$userInfoLdap[0]['dn']
