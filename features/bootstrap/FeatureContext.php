@@ -254,9 +254,8 @@ LDIF',
 		//  curl -i 'http://localhost/wp-login.php' -X POST -H 'Cookie: wordpress_test_cookie=test' --data-raw 'log=localadmin&pwd=P%40ssw0rd'
 		$client = new Client();
 
-		$this->res = $client->post('http://nginx/wp-login.php', [
+		$this->res = $client->post('http://nginx/wp-login.php?XDEBUG_SESSION_START=PHPSTORM', [
 			'cookies' => CookieJar::fromArray([
-				'wordpress_test_cookie' => 'test',
 				'XDEBUG_SESSION' => 'PHPSTORM',
 			], 'http://nginx'),
 			'form_params' => [

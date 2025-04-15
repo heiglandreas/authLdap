@@ -16,6 +16,7 @@ services:
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: "wppasswd"
       WORDPRESS_DEBUG: 1
+      PHP_IDE_CONFIG: serverName=localhost
     depends_on:
       db:
         condition: service_healthy
@@ -73,22 +74,26 @@ services:
       interval: 2s
 
   openldap:
-    image: osixia/openldap:latest
+    image: bitnami/openldap:latest
 #    build:
 #      context: dockersetup
 #      dockerfile: Dockerfile_ldap
     ports:
-      - 3389:389
+      - "389:389"
     volumes:
       - ./.ci/50-init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
-    command: "--copy-service --loglevel debug"
-    restart: unless-stopped
+    #command: "--copy-service --loglevel debug"
+    #restart: unless-stopped
     environment:
       LDAP_LOG_LEVEL: "0"
       LDAP_TLS: "false"
       LDAP_ADMIN_PASSWORD: "insecure"
+      LDAP_URI: "ldap://localhost:389"
+      LDAP_ADMIN_USERNAME: admin
+      LDAP_PORT_NUMBER: 389
+
     healthcheck:
-      test: ["CMD", "/usr/bin/ldapsearch", "-H",  "ldap://localhost/", "-x", "-s", "base", "-LLL", "+"]
+      test: ["CMD", "/opt/bitnami/openldap/bin/ldapsearch", "-H",  "ldap://localhost/", "-x", "-s", "base", "-LLL", "+"]
       timeout: 1s
       retries: 10
       interval: 2s
