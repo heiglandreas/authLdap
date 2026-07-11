@@ -1,8 +1,8 @@
+ARG PHP_BUILD_VERSION=$PHP_BUILD_VERSION
+
+FROM php:${PHP_BUILD_VERSION}-fpm
+
 ARG WORDPRESS_VERSION=$WORDPRESS_VERSION
-ARG PHP_VERSION=$PHP_VERSION
-
-FROM php:$PHP_VERSION-fpm
-
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -20,12 +20,11 @@ RUN set -x \
     && docker-php-ext-configure ldap --with-libdir=lib/$ARCH-$TARGETOS-gnu/ \
     && docker-php-ext-install ldap \
     && docker-php-ext-install mysqli \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.discover_client_host=on" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "memory_limit=-1" >> /usr/local/etc/php/php.ini \
+#    && pie install xdebug/xdebug \
+#    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+#    && echo "xdebug.discover_client_host=on" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+#    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+#    && echo "memory_limit=-1" >> /usr/local/etc/php/php.ini \
     && apt-get purge -y --auto-remove libldap2-dev
 
 RUN echo -n "memory_limit=-1" >> /usr/local/etc/php/conf.d/docker-fpm.ini
@@ -34,7 +33,7 @@ WORKDIR /var/www/html
 RUN set -x \
     && curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod 755 /usr/local/bin/wp \
-    && /usr/local/bin/wp --allow-root core download --version $WORDPRESS_VERSION \
+    && /usr/local/bin/wp --allow-root core download --version=${WORDPRESS_VERSION} \
     && /usr/local/bin/wp --allow-root cli update --nightly --yes
 
 
