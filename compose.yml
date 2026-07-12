@@ -1,11 +1,11 @@
 services:
   wp:
-    image: authldap_test:${WORDPRESS_VERSION:-6.7}-${PHP_VERSION:-8.4}
+    image: authldap_test:${WORDPRESS_VERSION:-6.7}-${PHP_BUILD_VERSION:-8.4}
     build:
       context: dockersetup
       dockerfile: Dockerfile_wordpress
       args:
-        PHP_VERSION: ${PHP_VERSION:-8.4}
+        PHP_BUILD_VERSION: ${PHP_BUILD_VERSION:-8.4}
         WORDPRESS_VERSION: ${WORDPRESS_VERSION:-6.7}
     volumes:
       - .:/var/www/html/wp-content/plugins/authldap
@@ -74,26 +74,28 @@ services:
       interval: 2s
 
   openldap:
-    image: bitnami/openldap:latest
+    image: osixia/openldap:2.6.10-alpha
 #    build:
 #      context: dockersetup
 #      dockerfile: Dockerfile_ldap
     ports:
       - "389:389"
     volumes:
-      - ./.ci/50-init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
+      - ./.ci/50-init.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif
     #command: "--copy-service --loglevel debug"
     #restart: unless-stopped
     environment:
-      LDAP_LOG_LEVEL: "0"
-      LDAP_TLS: "false"
-      LDAP_ADMIN_PASSWORD: "insecure"
-      LDAP_URI: "ldap://localhost:389"
-      LDAP_ADMIN_USERNAME: admin
-      LDAP_PORT_NUMBER: 389
+      OPENLDAP_BOOTSTRAP_SUFFIX: "dc=example,dc=org"
+      OPENLDAP_BOOTSTRAP_ORGANIZATION: "example.org"
+      OPENLDAP_DEBUG_LEVEL: "0"
+      OPENLDAP_BOOTSTRAP_TLS: "false"
+      OPENLDAP_BOOTSTRAP_DATA_ROOT_PASSWORD_HASHED: '{ARGON2}$$argon2id$$v=19$$m=7168,t=5,p=1$$cdNOtmE/cKaIi0ccPocGjQ$$oDPXXGFLSQHJXeSbX6q6gzcnv432qGffWAiu5nSd884'
+      OPENLDAP_BOOTSTRAP_CONFIG_ROOT_PASSWORD_HASHED: '{ARGON2}$$argon2id$$v=19$$m=7168,t=5,p=1$$cdNOtmE/cKaIi0ccPocGjQ$$oDPXXGFLSQHJXeSbX6q6gzcnv432qGffWAiu5nSd884' #"insecure"
+      OPENLDAP_URLS: 'ldap://:389 ldapi:///'
+      OPENLDAP_BOOTSTRAP_MEMBEROF: 'true'
 
     healthcheck:
-      test: ["CMD", "/opt/bitnami/openldap/bin/ldapsearch", "-H",  "ldap://localhost/", "-x", "-s", "base", "-LLL", "+"]
+      test: ["CMD", "/usr/bin/ldapsearch", "-H",  "ldap://localhost:389/", "-x", "-s", "base", "-LLL", "+"]
       timeout: 1s
       retries: 10
       interval: 2s

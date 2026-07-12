@@ -73,37 +73,16 @@ class LdapTest extends TestCase
 			'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
 			true,
 			false,
-			[
-				'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-				'password' => 'secret',
-				'server' => 'ldap.example.org',
-				'baseDn' => 'cn=example,c=org',
-				'debug' => true,
-			],
 		];
 		yield [
 			'ldap://uid=jondoe,cn=users,cn=example,c=org@ldap.example.org/cn=example,c=org',
 			true,
 			false,
-			[
-				'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-				'password' => '',
-				'server' => 'ldap.example.org',
-				'baseDn' => 'cn=example,c=org',
-				'debug' => true,
-			],
 		];
 		yield [
 			'ldap://ldap.example.org/cn=example,c=org',
 			true,
 			false,
-			[
-				'username' => 'anonymous',
-				'password' => '',
-				'server' => 'ldap.example.org',
-				'baseDn' => 'cn=example,c=org',
-				'debug' => true,
-			],
 		];
 //      yield [
 //           'ldap://ldap.example.org',
@@ -121,25 +100,11 @@ class LdapTest extends TestCase
 			'ldap://uid=jondoe,cn=users,cn=example,c=org:secret@ldap.example.org/cn=example,c=org',
 			false,
 			false,
-			[
-				'username' => 'uid=jondoe,cn=users,cn=example,c=org',
-				'password' => 'secret',
-				'server' => 'ldap.example.org',
-				'baseDn' => 'cn=example,c=org',
-				'debug' => false,
-			],
 		];
 		yield [
 			'ldap://ldap.example.org/cn=test%20example,c=org',
 			false,
 			false,
-			[
-				'username' => 'anonymous',
-				'password' => '',
-				'server' => 'ldap.example.org',
-				'baseDn' => 'cn=test example,c=org',
-				'debug' => false,
-			],
 		];
 	}
 
