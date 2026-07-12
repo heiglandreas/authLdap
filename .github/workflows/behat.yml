@@ -21,7 +21,7 @@ jobs:
 
     name: Test on PHP ${{ matrix.php-version }}/WordPress ${{ matrix.wordpress-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 #      - name: Docker Compose Pull
 #        run: docker compose pull
 #      - name: Cache Docker images
