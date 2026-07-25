@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - 'master'
+permissions: {}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test_compatibility:
     runs-on: ubuntu-latest
@@ -15,9 +20,11 @@ jobs:
 
     name: Check compatibility with 7.4
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+        with:
+          persist-credentials: false
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 #2.37.2
         with:
           php-version: '8.4'
           extensions: ldap
@@ -35,9 +42,11 @@ jobs:
         php-versions: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5', '8.6' ]
     name: Lint on ${{ matrix.php-versions }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #7.0.1
+        with:
+          persist-credentials: false
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 #2.37.2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ldap
@@ -59,8 +68,10 @@ jobs:
         php-versions: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5', '8.6' ]
     name: Test on ${{ matrix.php-versions }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: jpribyl/action-docker-layer-caching@v0.1.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
+        with:
+          persist-credentials: false
+      - uses: jpribyl/action-docker-layer-caching@c632825d12ec837065f49726ea27ddd40bcc7894 #v0.1.1
         continue-on-error: true
       - name: Build the docker compose stack
         run: docker compose -f compose.yml up -d db openldap
@@ -69,7 +80,7 @@ jobs:
       - name: Check logs
         run: docker compose logs openldap
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ldap
@@ -80,14 +91,19 @@ jobs:
       - name: Run Unit-Tests
         run: ./vendor/bin/phpunit --testdox
   coverage:
+    name: Create code-coverage report
     needs: test
     runs-on: ubuntu-latest
     continue-on-error: false
+    permissions:
+      id-token: read # read is totally sufficient here
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
+        with:
+          persist-credentials: false
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: "8.4"
           coverage: xdebug
@@ -99,6 +115,6 @@ jobs:
         run: ./vendor/bin/phpunit --testdox --colors=always --log-junit junit.xml
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # 1.2.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - 'master'
-
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -21,7 +25,9 @@ jobs:
 
     name: Test on PHP ${{ matrix.php-version }}/WordPress ${{ matrix.wordpress-version }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # 7.0.1
+        with:
+          persist-credentials: false
 #      - name: Docker Compose Pull
 #        run: docker compose pull
 #      - name: Cache Docker images
@@ -32,15 +38,22 @@ jobs:
 #            docker-${{ runner.os }}-${{ matrix.php-version }}-${{ matrix.wordpress-version }}-${{ hashFiles('compose.yml') }}
       - name: Build the docker compose stack
         if: steps.docker-cache.outputs.cache-hit != 'true'
-        run: WORDPRESS_VERSION=${{ matrix.wordpress-version }} PHP_BUILD_VERSION=${{ matrix.php-version }} docker compose build --build-arg PHP_BUILD_VERSION=${{ matrix.php-version }} --build-arg WORDPRESS_VERSION=${{ matrix.wordpress-version }} wp
+        run:  docker compose build --build-arg PHP_BUILD_VERSION=$PHP_BUILD_VERSION --build-arg WORDPRESS_VERSION=$WORDPRESS_VERSION wp
+        env:
+          WORDPRESS_VERSION: ${{ matrix.wordpress-version }}
+          PHP_BUILD_VERSION: ${{ matrix.php-version }}
+
       - name: run the stack
-        run: WORDPRESS_VERSION=${{ matrix.wordpress-version }} PHP_BUILD_VERSION=${{ matrix.php-version }} docker compose -f compose.yml up -d
+        run: docker compose -f compose.yml up -d
+        env:
+          WORDPRESS_VERSION: ${{ matrix.wordpress-version }}
+          PHP_BUILD_VERSION: ${{ matrix.php-version }}
       - name: Check running containers
         run: docker ps -a
       - name: Check logs
         run: docker compose logs openldap
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 #2.37.2
         with:
           php-version: ${{ matrix.php-version }}
           tools: phive
