@@ -25,7 +25,7 @@
 	},
 	"require-dev": {
 		"automattic/wordbless": "dev-patch-1",
-		"guzzlehttp/guzzle": "^7.8",
+		"guzzlehttp/guzzle": "^7.8 || ^8.0",
 		"webmozart/assert": "^1.11"
 	},
 	"repositories": [
