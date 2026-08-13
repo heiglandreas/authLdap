@@ -2,7 +2,7 @@
 Contributors: heiglandreas
 Tags: ldap, auth, authentication, active directory, openLDAP, Open Directory
 Requires at least: 2.5.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 3.1.4
 License: MIT
@@ -46,6 +46,10 @@ In essence: Report a security vulnerability at https://github.com/heiglandreas/a
 Please see https://github.com/heiglandreas/authLdap/blob/master/SECURITY.md for more details
 
 == Changelog ==
+
+= 3.1.5 =
+
+* Add testing with WP 7.1
 
 = 3.1.4 =
 
