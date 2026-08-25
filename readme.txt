@@ -1,6 +1,6 @@
 === authLdap ===
 Contributors: heiglandreas
-Tags: ldap, auth, authentication, active directory, openLDAP, Open Directory
+Tags: ldap, auth, authentication, active directory, openLDAP
 Requires at least: 2.5.0
 Tested up to: 7.1
 Requires PHP: 7.4
